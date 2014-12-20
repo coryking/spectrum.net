@@ -1,0 +1,82 @@
+﻿<Window x:Class="CorySynth.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:CorySynth"
+        xmlns:providers="clr-namespace:NAudio.Wave.SampleProviders;assembly=NAudio"
+        xmlns:models="clr-namespace:CorySynth.Models"
+        Closing="Window_Closing"
+        Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <Style x:Key="VerticalSliderStyles" TargetType="{x:Type Slider}">
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="TickPlacement" Value="TopLeft"/>
+         </Style>
+        <DataTemplate x:Key="SignalGeneratorTemplate" DataType="{x:Type providers:SignalGenerator}">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox ItemsSource="{Binding Source={my:Enumeration {x:Type providers:SignalGeneratorType}}}" 
+    DisplayMemberPath="Description" 
+    SelectedValue="{Binding Type}"  
+    SelectedValuePath="Value" Grid.Row="0" Grid.ColumnSpan="2"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Frequency, StringFormat=Frequency: {0:F2}hz}"/>
+
+                <Slider Grid.Row="2" Grid.Column="0" Style="{StaticResource VerticalSliderStyles}" Value="{Binding Frequency, Mode=TwoWay}" 
+                                 Minimum="20" Maximum="20000"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Frequency, StringFormat=Gain: {0:F2}}"/>
+                <Slider Grid.Row="2" Grid.Column="1" Style="{StaticResource VerticalSliderStyles}" Value="{Binding Gain, Mode=TwoWay}" 
+                                Minimum="0" Maximum="1" TickFrequency="0.1" />
+
+            </Grid>
+
+
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type models:Adsr}" x:Key="AdsrTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding AttackSeconds, StringFormat=Attack: {0:F2}s}" Grid.Row="0" Grid.Column="0"/>
+                <Slider Grid.Row="1" Grid.Column="0" Value="{Binding AttackSeconds}" Minimum="0" Maximum="2"/>
+                <TextBlock Text="{Binding ReleaseSeconds, StringFormat=Release: {0:F2}s}" Grid.Row="0" Grid.Column="1"/>
+                <Slider Grid.Row="1" Grid.Column="1" Value="{Binding ReleaseSeconds}" Minimum="0" Maximum="2"/>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="MediaCommands.Play" CanExecute="CanPlay" Executed="PlayExecuted"/>
+        <CommandBinding Command="MediaCommands.Stop" CanExecute="CanStop" Executed="StopExecuted"/>
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="MediaCommands.Play">Play</Button>
+            <Button Command="MediaCommands.Stop">Stop</Button>
+            <ComboBox Name="AudioChannelBox" ItemsSource="{Binding Source={my:Enumeration {x:Type my:AudioChannels}}}" 
+    DisplayMemberPath="Description" 
+    SelectedValue="{Binding Channels}"  
+    SelectedValuePath="Value"/>
+            <TextBlock Text="{Binding SampleRate, StringFormat=\{0:d0\}hz}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <ContentControl Content="{Binding Generator}" ContentTemplate="{StaticResource SignalGeneratorTemplate}" />
+            <ContentControl Content="{Binding Adsr}" ContentTemplate="{StaticResource AdsrTemplate}" />
+        </StackPanel>
+
+    </Grid>
+</Window>
