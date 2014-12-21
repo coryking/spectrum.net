@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
+using NAudio.Midi;
 using System.Windows.Threading;
 
 namespace CorySynth
@@ -23,9 +24,9 @@ namespace CorySynth
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
-
+    {   
         private WasapiOut waveOut;
+        private MidiIn midiIn;
 
         public MainWindow()
         {
@@ -43,6 +44,21 @@ namespace CorySynth
         {
             IsPlaying = true;
             GenerateAudioChain();
+            Model.Start();
+
+        }
+
+        public void RecordMidi()
+        {
+            if (midiIn == null)
+            {
+                midiIn = new MidiIn(this.MidiDevicePicker.SelectedIndex); ;
+                midiIn.MessageReceived += midiIn_MessageReceived;
+            }
+            GenerateAudioChain();
+            midiIn.Start();
+            IsRecording = true;
+            
         }
 
         private void GenerateAudioChain()
@@ -56,7 +72,14 @@ namespace CorySynth
                 waveOut.Play();
 
             }
-            Model.Start();
+        }
+
+        void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
+        {
+            Console.WriteLine("Got a midi message! {0}", e.MidiEvent);
+            this.Dispatcher.Invoke(() => { Model.PlayNote(e.MidiEvent); });
+            //Model.PlayNote(e.MidiEvent);
+        
         }
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
@@ -72,16 +95,49 @@ namespace CorySynth
                 waveOut.Dispose();
                 waveOut = null;
             }
+            if (midiIn != null)
+            {
+                midiIn.Dispose();
+                midiIn = null;
+            }
         }
 
         public void Stop()
         {
-            IsPlaying = false;
-            Model.Stop(); 
+            if(IsPlaying)
+                Model.Stop(); 
 
+            IsPlaying = false;
+            IsRecording = false;
+            
             if(waveOut != null)
                 waveOut.Stop();
+
+            if (midiIn != null)
+                midiIn.Stop();
         }
+
+
+        #region IsRecording
+
+        /// <summary>
+        /// Identifies the <see cref="IsRecording"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsRecordingProperty =
+            DependencyProperty.Register("IsRecording", typeof(bool), typeof(MainWindow),
+                new FrameworkPropertyMetadata((bool)false));
+
+        /// <summary>
+        /// Gets or sets the IsRecording property.  This dependency property 
+        /// indicates ....
+        /// </summary>
+        public bool IsRecording
+        {
+            get { return (bool)GetValue(IsRecordingProperty); }
+            set { SetValue(IsRecordingProperty, value); }
+        }
+
+        #endregion
 
         #region IsPlaying
 
@@ -104,11 +160,9 @@ namespace CorySynth
 
         #endregion
 
-
-
         private void CanPlay(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !IsPlaying;
+            e.CanExecute = !IsPlaying && !IsRecording;
         }
 
         private void PlayExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -118,7 +172,7 @@ namespace CorySynth
 
         private void CanStop(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = IsPlaying;
+            e.CanExecute = IsPlaying || IsRecording;
         }
 
         private void StopExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -126,6 +180,16 @@ namespace CorySynth
             Stop();
         }
 
+        private void CanRecord(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !IsPlaying && (this.MidiDevicePicker != null && this.MidiDevicePicker.SelectedIndex > -1);
+
+        }
+
+        private void RecordExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            RecordMidi();
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Stop();

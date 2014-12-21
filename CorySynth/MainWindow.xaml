@@ -58,6 +58,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="MediaCommands.Play" CanExecute="CanPlay" Executed="PlayExecuted"/>
         <CommandBinding Command="MediaCommands.Stop" CanExecute="CanStop" Executed="StopExecuted"/>
+        <CommandBinding Command="MediaCommands.Record" CanExecute="CanRecord" Executed="RecordExecuted"/>
     </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -67,10 +68,12 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Command="MediaCommands.Play">Play</Button>
             <Button Command="MediaCommands.Stop">Stop</Button>
+            <Button Command="MediaCommands.Record">Record</Button>
             <ComboBox Name="AudioChannelBox" ItemsSource="{Binding Source={my:Enumeration {x:Type my:AudioChannels}}}" 
     DisplayMemberPath="Description" 
     SelectedValue="{Binding Channels}"  
     SelectedValuePath="Value"/>
+            <ComboBox Name="MidiDevicePicker" DisplayMemberPath="ProductName" ItemsSource="{Binding MidiDevices}"></ComboBox>
             <TextBlock Text="{Binding SampleRate, StringFormat=\{0:d0\}hz}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1">

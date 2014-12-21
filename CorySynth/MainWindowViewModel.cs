@@ -40,8 +40,13 @@ namespace CorySynth
             _mixer.ReadFully = true;
             Adsr = new Models.Adsr();
 
+            this.MidiDevices = new List<MidiInCapabilities>();
+            for (var i = 0; i < MidiIn.NumberOfDevices; i++)
+            {
+                MidiDevices.Add(MidiIn.DeviceInfo(i));
+            }
 
-            Sequence = new MidiEventCollection(0,TicksPerBeat);
+            Sequence = new MidiEventCollection(0, TicksPerBeat);
             AddSimpleNote(72, 4);
             AddSimpleNote(76, 4);
             AddSimpleNote(79, 4);
@@ -70,6 +75,8 @@ namespace CorySynth
             //timer.Interval = TimeSpan.FromSeconds(1 / (100 * Sequence.DeltaTicksPerQuarterNote));
             //timer.Tick += timer_Tick;
         }
+
+        public List<MidiInCapabilities> MidiDevices { get; private set; }
 
         private void AddSimpleNote(int noteNumber, int beats, int deltaBeats=0)
         {
@@ -118,19 +125,24 @@ namespace CorySynth
             while (newEvents != null && newEvents.Count > 0)
             {
                 var midiEvent = newEvents.Dequeue();
-                switch (midiEvent.CommandCode)
-                {
-                    case MidiCommandCode.NoteOn:
-                        AddNewNote((NoteOnEvent)midiEvent);
-                        break;
-                    case MidiCommandCode.NoteOff:
-                        StopNote((NoteEvent)midiEvent);
-                        break;
-                    default:
-                        break;
-                }
+                HandleMidiEvent(midiEvent);
 
 
+            }
+        }
+
+        private void HandleMidiEvent(MidiEvent midiEvent)
+        {
+            switch (midiEvent.CommandCode)
+            {
+                case MidiCommandCode.NoteOn:
+                    AddNewNote((NoteOnEvent)midiEvent);
+                    break;
+                case MidiCommandCode.NoteOff:
+                    StopNote((NoteEvent)midiEvent);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -184,6 +196,11 @@ namespace CorySynth
         public void NextTick()
         {
             SequencePlayer.NextTick();
+        }
+
+        internal void PlayNote(MidiEvent midiEvent)
+        {
+            HandleMidiEvent(midiEvent);
         }
     }
 
