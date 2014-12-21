@@ -136,7 +136,10 @@ namespace CorySynth
             switch (midiEvent.CommandCode)
             {
                 case MidiCommandCode.NoteOn:
-                    AddNewNote((NoteOnEvent)midiEvent);
+                    if (((NoteEvent)midiEvent).Velocity > 0)
+                        AddNewNote((NoteOnEvent)midiEvent);
+                    else
+                        StopNote((NoteEvent)midiEvent);
                     break;
                 case MidiCommandCode.NoteOff:
                     StopNote((NoteEvent)midiEvent);
