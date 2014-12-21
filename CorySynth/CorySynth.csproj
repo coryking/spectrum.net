@@ -73,7 +73,10 @@
   <ItemGroup>
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Models\Adsr.cs" />
+    <Compile Include="Models\MidiNotes.cs" />
+    <Compile Include="NoteTracker.cs" />
     <Compile Include="Oscillator.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

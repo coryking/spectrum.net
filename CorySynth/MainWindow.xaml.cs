@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
+using System.Windows.Threading;
 
 namespace CorySynth
 {
@@ -30,7 +31,10 @@ namespace CorySynth
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
+
         }
+
+
 
         public MainWindowViewModel Model { get { return this.DataContext as MainWindowViewModel; } }
 
@@ -45,12 +49,14 @@ namespace CorySynth
         {
             if (waveOut == null)
             {
-                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 50);
+                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, (int)(Model.TicksPerMs * 100));
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
 
                 waveOut.Init(Model.GetAudioChain());
                 waveOut.Play();
+
             }
+            Model.Start();
         }
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
@@ -71,6 +77,8 @@ namespace CorySynth
         public void Stop()
         {
             IsPlaying = false;
+            Model.Stop(); 
+
             if(waveOut != null)
                 waveOut.Stop();
         }
