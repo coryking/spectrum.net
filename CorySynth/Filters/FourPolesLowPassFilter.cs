@@ -16,6 +16,8 @@ namespace CorySynth.Filters
         private WaveFormat waveFormat;
         private ISampleProvider source;
 
+        private NAudio.Dsp.BiQuadFilter filter;
+        
         float _frequency; // peak freq
 
 
@@ -43,20 +45,10 @@ namespace CorySynth.Filters
         {
             this.source = source;
             waveFormat = source.WaveFormat;
-
             Frequency = 600.0f;
             Resonance = 0.1f;
-            inQueue = new Queue<float>(4);
-            outQueue = new Queue<float>(4);
+
         }
-
-        float c;
-
-        float a1;
-        float a2;
-        float a3;
-        float b1;
-        float b2;
 
         /// <summary>
         ///  rename
@@ -64,39 +56,9 @@ namespace CorySynth.Filters
 
         private void SetParams()
         {
-            float rate = Frequency / waveFormat.SampleRate;
-            c = (float)(1.0f / Math.Tan(Math.PI * rate));
-            //c = 1.0f / (float)Math.Tan(Math.PI * Frequency / waveFormat.SampleRate); // *0.957f;
-            a1 = 1.0f / (1.0f + Resonance * c + c * c);
-            a2 = 2 * a1;
-            a3 = a1;
-            b1 = 2.0f * (1.0f - c * c) * a1;
-            b2 = (1.0f - Resonance * c + c * c) * a1;
+            filter = NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, Frequency, Resonance);
         }
-        private Queue<float> inQueue;
-        private Queue<float> outQueue;
-
-        float in1, in2;
-        float out1, out2;
-
-        public float Process(float input)
-        {
-            float output = (a1 * input) +
-                             (a2 * in1) +
-                             (a3 * in2) -
-                             (b1 * out1) -
-                             (b2 * out2);
-
-            in2 = in1;
-            in1 = input;
-
-            out2 = out1;
-            out1 = output;
-
-            //Console.WriteLine(input + ", " + output);
-
-            return output;
-        }
+       
 
         public int Read(float[] buffer, int offset, int sampleCount)
         {
@@ -115,7 +77,7 @@ namespace CorySynth.Filters
             //System.out.println("in-1" + in_1 + "in-2" + in_2 + "out-1" + out_1 + "out-2" + out_2); 
             for (int i = 0; i < samplesRead; i++)
             {
-                buffer[i + offset] = Process(buffer[i+offset]);
+                buffer[i + offset] = filter.Transform(buffer[i + offset]); //Process(buffer[i+offset]);
 
             }
             //System.out.println("sampleRate = "+ sampleRate +  "f = "+ freq + "  Coefs: a1 " + a1  +" a2"+ a2 +" a3"+ a3 +" b1 "+ b1 +" b2 " +b2);

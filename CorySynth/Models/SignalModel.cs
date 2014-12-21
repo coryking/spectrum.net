@@ -12,12 +12,20 @@ namespace CorySynth.Models
     {
         public NAudio.Wave.SampleProviders.SignalGeneratorType Type { get; set; }
 
-        private double _lowPassCutoff;
+        private float _lowPassCutoff;
 
-        public double LowPassCutoff
+        public float LowPassCutoff
         {
             get { return _lowPassCutoff; }
             set { _lowPassCutoff = value; OnPropertyChanged("LowPassCutoff"); }
+        }
+
+        private float _lowPassResonance;
+
+        public float LowPassResonance
+        {
+            get { return _lowPassResonance; }
+            set { _lowPassResonance = value; OnPropertyChanged("LowPassresonance"); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -18,8 +18,12 @@
     SelectedValue="{Binding Type}"  
     SelectedValuePath="Value" VerticalAlignment="Top"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="{Binding LowPassCutoff, StringFormat=Frequency: {0:D2}hz}"/>
+                    <TextBlock Text="{Binding LowPassCutoff, StringFormat=Frequency: {0:F2}hz}"/>
                     <Slider Value="{Binding LowPassCutoff}" Orientation="Vertical" Height="250" Minimum="1" Maximum="20000"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{Binding LowPassResonance, StringFormat=Q: {0:F2}hz}"/>
+                    <Slider Value="{Binding LowPassResonance}" Orientation="Vertical" Height="250" Minimum="0.01" Maximum="3"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>

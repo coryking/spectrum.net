@@ -88,10 +88,9 @@ namespace CorySynth
 
         private void Signal_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "LowPassCutoff")
-            {
-                lfoFilter.Frequency = (float)Signal.LowPassCutoff;
-            }
+            lfoFilter.Frequency = (float)Signal.LowPassCutoff;
+            lfoFilter.Resonance = (float)Signal.LowPassResonance;
+            
         }
 
         public List<MidiInCapabilities> MidiDevices { get; private set; }
