@@ -65,7 +65,7 @@ namespace CorySynth
         {
             if (waveOut == null)
             {
-                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, (int)(Model.TicksPerMs * 100));
+                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 10);
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
 
                 waveOut.Init(Model.GetAudioChain());
@@ -76,7 +76,10 @@ namespace CorySynth
 
         void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
         {
-            Console.WriteLine("Got a midi message! {0}", e.MidiEvent);
+            // Ignore clock events
+            if (e.MidiEvent.CommandCode == MidiCommandCode.TimingClock || e.MidiEvent.CommandCode == MidiCommandCode.AutoSensing)
+                return;
+            Console.WriteLine(" > Got Midi Event, Invoking Main Thread! {0}", e.MidiEvent);
             this.Dispatcher.Invoke(() => { Model.PlayNote(e.MidiEvent); });
             //Model.PlayNote(e.MidiEvent);
         

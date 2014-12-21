@@ -44,7 +44,7 @@ namespace CorySynth.Models
         public int Number;
         public override string ToString()
         {
-            return String.Format("{0}: {1} ({2})", Name, Frequency, Number);
+            return String.Format("{2}: {0} {1}hz", Name, Frequency, Number);
         }
     }
 

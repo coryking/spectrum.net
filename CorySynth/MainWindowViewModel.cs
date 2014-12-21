@@ -15,6 +15,7 @@ namespace CorySynth
     public class MainWindowViewModel
     {
         private MixingSampleProvider _mixer;
+        private ISampleProvider _headProvider;
         private Timer timer;
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
@@ -32,6 +33,8 @@ namespace CorySynth
             get { return TicksPerMinute / (60.0 * 1000.0);  }
         }
 
+        private Filters.FourPolesLowPassFilter lfoFilter;
+
         public MainWindowViewModel()
         {
             Channels = AudioChannels.MONO;
@@ -39,6 +42,13 @@ namespace CorySynth
             _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, (int)Channels)); ;
             _mixer.ReadFully = true;
             Adsr = new Models.Adsr();
+            Signal = new Models.SignalModel();
+            Signal.PropertyChanged +=Signal_PropertyChanged;
+            lfoFilter = new Filters.FourPolesLowPassFilter(_mixer)
+            {
+                Frequency=(float)Signal.LowPassCutoff,
+            };
+            _headProvider =  lfoFilter;
 
             this.MidiDevices = new List<MidiInCapabilities>();
             for (var i = 0; i < MidiIn.NumberOfDevices; i++)
@@ -74,6 +84,14 @@ namespace CorySynth
             Console.WriteLine("Timer Interval: {0}", timer.Interval); 
             //timer.Interval = TimeSpan.FromSeconds(1 / (100 * Sequence.DeltaTicksPerQuarterNote));
             //timer.Tick += timer_Tick;
+        }
+
+        private void Signal_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "LowPassCutoff")
+            {
+                lfoFilter.Frequency = (float)Signal.LowPassCutoff;
+            }
         }
 
         public List<MidiInCapabilities> MidiDevices { get; private set; }
@@ -133,6 +151,7 @@ namespace CorySynth
 
         private void HandleMidiEvent(MidiEvent midiEvent)
         {
+
             switch (midiEvent.CommandCode)
             {
                 case MidiCommandCode.NoteOn:
@@ -165,9 +184,13 @@ namespace CorySynth
                 var wave = new SignalGenerator(SampleRate, (int)Channels)
                 {
                     Frequency = freq,
-                    Type = SignalGeneratorType.SawTooth
+                    Type = Signal.Type
                 };
-                return new AdsrSampleProvider(wave)
+                var volume = new VolumeSampleProvider(wave)
+                {
+                    Volume = noteOnEvent.Velocity / 128.0f
+                };
+                return new AdsrSampleProvider(volume)
                 {
                     ReleaseSeconds=Adsr.ReleaseSeconds,
                     AttackSeconds=Adsr.AttackSeconds
@@ -181,6 +204,8 @@ namespace CorySynth
 
         public Models.Adsr Adsr { get; set; }
 
+        public Models.SignalModel Signal { get; set; }
+
         public Player SequencePlayer { get; set; }
 
         public NoteTracker Tracker { get; set; }
@@ -191,7 +216,7 @@ namespace CorySynth
 
         public ISampleProvider GetAudioChain()
         {
-            return _mixer;
+            return _headProvider;
         }
 
 

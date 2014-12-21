@@ -11,6 +11,18 @@
             <Setter Property="Orientation" Value="Vertical"/>
             <Setter Property="TickPlacement" Value="TopLeft"/>
          </Style>
+        <DataTemplate x:Key="SignalModelTemplate" DataType="{x:Type models:SignalModel}">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox ItemsSource="{Binding Source={my:Enumeration {x:Type providers:SignalGeneratorType}}}" 
+    DisplayMemberPath="Description" 
+    SelectedValue="{Binding Type}"  
+    SelectedValuePath="Value" VerticalAlignment="Top"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{Binding LowPassCutoff, StringFormat=Frequency: {0:D2}hz}"/>
+                    <Slider Value="{Binding LowPassCutoff}" Orientation="Vertical" Height="250" Minimum="1" Maximum="20000"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Key="SignalGeneratorTemplate" DataType="{x:Type providers:SignalGenerator}">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -78,6 +90,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <ContentControl Content="{Binding Adsr}" ContentTemplate="{StaticResource AdsrTemplate}" />
+            <ContentControl Content="{Binding Signal}" ContentTemplate="{StaticResource SignalModelTemplate}"/>
         </StackPanel>
 
     </Grid>
