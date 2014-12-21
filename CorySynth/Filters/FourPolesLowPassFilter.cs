@@ -25,6 +25,7 @@ namespace CorySynth.Filters
             set
             {
                 _frequency = value;
+                SetParams();
             }
         }
 
@@ -34,7 +35,7 @@ namespace CorySynth.Filters
         public float Resonance
         {
             get { return _resonance; }
-            set { _resonance = value; }
+            set { _resonance = value; SetParams(); }
         }
 
 
@@ -44,7 +45,7 @@ namespace CorySynth.Filters
             waveFormat = source.WaveFormat;
 
             Frequency = 600.0f;
-            Resonance = 1.0f; ;
+            Resonance = 0.1f;
             inQueue = new Queue<float>(4);
             outQueue = new Queue<float>(4);
         }
@@ -63,8 +64,8 @@ namespace CorySynth.Filters
 
         private void SetParams()
         {
-
-            c = (float)(1.0f / Math.Tan(Math.PI * Frequency / waveFormat.SampleRate));
+            float rate = Frequency / waveFormat.SampleRate;
+            c = (float)(1.0f / Math.Tan(Math.PI * rate));
             //c = 1.0f / (float)Math.Tan(Math.PI * Frequency / waveFormat.SampleRate); // *0.957f;
             a1 = 1.0f / (1.0f + Resonance * c + c * c);
             a2 = 2 * a1;
@@ -114,20 +115,8 @@ namespace CorySynth.Filters
             //System.out.println("in-1" + in_1 + "in-2" + in_2 + "out-1" + out_1 + "out-2" + out_2); 
             for (int i = 0; i < samplesRead; i++)
             {
-                inQueue.Enqueue(buffer[i + offset]);
-                buffer[i + offset] = 
-                    (a1 * inQueue.ElementAtOrDefault(3))
-                    + (a2 * inQueue.ElementAtOrDefault(2))
-                    + (a3 * inQueue.ElementAtOrDefault(1))
-                    - (b1 * outQueue.ElementAtOrDefault(1))
-                    - (b2 * outQueue.ElementAtOrDefault(0));
-                outQueue.Enqueue(buffer[i + offset]);
-                //if(out[i]< max)max = out[i];
-                if(inQueue.Count > 4)
-                    inQueue.Dequeue();
+                buffer[i + offset] = Process(buffer[i+offset]);
 
-                if (outQueue.Count > 2)
-                    outQueue.Dequeue();
             }
             //System.out.println("sampleRate = "+ sampleRate +  "f = "+ freq + "  Coefs: a1 " + a1  +" a2"+ a2 +" a3"+ a3 +" b1 "+ b1 +" b2 " +b2);
             //System.out.println("out-1 = " + out[count-1]);
