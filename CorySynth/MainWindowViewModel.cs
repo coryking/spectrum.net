@@ -47,6 +47,7 @@ namespace CorySynth
             lfoFilter = new Filters.FourPolesLowPassFilter(_mixer)
             {
                 Frequency=(float)Signal.LowPassCutoff,
+                Q=Signal.Q,
             };
             _headProvider =  lfoFilter;
 
@@ -89,7 +90,7 @@ namespace CorySynth
         private void Signal_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             lfoFilter.Frequency = (float)Signal.LowPassCutoff;
-            lfoFilter.Resonance = (float)Signal.LowPassResonance;
+            lfoFilter.Q = (float)Signal.Q;
             
         }
 

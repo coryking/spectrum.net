@@ -17,15 +17,30 @@ namespace CorySynth.Models
         public float LowPassCutoff
         {
             get { return _lowPassCutoff; }
-            set { _lowPassCutoff = value; OnPropertyChanged("LowPassCutoff"); }
+            set
+            {
+                if (_lowPassCutoff != value)
+                {
+                    _lowPassCutoff = value; 
+                    OnPropertyChanged("LowPassCutoff");
+                }
+
+            }
         }
 
-        private float _lowPassResonance;
+        private float _q;
 
-        public float LowPassResonance
+        public float Q
         {
-            get { return _lowPassResonance; }
-            set { _lowPassResonance = value; OnPropertyChanged("LowPassresonance"); }
+            get { return _q; }
+            set
+            {
+                if (_q != value)
+                {
+                    _q = value;
+                    OnPropertyChanged("Q");
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

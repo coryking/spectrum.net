@@ -32,12 +32,12 @@ namespace CorySynth.Filters
         }
 
 
-        private float _resonance;
+        private float _q;
 
-        public float Resonance
+        public float Q
         {
-            get { return _resonance; }
-            set { _resonance = value; SetParams(); }
+            get { return _q; }
+            set { _q = value; SetParams(); }
         }
 
 
@@ -46,7 +46,7 @@ namespace CorySynth.Filters
             this.source = source;
             waveFormat = source.WaveFormat;
             Frequency = 600.0f;
-            Resonance = 0.1f;
+            Q = 0.5f;
 
         }
 
@@ -56,7 +56,7 @@ namespace CorySynth.Filters
 
         private void SetParams()
         {
-            filter = NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, Frequency, Resonance);
+            filter = NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, Frequency, Q);
         }
        
 
