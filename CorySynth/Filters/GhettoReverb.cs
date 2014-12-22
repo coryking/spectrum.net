@@ -28,7 +28,7 @@ namespace CorySynth.Filters
                 return samplesRead;
 
             var totalSamplesRead = samplesRead;
-
+            Console.WriteLine("Reverb read.  Channels {0}", WaveFormat.Channels);
             lock (DecayBufferSyncRoot)
             {
                 for (var n = 0; n < samplesRead; n++)

@@ -32,7 +32,15 @@ namespace CorySynth
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
+            this.Model.SignalPathChanged +=Model_SignalPathChanged;
+        }
 
+        private void Model_SignalPathChanged(object sender)
+        {
+            if (IsPlaying && waveOut != null)
+            {
+                waveOut.Init(Model.GetAudioChain());
+            }
         }
 
 

@@ -12,6 +12,8 @@ using System.Windows.Threading;
 using System.Timers;
 namespace CorySynth
 {
+    public delegate void SignalPathChangedArgs(object sender);
+
     public class MainWindowViewModel
     {
         private MixingSampleProvider _mixer;
@@ -38,32 +40,10 @@ namespace CorySynth
 
         public MainWindowViewModel()
         {
-            Channels = AudioChannels.MONO;
-
-            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, 1)); ;
-            _mixer.ReadFully = true;
             Adsr = new Models.Adsr();
             Signal = new Models.SignalModel();
             Signal.PropertyChanged +=Signal_PropertyChanged;
-            lfoFilter = new Filters.FourPolesLowPassFilter(_mixer)
-            {
-                Frequency=(float)Signal.LowPassCutoff,
-                Q=Signal.Q,
-            };
-            if (Channels == AudioChannels.STEREO)
-            {
-                _headProvider = new NAudio.Wave.SampleProviders.MonoToStereoSampleProvider(lfoFilter);
-            }
-            else
-            {
-                _headProvider = lfoFilter;
-            }
-            reverbFilter = new Filters.GhettoReverb(_headProvider)
-            {
-                Decay=0.2f,
-                Delay=100
-            };
-            _headProvider = reverbFilter;
+            RebuildSignalChain();
             
             this.MidiDevices = new List<MidiInCapabilities>();
             for (var i = 0; i < MidiIn.NumberOfDevices; i++)
@@ -99,6 +79,31 @@ namespace CorySynth
             Console.WriteLine("Timer Interval: {0}", timer.Interval); 
             //timer.Interval = TimeSpan.FromSeconds(1 / (100 * Sequence.DeltaTicksPerQuarterNote));
             //timer.Tick += timer_Tick;
+        }
+
+        private void RebuildSignalChain()
+        {
+            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, 1)); ;
+            _mixer.ReadFully = true;
+            lfoFilter = new Filters.FourPolesLowPassFilter(_mixer)
+            {
+                Frequency = (float)Signal.LowPassCutoff,
+                Q = Signal.Q,
+            };
+            if (Channels == AudioChannels.STEREO)
+            {
+                _headProvider = new NAudio.Wave.SampleProviders.MonoToStereoSampleProvider(lfoFilter);
+            }
+            else
+            {
+                _headProvider = lfoFilter;
+            }
+            reverbFilter = new Filters.GhettoReverb(_headProvider)
+            {
+                Decay = 0.2f,
+                Delay = 100
+            };
+            _headProvider = reverbFilter;
         }
 
         private void Signal_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -228,7 +233,19 @@ namespace CorySynth
         
         public int SampleRate { get { return 44100; } }
 
-        public AudioChannels Channels { get; set; }
+        private AudioChannels _channels;
+        public AudioChannels Channels
+        {
+            get { return _channels; }
+            set
+            {
+                if (_channels != value)
+                {
+                    _channels = value;
+                    RebuildSignalChain();
+                }
+            }
+        }
 
         public ISampleProvider GetAudioChain()
         {
@@ -245,6 +262,14 @@ namespace CorySynth
         internal void PlayNote(MidiEvent midiEvent)
         {
             HandleMidiEvent(midiEvent);
+        }
+
+
+        public event SignalPathChangedArgs SignalPathChanged;
+        private void OnSignalPathChanged()
+        {
+            if (SignalPathChanged != null)
+                SignalPathChanged(this);
         }
     }
 
