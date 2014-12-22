@@ -25,6 +25,16 @@
                     <TextBlock Text="{Binding Q, StringFormat=Q: {0:F2}}"/>
                     <Slider Value="{Binding Q}" Orientation="Vertical" Height="250" Minimum="0.01" Maximum="1"/>
                 </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{Binding ReverbDecay, StringFormat=Reverb Decay: {0:F2}}"/>
+                    <Slider Value="{Binding ReverbDecay}" Orientation="Vertical" Height="250" Minimum="0.01" Maximum="0.99"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{Binding ReverbDelay, StringFormat=Reverb Delay: {0:F2}}"/>
+                    <Slider Value="{Binding ReverbDelay}" Orientation="Vertical" Height="250" Minimum="1" Maximum="500"/>
+                </StackPanel>
+
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratorTemplate" DataType="{x:Type providers:SignalGenerator}">

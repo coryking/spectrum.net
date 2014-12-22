@@ -10,7 +10,46 @@ namespace CorySynth.Models
 {
     public class SignalModel : INotifyPropertyChanged
     {
+        public SignalModel()
+        {
+            LowPassCutoff = 22000.0f;
+            Q = 0.5f;
+            ReverbDelay = 100;
+            ReverbDecay = 0.2f;
+
+        }
+
         public NAudio.Wave.SampleProviders.SignalGeneratorType Type { get; set; }
+
+        private float _reverbDelay;
+
+        public float ReverbDelay
+        {
+            get { return _reverbDelay; }
+            set
+            {
+                if (_reverbDelay != value)
+                {
+                    _reverbDelay = value;
+                    OnPropertyChanged("ReverbDelay");
+                }
+            }
+        }
+
+        private float _reverbDecay;
+
+        public float ReverbDecay
+        {
+            get { return _reverbDecay; }
+            set {
+                if (_reverbDecay != value)
+                {
+                    _reverbDecay = value;
+                    OnPropertyChanged("ReverbDecay");
+                }
+
+            }
+        }
 
         private float _lowPassCutoff;
 

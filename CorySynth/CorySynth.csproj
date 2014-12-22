@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="EnumerationExtension.cs" />
     <Compile Include="Filters\FourPolesLowPassFilter.cs" />
+    <Compile Include="Filters\GhettoReverb.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

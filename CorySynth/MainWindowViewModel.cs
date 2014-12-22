@@ -34,12 +34,13 @@ namespace CorySynth
         }
 
         private Filters.FourPolesLowPassFilter lfoFilter;
+        private Filters.GhettoReverb reverbFilter;
 
         public MainWindowViewModel()
         {
             Channels = AudioChannels.MONO;
 
-            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, (int)Channels)); ;
+            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, 1)); ;
             _mixer.ReadFully = true;
             Adsr = new Models.Adsr();
             Signal = new Models.SignalModel();
@@ -49,8 +50,21 @@ namespace CorySynth
                 Frequency=(float)Signal.LowPassCutoff,
                 Q=Signal.Q,
             };
-            _headProvider =  lfoFilter;
-
+            if (Channels == AudioChannels.STEREO)
+            {
+                _headProvider = new NAudio.Wave.SampleProviders.MonoToStereoSampleProvider(lfoFilter);
+            }
+            else
+            {
+                _headProvider = lfoFilter;
+            }
+            reverbFilter = new Filters.GhettoReverb(_headProvider)
+            {
+                Decay=0.2f,
+                Delay=100
+            };
+            _headProvider = reverbFilter;
+            
             this.MidiDevices = new List<MidiInCapabilities>();
             for (var i = 0; i < MidiIn.NumberOfDevices; i++)
             {
@@ -91,6 +105,8 @@ namespace CorySynth
         {
             lfoFilter.Frequency = (float)Signal.LowPassCutoff;
             lfoFilter.Q = (float)Signal.Q;
+            reverbFilter.Decay = Signal.ReverbDecay;
+            reverbFilter.Delay = Signal.ReverbDelay;
             
         }
 
@@ -181,7 +197,7 @@ namespace CorySynth
         {
             var provider = Tracker.PlayNote(noteOnEvent.NoteNumber, (freq) =>
             {
-                var wave = new SignalGenerator(SampleRate, (int)Channels)
+                var wave = new SignalGenerator(SampleRate, 1)
                 {
                     Frequency = freq,
                     Type = Signal.Type
