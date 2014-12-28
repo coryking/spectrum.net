@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+
+  <Identity Name="6920d5ee-a0a2-4f92-8f48-00c6bb66c1f7" Publisher="CN=cory" Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>CorySynthUI.Windows</DisplayName>
+    <PublisherDisplayName>cory</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Prerequisites>
+    <OSMinVersion>6.3.0</OSMinVersion>
+    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+  </Prerequisites>
+
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="CorySynthUI.Windows.App">
+        <m2:VisualElements DisplayName="CorySynthUI.Windows" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="CorySynthUI.Windows" ForegroundText="light" BackgroundColor="#464646">
+            <m2:SplashScreen Image="Assets\SplashScreen.png" />
+        </m2:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+<Extensions>
+    <Extension Category="windows.activatableClass.proxyStub">
+        <ProxyStub ClassId="79767945-1094-4283-9BE0-289FC0EE8334">
+          <Path>WindowsPreview.Devices.Midi.dll</Path>
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiMessage" InterfaceId="79767945-1094-4283-9BE0-289FC0EE8334" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CINoteOffMessage" InterfaceId="16FD8AF4-198E-4D8F-A654-D305A293548F" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CINoteOnMessage" InterfaceId="E0224AF5-6181-46DD-AFA2-410004C057AA" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIPolyphonicKeyPressureMessage" InterfaceId="1F7337FE-ACE8-48A0-868E-7CDBF20F04D6" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIControlChangeMessage" InterfaceId="B7E15F83-780D-405F-B781-3E1598C97F40" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIProgramChangeMessage" InterfaceId="9CBB3C78-7A3E-4327-AA98-20B8E4485AF8" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIChannelPressureMessage" InterfaceId="BE1FA860-62B4-4D52-A37E-92E54D35B909" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIPitchWheelMessage" InterfaceId="29DF4CB1-2E9F-4FAF-8C2B-9CB82A9079CA" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiTimeCodeMessage" InterfaceId="0BF7087D-FA63-4A1C-8DEB-C0E87796A6D7" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CISongPositionPointerMessage" InterfaceId="4CA50C56-EC5E-4AE4-A115-88DC57CC2B79" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CISongSelectMessage" InterfaceId="49F0F27F-6D83-4741-A5BF-4629F6BE974F" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CISystemExclusiveMessageFactory" InterfaceId="083DE222-3B74-4320-9B42-0CA8545F8A24" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CINoteOffMessageFactory" InterfaceId="A6B240E0-A749-425F-8AF4-A4D979CC15B5" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CINoteOnMessageFactory" InterfaceId="9B4280A0-59C1-420E-B517-15A10AA9606B" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIPolyphonicKeyPressureMessageFactory" InterfaceId="E98F483E-C4B3-4DD2-917C-E349815A1B3B" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIControlChangeMessageFactory" InterfaceId="2AB14321-956C-46AD-9752-F87F55052FE3" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIProgramChangeMessageFactory" InterfaceId="D6B04387-524B-4104-9C99-6572BFD2E261" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIChannelPressureMessageFactory" InterfaceId="6218ED2F-2284-412A-94CF-10FB04842C6C" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIPitchWheelMessageFactory" InterfaceId="F5EEDF55-CFC8-4926-B30E-A3622393306C" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiTimeCodeMessageFactory" InterfaceId="EB3099C5-771C-40DE-B961-175A7489A85E" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CISongPositionPointerMessageFactory" InterfaceId="9C00E996-F10B-4FEA-B395-F5D6CF80F64E" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CISongSelectMessageFactory" InterfaceId="848878E4-8748-4129-A66C-A05493F75DAA" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIRawMessageFactory" InterfaceId="851818C3-04D9-4FC9-AED4-4E7C4FA1AB9D" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMessageReceivedEventArgs" InterfaceId="76566E56-F328-4B51-907D-B3A8CE96BF80" />
+                <Interface Name="IAsyncOperationCompletedHandler_1_WindowsPreview__CDevices__CMidi__CMidiInPort" InterfaceId="e4a8c8df-6ebb-580e-be5c-59ce241b98a6" />
+                <Interface Name="IAsyncOperation_1_WindowsPreview__CDevices__CMidi__CMidiInPort" InterfaceId="713374a6-1379-5325-8d30-78ffc318e442" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiInPortStatics" InterfaceId="44C439DC-67FF-4A6E-8BAC-FDB6610CF296" />
+                <Interface Name="IAsyncOperationCompletedHandler_1_WindowsPreview__CDevices__CMidi__CMidiOutPort" InterfaceId="e5b2d2bd-5a8f-55fd-9ee1-4afb797df021" />
+                <Interface Name="IAsyncOperation_1_WindowsPreview__CDevices__CMidi__CMidiOutPort" InterfaceId="6434e4c5-3bca-5875-9636-56c9c7546512" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiOutPortStatics" InterfaceId="065CC3E9-0F88-448B-9B64-A95826C65B8F" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiInPort" InterfaceId="D5C1D9DB-971A-4EAF-A23D-EA19FE607FF9" />
+                <Interface Name="ABI_CWindowsPreview_CDevices_CMidi_CIMidiOutPort" InterfaceId="931D6D9F-57A2-4A3A-ADB8-4640886F6693" />
+                <Interface Name="ITypedEventHandler_2_WindowsPreview__CDevices__CMidi__CMidiInPort_WindowsPreview__CDevices__CMidi__CMessageReceivedEventArgs" InterfaceId="6e9b28a1-afce-5f3d-9a21-1e1b9da51a43" />
+        </ProxyStub>
+    </Extension>
+  </Extensions></Package>

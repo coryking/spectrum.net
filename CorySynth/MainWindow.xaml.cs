@@ -73,7 +73,7 @@ namespace CorySynth
         {
             if (waveOut == null)
             {
-                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 10);
+                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
 
                 waveOut.Init(Model.GetAudioChain());
