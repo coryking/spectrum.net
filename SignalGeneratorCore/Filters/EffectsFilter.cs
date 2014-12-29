@@ -1,6 +1,7 @@
 ﻿using CorySynth.Filters;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using SignalGeneratorCore.Filters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -56,7 +57,7 @@ namespace CorySynth.Filters
                 _headProvider = lfoFilter;
             }
             reverbFilter = new GhettoReverb(_headProvider);
-            _headProvider = reverbFilter;
+            _headProvider = new DynamicConvolvingFilter(_headProvider);//reverbFilter;
         }
 
         private List<String> _types;

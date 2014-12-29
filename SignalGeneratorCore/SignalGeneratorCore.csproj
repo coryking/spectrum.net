@@ -102,8 +102,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Dsp\DynamicConvolver.cs" />
+    <Compile Include="Filters\DynamicConvolvingFilter.cs" />
     <Compile Include="Filters\FourPolesLowPassFilter.cs" />
     <Compile Include="Filters\GhettoReverb.cs" />
+    <Compile Include="Filters\NormalizingFilter.cs" />
     <Compile Include="Models\Adsr.cs" />
     <Compile Include="Models\BasicNoteModel.cs" />
     <Compile Include="Models\IProviderModel.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sequencer\ChannelSampleProvider.cs" />
     <Compile Include="Sequencer\NoteTracker.cs" />
+    <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
