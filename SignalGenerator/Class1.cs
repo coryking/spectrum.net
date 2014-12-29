@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGenerator
+namespace CorySignalGenerator
 {
     public class Class1
     {

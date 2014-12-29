@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.SampleProviders
+namespace CorySignalGenerator.SampleProviders
 {
     public class BasicNote : ISampleProvider
     {

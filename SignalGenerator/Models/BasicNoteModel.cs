@@ -1,13 +1,13 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using SignalGeneratorCore.SampleProviders;
+using CorySignalGenerator.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Models
+namespace CorySignalGenerator.Models
 {
     public class BasicNoteModel: IProviderModel
     {

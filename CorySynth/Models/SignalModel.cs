@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CorySynth.Models
+namespace CorySignalGenerator.Models
 {
     public class SignalModel : INotifyPropertyChanged
     {

@@ -1,12 +1,12 @@
 ﻿using NAudio.Wave;
-using SignalGeneratorCore.Dsp;
+using CorySignalGenerator.Dsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Filters
+namespace CorySignalGenerator.Filters
 {
     public class DynamicConvolvingFilter :ISampleProvider
     {

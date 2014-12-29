@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorySynth.Filters
+namespace CorySignalGenerator.Filters
 {
     /// <summary>
     /// A "Four Poles" low pass filter

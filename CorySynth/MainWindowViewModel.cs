@@ -10,7 +10,7 @@ using System.ComponentModel;
 using NAudio.Midi;
 using System.Windows.Threading;
 using System.Timers;
-namespace CorySynth
+namespace CorySignalGenerator
 {
     public delegate void SignalPathChangedArgs(object sender);
 

@@ -1,15 +1,15 @@
-﻿using CorySynth;
+﻿using CorySignalGenerator;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using SignalGeneratorCore.Models;
-using SignalGeneratorCore.SampleProviders;
+using CorySignalGenerator.Models;
+using CorySignalGenerator.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Sequencer
+namespace CorySignalGenerator.Sequencer
 {
     public class ChannelSampleProvider : ISampleProvider
     {

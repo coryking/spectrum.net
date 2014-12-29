@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Filters
+namespace CorySignalGenerator.Filters
 {
     /// <summary>
     /// This filter does its best to make sure the sample buffer values never go above zero

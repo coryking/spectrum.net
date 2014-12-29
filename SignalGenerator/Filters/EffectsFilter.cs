@@ -1,7 +1,6 @@
-﻿using CorySynth.Filters;
+﻿using CorySignalGenerator.Filters;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using SignalGeneratorCore.Filters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CorySynth.Filters
+namespace CorySignalGenerator.Filters
 {
     public class EffectsFilter : INotifyPropertyChanged, ISampleProvider
     {

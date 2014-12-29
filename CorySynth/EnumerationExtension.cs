@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace CorySynth
+namespace CorySignalGenerator
 {
     public class EnumerationExtension : MarkupExtension
     {

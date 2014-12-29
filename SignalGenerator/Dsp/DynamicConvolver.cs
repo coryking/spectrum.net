@@ -1,11 +1,11 @@
-﻿using SignalGeneratorCore.Utils;
+﻿using CorySignalGenerator.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Dsp
+namespace CorySignalGenerator.Dsp
 {
     public class DynamicConvolver
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorySynth.Filters
+namespace CorySignalGenerator.Filters
 {
     public class GhettoReverb : ISampleProvider
     {

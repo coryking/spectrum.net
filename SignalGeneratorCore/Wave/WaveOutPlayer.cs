@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Wave
+namespace CorySignalGenerator.Wave
 {
     public class WaveOutPlayer :IDisposable
     {

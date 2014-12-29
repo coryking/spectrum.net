@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.SampleProviders
+namespace CorySignalGenerator.SampleProviders
 {
     /// <summary>
     /// ADSR sample provider allowing you to specify attack, decay, sustain and release values

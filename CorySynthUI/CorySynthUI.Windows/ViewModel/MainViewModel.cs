@@ -10,10 +10,10 @@ using System.Collections.ObjectModel;
 using Windows.Devices.Enumeration;
 using Windows.UI.Core;
 using System.Diagnostics;
-using SignalGeneratorCore.Models;
-using SignalGeneratorCore.Sequencer;
-using CorySynth.Filters;
-using SignalGeneratorCore.Wave;
+using CorySignalGenerator.Models;
+using CorySignalGenerator.Sequencer;
+using CorySignalGenerator.Filters;
+using CorySignalGenerator.Wave;
 
 namespace CorySynthUI.ViewModel
 {

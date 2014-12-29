@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Utils
+namespace CorySignalGenerator.Utils
 {
     /// <summary>
     /// A very basic, generic circular buffer implementation

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SignalGeneratorCore.Models
+namespace CorySignalGenerator.Models
 {
     public interface IProviderModel
     {

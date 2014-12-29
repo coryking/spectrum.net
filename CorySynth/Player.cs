@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NAudio.Midi;
 using NAudio.Wave;
 
-namespace CorySynth
+namespace CorySignalGenerator
 {
     /// <summary>
     /// This delegate represents when there are new player events

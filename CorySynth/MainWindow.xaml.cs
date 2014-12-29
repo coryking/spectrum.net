@@ -18,7 +18,7 @@ using NAudio.Wave;
 using NAudio.Midi;
 using System.Windows.Threading;
 
-namespace CorySynth
+namespace CorySignalGenerator
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
