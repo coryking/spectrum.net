@@ -14,9 +14,7 @@ namespace CorySignalGenerator.Utils
     {
         private readonly T[] buffer;
         private readonly object lockObject;
-        private int writePosition;
         private int readPosition;
-        private int byteCount;
 
         /// <summary>
         /// Create a new circular buffer
@@ -38,79 +36,23 @@ namespace CorySignalGenerator.Utils
 
         public T this[int index]
         {
-            get { return buffer[computeIndex(index)]; }
-            set { buffer[computeIndex(index)] = value; }
-        }
-
-        /// <summary>
-        /// Write data to the buffer
-        /// </summary>
-        /// <param name="data">Data to write</param>
-        /// <param name="offset">Offset into data</param>
-        /// <param name="count">Number of bytes to write</param>
-        /// <returns>number of bytes written</returns>
-        public int Write(T[] data, int offset, int count)
-        {
-            lock (lockObject)
+            get
             {
-                var bytesWritten = 0;
-                if (count > buffer.Length - byteCount)
+                if (index > buffer.Length)
+                    throw new IndexOutOfRangeException();
+                lock (lockObject)
                 {
-                    count = buffer.Length - byteCount;
+                    return buffer[computeIndex(index)];
                 }
-                // write to end
-                int writeToEnd = Math.Min(buffer.Length - writePosition, count);
-                Array.Copy(data, offset, buffer, writePosition, writeToEnd);
-                writePosition += writeToEnd;
-                writePosition %= buffer.Length;
-                bytesWritten += writeToEnd;
-                if (bytesWritten < count)
-                {
-                    Debug.Assert(writePosition == 0);
-                    // must have wrapped round. Write to start
-                    Array.Copy(data, offset + bytesWritten, buffer, writePosition, count - bytesWritten);
-                    writePosition += (count - bytesWritten);
-                    bytesWritten = count;
-                }
-                byteCount += bytesWritten;
-                return bytesWritten;
             }
-        }
-
-        /// <summary>
-        /// Read from the buffer
-        /// </summary>
-        /// <param name="data">Buffer to read into</param>
-        /// <param name="offset">Offset into read buffer</param>
-        /// <param name="count">Bytes to read</param>
-        /// <returns>Number of bytes actually read</returns>
-        public int Read(T[] data, int offset, int count)
-        {
-            lock (lockObject)
+            set
             {
-                if (count > byteCount)
+                if (index > buffer.Length)
+                    throw new IndexOutOfRangeException();
+                lock (lockObject)
                 {
-                    count = byteCount;
+                    buffer[computeIndex(index)] = value;
                 }
-                int bytesRead = 0;
-                int readToEnd = Math.Min(buffer.Length - readPosition, count);
-                Array.Copy(buffer, readPosition, data, offset, readToEnd);
-                bytesRead += readToEnd;
-                readPosition += readToEnd;
-                readPosition %= buffer.Length;
-
-                if (bytesRead < count)
-                {
-                    // must have wrapped round. Read from start
-                    Debug.Assert(readPosition == 0);
-                    Array.Copy(buffer, readPosition, data, offset + bytesRead, count - bytesRead);
-                    readPosition += (count - bytesRead);
-                    bytesRead = count;
-                }
-
-                byteCount -= bytesRead;
-                Debug.Assert(byteCount >= 0);
-                return bytesRead;
             }
         }
 
@@ -122,22 +64,13 @@ namespace CorySignalGenerator.Utils
             get { return buffer.Length; }
         }
 
-        /// <summary>
-        /// Number of bytes currently stored in the circular buffer
-        /// </summary>
-        public int Count
-        {
-            get { return byteCount; }
-        }
 
         /// <summary>
         /// Resets the buffer
         /// </summary>
         public void Reset()
         {
-            byteCount = 0;
             readPosition = 0;
-            writePosition = 0;
         }
 
         /// <summary>
@@ -146,16 +79,11 @@ namespace CorySignalGenerator.Utils
         /// <param name="count">Bytes to advance</param>
         public void Advance(int count)
         {
-            if (count >= byteCount)
-            {
-                Reset();
-            }
-            else
-            {
-                byteCount -= count;
-                readPosition += count;
-                readPosition %= MaxLength;
-            }
+
+            readPosition -= count;
+            if (readPosition < 0)
+                readPosition = MaxLength - 1;
+
         }
     }
 }
