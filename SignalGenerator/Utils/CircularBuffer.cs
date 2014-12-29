@@ -38,21 +38,19 @@ namespace CorySignalGenerator.Utils
         {
             get
             {
-                if (index > buffer.Length)
-                    throw new IndexOutOfRangeException();
-                lock (lockObject)
-                {
+                //if (index > buffer.Length)
+                //    throw new IndexOutOfRangeException();
+
                     return buffer[computeIndex(index)];
-                }
+                
             }
             set
             {
-                if (index > buffer.Length)
-                    throw new IndexOutOfRangeException();
-                lock (lockObject)
-                {
-                    buffer[computeIndex(index)] = value;
-                }
+                //if (index > buffer.Length)
+                //    throw new IndexOutOfRangeException();
+
+                buffer[computeIndex(index)] = value;
+
             }
         }
 

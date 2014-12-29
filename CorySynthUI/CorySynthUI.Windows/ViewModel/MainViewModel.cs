@@ -115,6 +115,8 @@ namespace CorySynthUI.ViewModel
                 }).ContinueWith((task) =>
                 {
                     _midiIn = task.Result;
+                    if (_midiIn == null)
+                        throw new InvalidOperationException("Could not get midi device");
                     _midiIn.MessageReceived += _midiIn_MessageReceived;
 
                 });
