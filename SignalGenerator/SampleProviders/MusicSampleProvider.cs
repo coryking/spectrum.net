@@ -20,6 +20,12 @@ namespace CorySignalGenerator.SampleProviders
         public MusicSampleProvider(SampleSource sampleSource)
         {
             this.sampleSource = sampleSource;
+            if (sampleSource.IsRandomStart)
+            {
+                var rnd = new Random(Convert.ToInt32(sampleSource.SampleData[0]));
+                var nextOffset = rnd.Next(0, (sampleSource.Length / sampleSource.SampleWaveFormat.Channels) - 1);
+                SampleOffset = nextOffset * sampleSource.SampleWaveFormat.Channels;
+            }
         }
 
         public WaveFormat WaveFormat

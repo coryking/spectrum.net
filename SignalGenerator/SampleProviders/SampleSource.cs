@@ -26,23 +26,24 @@ namespace CorySignalGenerator.SampleProviders
                 {
                     throw new InvalidOperationException(String.Format("Couldn't read the whole sample, expected {0} samples, got {1}", n, sourceSamples));
                 }
-                var ss = new SampleSource(sampleData, false, sp.WaveFormat);
+                var ss = new SampleSource(sampleData, false, false, sp.WaveFormat);
                 return ss;
             }
         }
 #endif
-        public SampleSource(float[] sampleData,bool isLoopable, WaveFormat waveFormat) :
-            this(sampleData, isLoopable, waveFormat, 0, sampleData.Length)
+        public SampleSource(float[] sampleData,bool isLoopable, bool isRandomStart, WaveFormat waveFormat) :
+            this(sampleData, isLoopable, isRandomStart, waveFormat, 0, sampleData.Length)
         {
         }
 
-        public SampleSource(float[] sampleData, bool isLoopable, WaveFormat waveFormat, int startIndex, int length)
+        public SampleSource(float[] sampleData, bool isLoopable, bool isRandomStart, WaveFormat waveFormat, int startIndex, int length)
         {
             this.SampleData = sampleData;
             this.SampleWaveFormat = waveFormat;
             this.StartIndex = startIndex;
             this.Length = length;
             this.IsLoopable = isLoopable;
+            this.IsRandomStart = isRandomStart;
         }
 
         /// <summary>
@@ -63,5 +64,7 @@ namespace CorySignalGenerator.SampleProviders
         public int Length { get; private set; }
 
         public bool IsLoopable { get; private set; }
+
+        public bool IsRandomStart { get; private set; }
     }
 }

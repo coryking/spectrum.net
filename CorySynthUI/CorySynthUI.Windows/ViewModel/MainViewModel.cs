@@ -48,7 +48,7 @@ namespace CorySynthUI.ViewModel
 
         public MainViewModel(CoreDispatcher dispatcher)
         {
-            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1);
+            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,2);
             //_noteModel = new SignalGeneretedSound(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1))
             //{
             //    AttackSeconds=0.5f,

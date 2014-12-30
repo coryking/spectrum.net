@@ -23,7 +23,7 @@ namespace CorySignalGenerator.SampleProviders
         /// </summary>
         public AdsrSampleProvider(ISampleProvider source)
         {
-            if (source.WaveFormat.Channels > 1) throw new ArgumentException("Currently only supports mono inputs");
+            //if (source.WaveFormat.Channels > 1) throw new ArgumentException("Currently only supports mono inputs");
             this.source = source;
             adsr = new EnvelopeGenerator();
             AttackSeconds = 0.01f;
@@ -72,9 +72,13 @@ namespace CorySignalGenerator.SampleProviders
         {
             if (adsr.State == EnvelopeGenerator.EnvelopeState.Idle) return 0; // we've finished
             var samples = source.Read(buffer, offset, count);
-            for (int n = 0; n < samples; n++)
+            for (int n = 0; n < samples/WaveFormat.Channels; n++)
             {
-                buffer[offset++] *= adsr.Process();
+                for (int x = 0; x < WaveFormat.Channels;x++ )
+                {
+                    var multiplier = adsr.Process();
+                    buffer[offset++] *= multiplier;
+                }
             }
             return samples;
         }

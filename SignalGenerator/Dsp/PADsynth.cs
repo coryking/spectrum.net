@@ -34,7 +34,20 @@ namespace CorySignalGenerator.Dsp
         {
             var synth = new PADsynth(sampleSize, sampleRate, numberHarmonics);
             var sampleData = synth.synth(freq, bw, bwscale);
-            return new SampleSource(sampleData, true, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1));
+
+            var outputData = new float[sampleData.Length * channels];
+            var channelOffsets = sampleData.Length / channels;
+            for (var x = 0; x < channels; x++)
+            {
+                for (var i = 0; i < sampleData.Length; i++)
+                {
+                    var outputPos = i * channels + x;
+                    var inputPos = i + x * channelOffsets;
+                    inputPos %= sampleData.Length;
+                    outputData[outputPos] = sampleData[inputPos];
+                }
+            }
+            return new SampleSource(outputData, true, true, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels));
         }
 
         /// <summary>
