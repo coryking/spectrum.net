@@ -34,7 +34,7 @@ namespace CorySignalGenerator.Dsp
         {
             var synth = new PADsynth(sampleSize, sampleRate, numberHarmonics);
             var sampleData = synth.synth(freq, bw, bwscale);
-            return new SampleSource(sampleData, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1));
+            return new SampleSource(sampleData, true, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1));
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace CorySignalGenerator.Dsp
             var output = new float[N/2];
             for (var i = 0; i < N/2; i++)
             {
-                output[i] = complex_freq[i].X / max * 1.4142f;
+                output[i] = complex_freq[i].X / (max * 1.4142f);
             }
             return output;
         }

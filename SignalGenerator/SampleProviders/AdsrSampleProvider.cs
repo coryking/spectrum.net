@@ -11,7 +11,7 @@ namespace CorySignalGenerator.SampleProviders
     /// <summary>
     /// ADSR sample provider allowing you to specify attack, decay, sustain and release values
     /// </summary>
-    public class AdsrSampleProvider : ISampleProvider
+    public class AdsrSampleProvider : ISampleProvider, IStoppableSample
     {
         private readonly ISampleProvider source;
         private readonly EnvelopeGenerator adsr;

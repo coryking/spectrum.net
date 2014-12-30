@@ -59,8 +59,10 @@ namespace CorySynthUI.ViewModel
             {
                 Harmonics=64,
                 Bandwidth=20,
-                BandwidthScale=0.5f,
-                SampleSize=baseWaveFormat.SampleRate * 4,
+                BandwidthScale=1.0f,
+                SampleSize=(int)Math.Pow(2,15) *2,//baseWaveFormat.SampleRate * 2,
+                AttackSeconds=0.5f,
+                ReleaseSeconds = 0.5f
             };
             _noteModel.InitSamples();
             _sampler = new ChannelSampleProvider(_noteModel);

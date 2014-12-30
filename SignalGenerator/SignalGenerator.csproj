@@ -55,6 +55,7 @@
     <Compile Include="Filters\GhettoReverb.cs" />
     <Compile Include="Filters\NormalizingFilter.cs" />
     <Compile Include="Models\Adsr.cs" />
+    <Compile Include="SampleProviders\IStoppableSample.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
     <Compile Include="Sounds\ISoundModel.cs" />

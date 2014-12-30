@@ -45,9 +45,9 @@ namespace CorySignalGenerator.Sequencer
         public void StopNote(int noteNumber)
         {
             var provider = Tracker.StopNote(noteNumber);
-            if (provider is AdsrNote)
+            if (provider is IStoppableSample)
             {
-                ((AdsrNote)provider).StopNote();
+                ((IStoppableSample)provider).Stop();
             }
         }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.SampleProviders
 {
-    public abstract class AdsrNote : ISampleProvider
+    public abstract class AdsrNote : ISampleProvider, IStoppableSample
     {
         public int Velocity { get; set; }
 
@@ -47,7 +47,7 @@ namespace CorySignalGenerator.SampleProviders
             return _provider.Read(buffer, offset, count);
         }
 
-        public void StopNote()
+        public void Stop()
         {
             if(_provider != null)
                 _provider.Stop();

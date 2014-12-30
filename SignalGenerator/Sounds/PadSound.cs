@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MoreLinq;
 using System.Collections.Concurrent;
 using CorySignalGenerator.Extensions;
+using CorySignalGenerator.Models;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -47,6 +48,9 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         public int SampleSize { get; set; }
 
+        public float AttackSeconds { get; set; }
+        public float ReleaseSeconds { get; set; }
+
         public PadSound(WaveFormat waveFormat)
         {
             Bandwidth = 25f;
@@ -68,18 +72,20 @@ namespace CorySignalGenerator.Sounds
             if (!IsWaveTableLoaded)
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
             var nearestFreq = WaveTable.Keys.MinBy(x => Math.Abs(x - frequency));
-            return new MusicSampleProvider(WaveTable[nearestFreq]);
+            var music_sampler = new MusicSampleProvider(WaveTable[nearestFreq]);
+            return new AdsrSampleProvider(music_sampler)
+            {
+                AttackSeconds=AttackSeconds,
+                ReleaseSeconds = ReleaseSeconds
+            };
         }
 
 
        
         public void InitSamples()
         {
-            var freqs = new float[]{
-                440f,
-                //330f,
-                //700f,
-            };
+            var freqs = MidiNotes.GenerateNotes().Values.Select(x => (float)x.Frequency);
+            //var freqs = new float[] { 440f };
             Parallel.ForEach(freqs, (frequency) =>
             {
                 var sample =

@@ -10,31 +10,16 @@ namespace CorySignalGenerator.SampleProviders
     /// <summary>
     /// Taken from NAudio WPF demo
     /// </summary>
-    class MusicSampleProvider : ISampleProvider
+    public class MusicSampleProvider : ISampleProvider
     {
-        private int delayBy;
-        private int position;
+        private int SampleOffset;
         private readonly SampleSource sampleSource;
+        const int SINGLE_BYTES = 4; // four bytes per float
+        private bool isFinished = false; // will be true only when non-loopable
 
         public MusicSampleProvider(SampleSource sampleSource)
         {
             this.sampleSource = sampleSource;
-        }
-
-        /// <summary>
-        /// Samples to delay before returning anything
-        /// </summary>
-        public int DelayBy
-        {
-            get { return delayBy; }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("Cannot delay by negative number of samples");
-                }
-                delayBy = value;
-            }
         }
 
         public WaveFormat WaveFormat
@@ -42,34 +27,38 @@ namespace CorySignalGenerator.SampleProviders
             get { return this.sampleSource.SampleWaveFormat; }
         }
 
-        public int Read(float[] buffer, int offset, int count)
+        protected float[] SampleBuffer
         {
-            int samplesWritten = 0;
-            if (position < delayBy)
-            {
-                int zeroFill = Math.Min(delayBy - position, count);
-                Array.Clear(buffer, offset, zeroFill);
-                position += zeroFill;
-                samplesWritten += zeroFill;
-            }
-            if (samplesWritten < count)
-            {
-                int samplesNeeded = count - samplesWritten;
-                int samplesAvailable = sampleSource.Length - (position - delayBy);
-                int samplesToCopy = Math.Min(samplesNeeded, samplesAvailable);
-                Array.Copy(sampleSource.SampleData, PositionInSampleSource, buffer, samplesWritten, samplesToCopy);
-                position += samplesToCopy;
-                samplesWritten += samplesToCopy;
-            }
-            return samplesWritten;
+            get { return sampleSource.SampleData; }
         }
 
-        private int PositionInSampleSource
+        public bool IsLoopable { get { return sampleSource.IsLoopable; } }
+
+        public int Read(float[] buffer, int offset, int count)
         {
-            get
+            if (isFinished)
+                return 0;
+            var dstOffset = 0;
+            while (dstOffset < count)
             {
-                return (position - delayBy) + sampleSource.StartIndex;
+                var copyLength = Math.Min(this.SampleBuffer.Length - SampleOffset, count - dstOffset);
+                Buffer.BlockCopy(this.SampleBuffer, SINGLE_BYTES * this.SampleOffset, buffer, SINGLE_BYTES * (dstOffset + offset), copyLength * SINGLE_BYTES);
+                dstOffset += copyLength;
+                SampleOffset += copyLength;
+                if (SampleOffset >= this.SampleBuffer.Length)
+                {
+                    SampleOffset = 0;
+                    if (!IsLoopable)
+                    {
+                        isFinished = true;
+                        return dstOffset;
+                    }
+                }
+                        
             }
+            return dstOffset;
         }
+
+       
     }
 }
