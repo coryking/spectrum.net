@@ -16,8 +16,9 @@ namespace CorySignalGenerator.Dsp
         private CircularBuffer<double> x = new CircularBuffer<double>(L);
         private CircularBuffer<int> S = new CircularBuffer<int>(L);
         //private double[] x = new double[L];
-        private double[,] h = new double[STEPS,L];
         //private int[] S = new int[L];
+
+        private double[,] h = new double[STEPS,L];
 
         /// <summary>
         /// Creates a new instance of the Dynamic Convolver
@@ -47,7 +48,7 @@ namespace CorySignalGenerator.Dsp
             }
         }
 
-        protected double Conv(int d)
+        protected unsafe double Conv(int d)
         {
             double y = 0;
             for (var i = 0; i < L; i++)
@@ -58,7 +59,7 @@ namespace CorySignalGenerator.Dsp
             return y;
         }
 
-        public float Operator(float input)
+        public unsafe float Operator(float input)
         {
             double A = Math.Abs(input);
             double a, b, w, y = 0;

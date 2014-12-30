@@ -66,6 +66,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -77,6 +78,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -103,6 +105,9 @@
   <ItemGroup>
     <Compile Include="..\SignalGenerator\Dsp\DynamicConvolver.cs">
       <Link>Dsp\DynamicConvolver.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Dsp\PADsynth.cs">
+      <Link>Dsp\PADsynth.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\DynamicConvolvingFilter.cs">
       <Link>Filters\DynamicConvolvingFilter.cs</Link>
@@ -136,6 +141,12 @@
     </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\BasicNote.cs">
       <Link>SampleProviders\BasicNote.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\MusicSampleProvider.cs">
+      <Link>SampleProviders\MusicSampleProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\SampleSource.cs">
+      <Link>SampleProviders\SampleSource.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\ChannelSampleProvider.cs">
       <Link>Sequencer\ChannelSampleProvider.cs</Link>
