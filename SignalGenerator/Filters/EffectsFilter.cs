@@ -56,7 +56,7 @@ namespace CorySignalGenerator.Filters
                 _headProvider = lfoFilter;
             }
             reverbFilter = new GhettoReverb(_headProvider);
-            _headProvider = new DynamicConvolvingFilter(_headProvider);//reverbFilter;
+            _headProvider = reverbFilter; // new DynamicConvolvingFilter(_headProvider);//reverbFilter;
         }
 
         private List<String> _types;

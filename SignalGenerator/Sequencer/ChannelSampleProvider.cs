@@ -8,16 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CorySignalGenerator.Sounds;
 
 namespace CorySignalGenerator.Sequencer
 {
     public class ChannelSampleProvider : ISampleProvider
     {
-        private IProviderModel _noteProvider;
+        private ISoundModel _noteProvider;
 
-        public ChannelSampleProvider(IProviderModel noteProvider, int sampleRate, int channels)
+        public ChannelSampleProvider(ISoundModel noteProvider)
         {
-            WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels);
+            WaveFormat = noteProvider.WaveFormat;
             Tracker = new NoteTracker();
             _noteProvider = noteProvider;
             RebuildMixer();
@@ -44,9 +45,9 @@ namespace CorySignalGenerator.Sequencer
         public void StopNote(int noteNumber)
         {
             var provider = Tracker.StopNote(noteNumber);
-            if (provider is BasicNote)
+            if (provider is AdsrNote)
             {
-                ((BasicNote)provider).StopNote();
+                ((AdsrNote)provider).StopNote();
             }
         }
 
@@ -54,7 +55,7 @@ namespace CorySignalGenerator.Sequencer
         {
             var provider = Tracker.PlayNote(noteNumber, (freq) =>
             {
-                return _noteProvider.GetProvider(freq, velocity, WaveFormat.SampleRate, WaveFormat.Channels);
+                return _noteProvider.GetProvider(freq, velocity);
             });
             if(provider != null)
                 _mixer.AddMixerInput(provider);

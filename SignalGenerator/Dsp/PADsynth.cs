@@ -1,6 +1,9 @@
-﻿using NAudio.Dsp;
+﻿using CorySignalGenerator.SampleProviders;
+using NAudio.Dsp;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +18,24 @@ namespace CorySignalGenerator.Dsp
         private int number_harmonics;
         private System.Random rnd;
         protected int N;
+
+        /// <summary>
+        /// Generate a new sample source
+        /// </summary>
+        /// <param name="numberHarmonics">Number of harmonics (eg: 10)</param>
+        /// <param name="sampleSize">Number of samples (should be a power of two)</param>
+        /// <param name="sampleRate">Sample rate (eg: 44100)</param>
+        /// <param name="freq">the fundamental frequency (eg. 440 Hz)</param>
+        /// <param name="bw">bandwidth in cents of the fundamental frequency (eg. 25 cents)</param>
+        /// <param name="bwscale"> how the bandwidth increase on the higher harmonics (recomanded value: 1.0)</param>
+        /// <param name="channels">Number of channels</param>
+        /// <returns></returns>
+        public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int sampleSize, int sampleRate,int channels=1)
+        {
+            var synth = new PADsynth(sampleSize, sampleRate, numberHarmonics);
+            var sampleData = synth.synth(freq, bw, bwscale);
+            return new SampleSource(sampleData, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 1));
+        }
 
         /// <summary>
         /// 
@@ -65,23 +86,32 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         public float[] synth(float f, float bw, float bwscale)
         {
-            Array.Clear(freq_amp,0,freq_amp.Length);
+            for (var i = 1; i < number_harmonics; i++)
+                A[i] = Convert.ToSingle(1.0 / i);
+
+            Array.Clear(freq_amp, 0, freq_amp.Length);
             for (var nh = 1; nh < number_harmonics; nh++)
             {
-                var rF = f * relF(nh);
-
                 var bw_Hz = (Math.Pow(2.0, bw / 1200.0) - 1.0) * f * Math.Pow(relF(nh), bwscale);
                 var bwi = bw_Hz / (2.0 * samplerate);
-                var fi = rF / samplerate;
+                var fi = f * relF(nh) / samplerate;
+#if SHOW_DEBUG
+                Debug.WriteLine("freq: {0}, bw_Hz, {1}, bwi: {2}, fi: {3}, bwscale: {4}, bw: {5}, relF({6}): {7}", f, bw_Hz, bwi, fi, bwscale, bw, nh, relF(nh));
+#endif
                 for (var i = 0; i < N / 2; i++)
                 {
-                    var hprofile = profile((i / (double)N) - fi, bwi);
+                    var fiH = ((double)i / (double)N) - fi;
+                    var hprofile = profile(fiH, bwi);
+#if SHOW_DEBUG
+                    Debug.WriteLineIf((i < 2), String.Format("> i: {0}, fiH: {1}", i, fiH));
+                    Debug.WriteLineIf((hprofile > 0.0), String.Format("> i: {0} fiH: {1}, hProfile: {2}", i, fiH, hprofile));
+#endif
                     freq_amp[i] += Convert.ToSingle(hprofile * A[nh]);
                 }
             }
 
             var complex_freq = new Complex[N / 2];
-            for (var i = 0; i < N; i++)
+            for (var i = 0; i < N/2; i++)
             {
                 var phase = RND() * 2.0f * Math.PI;
                 complex_freq[i].X = Convert.ToSingle(freq_amp[i] * Math.Cos(phase));
@@ -91,7 +121,7 @@ namespace CorySignalGenerator.Dsp
             var m = (int)Math.Log(N/2, 2.0);
             FastFourierTransform.FFT(false, m, complex_freq);
             var max = 0f;
-            for (var i = 0; i < N; i++)
+            for (var i = 0; i < N/2; i++)
             {
                 if (Math.Abs(complex_freq[i].X) > max)
                 {
@@ -101,8 +131,8 @@ namespace CorySignalGenerator.Dsp
             }
             if (max < 1e-5)
                 max = 1e-5f;
-            var output = new float[N];
-            for (var i = 0; i < N; i++)
+            var output = new float[N/2];
+            for (var i = 0; i < N/2; i++)
             {
                 output[i] = complex_freq[i].X / max * 1.4142f;
             }
@@ -113,11 +143,11 @@ namespace CorySignalGenerator.Dsp
         /// <summary>
         /// This method returns the N'th overtone's position relative to the fundamental frequency. By default it returns N. You may override it to make metallic sounds or other instruments where the overtones are not harmonic.
         /// </summary>
-        /// <param name="N"></param>
+        /// <param name="nh"></param>
         /// <returns></returns>
-        protected virtual float relF(int N)
+        protected virtual double relF(int nh)
         {
-            return N;
+            return nh * (1.0 + nh * 0.1);
         }
         /// <summary>
         /// This is the profile of one harmonic
@@ -130,11 +160,12 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         protected virtual double profile(double fi, double bwi)
         {
-            float x = fi / bwi;
+            var x = fi / bwi;
             x *= x;
+            //Debug.WriteLine("> x: {0}", x);
             if (x > 14.71280603) 
-                return 0.0f;//this avoids computing the e^(-x^2) where it's results are very close to zero
-            return (float)Math.Exp(-x) / bwi;
+                return 0.0d;//this avoids computing the e^(-x^2) where it's results are very close to zero
+            return Math.Exp(-x) / bwi;
         }
         /// <summary>
         /// a random number generator that returns values between 0 and 1

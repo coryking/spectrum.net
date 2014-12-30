@@ -14,6 +14,7 @@ using CorySignalGenerator.Models;
 using CorySignalGenerator.Sequencer;
 using CorySignalGenerator.Filters;
 using CorySignalGenerator.Wave;
+using CorySignalGenerator.Sounds;
 
 namespace CorySynthUI.ViewModel
 {
@@ -26,7 +27,7 @@ namespace CorySynthUI.ViewModel
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
 
-        private BasicNoteModel _noteModel;
+        private ISoundModel _noteModel;
         private ChannelSampleProvider _sampler;
         private EffectsFilter _effects;
         private WaveOutPlayer _player;
@@ -47,13 +48,22 @@ namespace CorySynthUI.ViewModel
 
         public MainViewModel(CoreDispatcher dispatcher)
         {
-            _noteModel = new BasicNoteModel()
+            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1);
+            //_noteModel = new SignalGeneretedSound(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1))
+            //{
+            //    AttackSeconds=0.5f,
+            //    ReleaseSeconds=0.5f,
+            //    Type=NAudio.Wave.SampleProviders.SignalGeneratorType.Square,
+            //};
+            _noteModel = new PadSound(baseWaveFormat)
             {
-                AttackSeconds=0.5f,
-                ReleaseSeconds=0.5f,
-                Type=NAudio.Wave.SampleProviders.SignalGeneratorType.Square,
+                Harmonics=64,
+                Bandwidth=20,
+                BandwidthScale=0.5f,
+                SampleSize=baseWaveFormat.SampleRate * 4,
             };
-            _sampler = new ChannelSampleProvider(_noteModel, 44100, 1);
+            _noteModel.InitSamples();
+            _sampler = new ChannelSampleProvider(_noteModel);
             _effects = new EffectsFilter(_sampler, 2)
             {
                 ReverbDecay = 0.5f,

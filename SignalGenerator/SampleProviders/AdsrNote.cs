@@ -8,29 +8,27 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.SampleProviders
 {
-    public class BasicNote : ISampleProvider
+    public abstract class AdsrNote : ISampleProvider
     {
         public int Velocity { get; set; }
-        public SignalGeneratorType Type { get; set; }
-        public float Frequency { get; set; }
+
 
         public float ReleaseSeconds { get; set; }
         public float AttackSeconds { get; set; }
 
+
         private AdsrSampleProvider _provider;
 
-        public BasicNote(int sampleRate, int channels)
+        public AdsrNote(WaveFormat waveFormat)
         {
-            WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels);
+            WaveFormat = waveFormat;
         }
 
-        private void RebuildChain()
+        protected abstract ISampleProvider GetSampler();
+       
+        protected void RebuildChain()
         {
-            var wave = new SignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels)
-                {
-                    Frequency = Frequency,
-                    Type = Type
-                };
+            var wave = GetSampler();
             var volume = new VolumeSampleProvider(wave)
             {
                 Volume = Velocity / 128.0f

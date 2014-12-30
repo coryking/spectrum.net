@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MoreLinq">
+      <HintPath>..\packages\morelinq.1.1.0\lib\net35\MoreLinq.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio">
       <HintPath>..\packages\NAudio.1.7.2\lib\net35\NAudio.dll</HintPath>
     </Reference>
@@ -45,20 +48,23 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Filters\DynamicConvolvingFilter.cs" />
     <Compile Include="Filters\EffectsFilter.cs" />
     <Compile Include="Filters\FourPolesLowPassFilter.cs" />
     <Compile Include="Filters\GhettoReverb.cs" />
     <Compile Include="Filters\NormalizingFilter.cs" />
     <Compile Include="Models\Adsr.cs" />
-    <Compile Include="Models\BasicNoteModel.cs" />
-    <Compile Include="Models\IProviderModel.cs" />
+    <Compile Include="Sounds\PadSound.cs" />
+    <Compile Include="Sounds\SignalGeneratedSound.cs" />
+    <Compile Include="Sounds\ISoundModel.cs" />
     <Compile Include="Models\MidiNotes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleProviders\AdsrSampleProvider.cs" />
-    <Compile Include="SampleProviders\BasicNote.cs" />
+    <Compile Include="SampleProviders\AdsrNote.cs" />
     <Compile Include="SampleProviders\MusicSampleProvider.cs" />
     <Compile Include="SampleProviders\SampleSource.cs" />
+    <Compile Include="SampleProviders\SignalGeneratorNote.cs" />
     <Compile Include="Sequencer\ChannelSampleProvider.cs" />
     <Compile Include="Sequencer\NoteTracker.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
