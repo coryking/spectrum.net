@@ -97,9 +97,9 @@ namespace CorySignalGenerator.Sounds
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)
             {
-
-                var windowSize = 50; // 6 * 1000 * 1 / nearestNote.FundamentalFrequency;
-                var overlapSize = 20; // windowSize * 2 / 5f;
+                var windowFactor = 2 + 4 * noteNumber / 128;
+                var windowSize = windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
+                var overlapSize = windowSize * 2 / 5f;
                 Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
 
                 outputProvider = new SuperPitch(music_sampler)
