@@ -58,8 +58,10 @@
     <Compile Include="Filters\GhettoReverb.cs" />
     <Compile Include="Filters\JSNetEffect.cs" />
     <Compile Include="Filters\NormalizingFilter.cs" />
+    <Compile Include="Filters\PitchDown.cs" />
     <Compile Include="Filters\SuperPitch.cs" />
     <Compile Include="JSNet\Effect.cs" />
+    <Compile Include="JSNet\PitchDown.cs" />
     <Compile Include="JSNet\Slider.cs" />
     <Compile Include="JSNet\SuperPitch.cs" />
     <Compile Include="Models\Adsr.cs" />

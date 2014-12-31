@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public abstract class JSNetEffect : Effect
+    public abstract class JSNetEffect: Effect, CorySignalGenerator.SampleProviders.IStoppableSample
     {
         protected Boolean isDirty;
 
@@ -74,6 +74,12 @@ namespace CorySignalGenerator.Filters
                     buffer[offset++] = spl1;
             }
             return samplesRead;
+        }
+
+        public void Stop()
+        {
+            if (this.Source is SampleProviders.IStoppableSample)
+                ((SampleProviders.IStoppableSample)this.Source).Stop();
         }
     }
 }

@@ -92,7 +92,8 @@ namespace CorySignalGenerator.Sounds
         {
             if (!IsWaveTableLoaded)
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
-            var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
+            var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
+            var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
             var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
             var volumeProvider = new VolumeSampleProvider(music_sampler)
             {
@@ -107,15 +108,15 @@ namespace CorySignalGenerator.Sounds
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)
             {
-                var windowFactor = 2 + 4 * noteNumber / 128;
+                var windowFactor = 16 * noteNumber / 128;
                 var windowSize = windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
-                var overlapSize = windowSize * 2 / 5f;
+                var overlapSize = 0.5f; //windowSize * 2 / 5f;
                 Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
 
-                outputProvider = new SuperPitch(adsrProvider)
+                outputProvider = new PitchDown(adsrProvider) //new SuperPitch(adsrProvider)
                 {
                     PitchOctaves=0f,
-                    PitchSemitones=noteDelta,
+                    PitchSemitones=(float)Math.Abs(noteDelta),
                     WindowSize=windowSize,
                     OverlapSize = overlapSize
                 };

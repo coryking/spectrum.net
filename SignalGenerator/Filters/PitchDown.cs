@@ -1,5 +1,4 @@
-﻿// .NET port of Super-pitch JS effect included with Cockos REAPER
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,37 +7,22 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public class SuperPitch : JSNetEffect
+    public class PitchDown : JSNetEffect
     {
-       
-
-        public SuperPitch(ISampleProvider source) :base(source)
+        public PitchDown(ISampleProvider source)
+            : base(source)
         {
-        
+
         }
 
         protected override Func<JSNet.Effect> CreateEffectInstance
         {
             get
             {
-                return () =>
-                {
-                    return new JSNet.SuperPitch();
-                };
+                return () => { return new JSNet.PitchDown(); };
             }
         }
 
-        protected override void SetEffectParams()
-        {
-            SetEffectSlider(0, PitchCents);
-            SetEffectSlider(1, PitchSemitones);
-            SetEffectSlider(2, PitchOctaves);
-            SetEffectSlider(3, WindowSize);
-            SetEffectSlider(4, OverlapSize);
-            SetEffectSlider(5, WetMix);
-            SetEffectSlider(6, DryMix);
-        }
-        
 
         #region properties
 
@@ -184,6 +168,15 @@ namespace CorySignalGenerator.Filters
         #endregion
 
 
-
+        protected override void SetEffectParams()
+        {
+            SetEffectSlider(0, PitchOctaves);
+            SetEffectSlider(1, PitchSemitones);
+            SetEffectSlider(2, PitchCents);
+            SetEffectSlider(3, WindowSize);
+            SetEffectSlider(4, OverlapSize);
+            SetEffectSlider(5, WetMix);
+            SetEffectSlider(6, DryMix);
+        }
     }
 }
