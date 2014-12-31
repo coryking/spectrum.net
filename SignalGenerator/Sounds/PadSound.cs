@@ -12,6 +12,7 @@ using CorySignalGenerator.Extensions;
 using CorySignalGenerator.Models;
 using System.Diagnostics;
 using CorySignalGenerator.Filters;
+using NAudio.Wave.SampleProviders;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -93,6 +94,15 @@ namespace CorySignalGenerator.Sounds
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
             var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
             var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
+            var volumeProvider = new VolumeSampleProvider(music_sampler)
+            {
+                Volume = velocity / 128.0f
+            };
+            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider)
+            {
+                AttackSeconds=AttackSeconds,
+                ReleaseSeconds = ReleaseSeconds
+            };
             ISampleProvider outputProvider;
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)
@@ -102,7 +112,7 @@ namespace CorySignalGenerator.Sounds
                 var overlapSize = windowSize * 2 / 5f;
                 Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
 
-                outputProvider = new SuperPitch(music_sampler)
+                outputProvider = new SuperPitch(adsrProvider)
                 {
                     PitchOctaves=0f,
                     PitchSemitones=noteDelta,
@@ -112,13 +122,9 @@ namespace CorySignalGenerator.Sounds
             }
             else
             {
-                outputProvider = music_sampler;
+                outputProvider = adsrProvider;
             }
-            return new AdsrSampleProvider(outputProvider)
-            {
-                AttackSeconds=AttackSeconds,
-                ReleaseSeconds = ReleaseSeconds
-            };
+            return outputProvider;
         }
 
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public class SuperPitch : JSNetEffect
+    public class SuperPitch : JSNetEffect, CorySignalGenerator.SampleProviders.IStoppableSample
     {
        
 
@@ -183,6 +183,12 @@ namespace CorySignalGenerator.Filters
 
         #endregion
 
-       
+
+
+        public void Stop()
+        {
+            if (this.Source is SampleProviders.IStoppableSample)
+                ((SampleProviders.IStoppableSample)this.Source).Stop();
+        }
     }
 }
