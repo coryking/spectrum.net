@@ -32,6 +32,7 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int sampleSize, int sampleRate,int channels=1)
         {
+            Debug.WriteLine("Building Wave Table\n> freq: {0}. harmonics: {1}, bw: {2}, bwscale: {3}", freq, numberHarmonics, bw, bwscale);
             var synth = new PADsynth(sampleSize, sampleRate, numberHarmonics);
             var sampleData = synth.synth(freq, bw, bwscale);
 

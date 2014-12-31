@@ -46,6 +46,14 @@ namespace CorySynthUI.ViewModel
             get { return TicksPerMinute / (60.0 * 1000.0); }
         }
 
+        public void GenerateWaveTable()
+        {
+            _noteModel.InitSamples();
+        }
+
+        public PadSound PadSound { get { return _noteModel as PadSound; } }
+
+
         public MainViewModel(CoreDispatcher dispatcher)
         {
             var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,2);

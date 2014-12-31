@@ -50,5 +50,10 @@ namespace CorySynthUI
         {
             ViewModel.StopPlaying();
         }
+
+        private void RegeneratePadSound_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.GenerateWaveTable();
+        }
     }
 }

@@ -32,6 +32,16 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+            <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Pad Synth</TextBlock>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonics</TextBlock>
+            <Slider Maximum="128" Minimum="1" Name="PadHarmonics" Value="{Binding PadSound.Harmonics, Mode=TwoWay}" TickFrequency="2"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
+            <Slider Maximum="50" Minimum="1" Name="PadBandwidth" Value="{Binding PadSound.Bandwidth, Mode=TwoWay}" TickFrequency="2"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Bandwidth Scale</TextBlock>
+            <Slider Minimum="0.5" Maximum="1.5" Name="PadBandwidthScale" Value="{Binding PadSound.BandwidthScale, Mode=TwoWay}" TickFrequency="0.1"/>
+            <Button Name="RegeneratePadSound" Click="RegeneratePadSound_Click">Rebuild Pad Sound</Button>
+        </StackPanel>
        
     </Grid>
 </Page>
