@@ -10,6 +10,9 @@ namespace CorySignalGenerator.Wave
     public class WaveOutPlayer :IDisposable
     {
         private NAudio.Win8.Wave.WaveOutputs.WasapiOutRT waveOut;
+
+        public event EventHandler<NAudio.Wave.StoppedEventArgs> PlaybackStopped;
+
         public WaveOutPlayer()
         {
 
@@ -44,8 +47,18 @@ namespace CorySignalGenerator.Wave
 
         void waveOut_PlaybackStopped(object sender, NAudio.Wave.StoppedEventArgs e)
         {
+            DisposeWaveOut();
+            if (PlaybackStopped != null)
+            {
+                PlaybackStopped(this, e);
+            }
+        }
+
+        private void DisposeWaveOut()
+        {
             if (waveOut != null)
             {
+                waveOut.PlaybackStopped -= waveOut_PlaybackStopped; ;
                 waveOut.Dispose();
                 waveOut = null;
             }
@@ -53,7 +66,7 @@ namespace CorySignalGenerator.Wave
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            DisposeWaveOut();
         }
     }
 }

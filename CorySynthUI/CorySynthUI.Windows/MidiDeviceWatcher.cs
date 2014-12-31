@@ -18,7 +18,7 @@ namespace CorySynthUI
         public MidiDeviceWatcher()
         {
             midiSelector = WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector();
-            _watcher = DeviceInformation.CreateWatcher();
+            _watcher = DeviceInformation.CreateWatcher(midiSelector);
             _watcher.Added += _watcher_Added;
             _watcher.Removed += _watcher_Removed;
             _watcher.Updated += _watcher_Updated;
@@ -69,7 +69,7 @@ namespace CorySynthUI
         {
             Task.Run(async () =>
             {
-                _deviceInfoCollection = await DeviceInformation.FindAllAsync();//WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector());
+                _deviceInfoCollection = await DeviceInformation.FindAllAsync(WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector());
 
             }).Wait();
             OnMidiDevicesChanged();

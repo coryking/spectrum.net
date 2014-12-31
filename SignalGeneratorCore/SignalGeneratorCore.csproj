@@ -130,6 +130,9 @@
     <Compile Include="..\SignalGenerator\Models\MidiNotes.cs">
       <Link>Models\MidiNotes.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Models\PropertyChangeModel.cs">
+      <Link>Models\PropertyChangeModel.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrNote.cs">
       <Link>SampleProviders\AdsrNote.cs</Link>
     </Compile>

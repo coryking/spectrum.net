@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Filters;
+using CorySignalGenerator.Models;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -11,7 +12,7 @@ using System.Windows;
 
 namespace CorySignalGenerator.Filters
 {
-    public class EffectsFilter : INotifyPropertyChanged, ISampleProvider
+    public class EffectsFilter : PropertyChangeModel, ISampleProvider
     {
         private ISampleProvider _source;
         private ISampleProvider _headProvider;
@@ -21,21 +22,11 @@ namespace CorySignalGenerator.Filters
             WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, outputChannels);
             _source = source;
             RebuildSignalChain();
-
             LowPassCutoff = 22000.0f;
             Q = 0.5f;
             ReverbDelay = 100;
             ReverbDecay = 0.2f;
-            _types = new List<string>()
-            {
-                NAudio.Wave.SampleProviders.SignalGeneratorType.Pink.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.SawTooth.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.Sin.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.Square.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.Sweep.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.Triangle.ToString(),
-                NAudio.Wave.SampleProviders.SignalGeneratorType.White.ToString(),
-            };
+           
 
         }
 
@@ -46,7 +37,6 @@ namespace CorySignalGenerator.Filters
         {
 
             lfoFilter = new FourPolesLowPassFilter(_source);
-           
             if (WaveFormat.Channels == 2 && _source.WaveFormat.Channels != WaveFormat.Channels)
             {
                 _headProvider = new MonoToStereoSampleProvider(lfoFilter);
@@ -56,85 +46,61 @@ namespace CorySignalGenerator.Filters
                 _headProvider = lfoFilter;
             }
             reverbFilter = new GhettoReverb(_headProvider);
-            _headProvider = reverbFilter; // new DynamicConvolvingFilter(_headProvider);//reverbFilter;
+            _headProvider = reverbFilter; 
         }
 
-        private List<String> _types;
 
-        public List<String> Types
-        {
-            get { return _types; }
-        }
-
-        public NAudio.Wave.SampleProviders.SignalGeneratorType Type { get; set; }
-
+        private float _reverbDelay;
         public float ReverbDelay
         {
-            get { return reverbFilter.Delay; }
+            get { return _reverbDelay; }
             set
             {
-                if (reverbFilter.Delay != value)
-                {
-                    reverbFilter.Delay = value;
-
-                    OnPropertyChanged("ReverbDelay");
-                }
+                Set(ref _reverbDelay, value, 0.0f, 2000.0f);
             }
         }
 
-
+        private float _reverbDecay;
         public float ReverbDecay
         {
-            get { return reverbFilter.Decay; }
+            get { return _reverbDecay; }
             set {
-                if (reverbFilter.Decay != value)
-                {
-                    reverbFilter.Decay = value;
-                    OnPropertyChanged("ReverbDecay");
-                }
-
+                Set(ref _reverbDecay, value, 0.0f, 0.49f);
             }
         }
 
-
+        private float _lfoFrequency;
         public float LowPassCutoff
         {
-            get { return lfoFilter.Frequency; }
+            get { return _lfoFrequency; }
             set
             {
-                if (lfoFilter.Frequency != value)
-                {
-                    lfoFilter.Frequency = value; 
-                    OnPropertyChanged("LowPassCutoff");
-                }
+                Set(ref _lfoFrequency, value);
 
             }
         }
 
-
+        private float _q;
         public float Q
         {
-            get { return lfoFilter.Q; }
+            get { return _q; }
             set
             {
-                if (lfoFilter.Q != value)
-                {
-                    lfoFilter.Q = value;
-                    OnPropertyChanged("Q");
-                }
+                Set(ref _q, value);
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName)
+        protected void SetFilterValues()
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); 
+            lfoFilter.Frequency = LowPassCutoff;
+            lfoFilter.Q = Q;
+            reverbFilter.Decay = ReverbDecay;
+            reverbFilter.Delay = ReverbDelay;
         }
 
         public int Read(float[] buffer, int offset, int count)
         {
+            SetFilterValues();
             return _headProvider.Read(buffer, offset, count);
         }
 

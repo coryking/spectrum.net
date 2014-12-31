@@ -24,34 +24,33 @@ namespace CorySignalGenerator.Filters
         {
             var samplesRead = Source.Read(buffer, offset, count);
             // if there is nothing to do... bail now.
-            if (Delay == 0 || Decay == 0)
+            if (SampleDelay < 10 || Decay < 0.01f)
                 return samplesRead;
 
             var totalSamplesRead = samplesRead;
-            lock (DecayBufferSyncRoot)
+
+            for (var n = 0; n < samplesRead; n++)
             {
-                for (var n = 0; n < samplesRead; n++)
+                if (DecayBuffer.Count > SampleDelay * WaveFormat.Channels)
                 {
-                    if (DecayBuffer.Count > SampleDelay * WaveFormat.Channels)
-                    {
-                        buffer[n + offset] += DecayBuffer.Dequeue();
-                        if(WaveFormat.Channels == 2 && DecayBuffer.Count > 0)
-                            buffer[n + offset] += (DecayBuffer.Peek() * 0.5f);
-                    }
+                    buffer[n + offset] += DecayBuffer.Dequeue();
+                    if (WaveFormat.Channels == 2 && DecayBuffer.Count > 0)
+                        buffer[n + offset] += (DecayBuffer.Peek() * 0.5f);
+                }
+                if (DecayBuffer.Count <= SampleDelay * WaveFormat.Channels)
                     DecayBuffer.Enqueue(buffer[n + offset] * Decay);
 
-                }
-                // if we have come to the end of the original sample
-                // we need to keep playing out the decay buffer until the end
-                if (samplesRead < count)
+            }
+            // if we have come to the end of the original sample
+            // we need to keep playing out the decay buffer until the end
+            if (samplesRead < count)
+            {
+                var bufferCount = Math.Min(count - samplesRead, DecayBuffer.Count);
+                for (var n = 0; n < bufferCount; n++)
                 {
-                    var bufferCount = Math.Min(count - samplesRead, DecayBuffer.Count);
-                    for (var n = 0; n < bufferCount; n++)
-                    {
-                        buffer[n + samplesRead + offset] = DecayBuffer.Dequeue();
-                    }
-                    totalSamplesRead += bufferCount;
+                    buffer[n + samplesRead + offset] = DecayBuffer.Dequeue();
                 }
+                totalSamplesRead += bufferCount;
             }
             return totalSamplesRead;
         }
@@ -63,44 +62,23 @@ namespace CorySignalGenerator.Filters
             get { return _decayBuffer; }
         }
 
-        protected object DecayBufferSyncRoot
-        {
-            get { return ((ICollection)DecayBuffer).SyncRoot; }
-        }
-        private float _delay;
-
+      
         /// <summary>
         /// The reverb delay, in milliseconds
         /// </summary>
         public float Delay
         {
-            get { return _delay; }
-            set
-            {
-                if (_delay != value)
-                {
-                    _delay = value;
-                    ClearBuffer();
-                }
-            }
+            get;
+            set;
         }
-
-        private float _decay;
 
         /// <summary>
         /// Gets / Sets the decay for the reverb.  Values should be between 0 (no reverb) and 1 (no decay)
         /// </summary>
         public float Decay
         {
-            get { return _decay; }
-            set
-            {
-                if (_decay != value)
-                {
-                    _decay = value;
-                    ClearBuffer();
-                }
-            }
+            get;
+            set;
         }
         /// <summary>
         /// Gets the number of samples to delay something
@@ -130,12 +108,5 @@ namespace CorySignalGenerator.Filters
             get { return _waveFormat; }
         }
 
-        private void ClearBuffer()
-        {
-            lock (DecayBufferSyncRoot)
-            {
-                DecayBuffer.Clear();
-            }
-        }
     }
 }

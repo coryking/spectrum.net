@@ -15,10 +15,11 @@ using CorySignalGenerator.Sequencer;
 using CorySignalGenerator.Filters;
 using CorySignalGenerator.Wave;
 using CorySignalGenerator.Sounds;
+using NAudio.Wave;
 
 namespace CorySynthUI.ViewModel
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : PropertyChangeModel
     {
         private MidiDeviceWatcher _watcher;
         private CoreDispatcher _dispatcher;
@@ -32,6 +33,11 @@ namespace CorySynthUI.ViewModel
         private EffectsFilter _effects;
         private WaveOutPlayer _player;
 
+        public ISampleProvider HeadSampleProvider
+        {
+            get;
+            private set;
+        }
 
         public double TicksPerMinute
         {
@@ -48,15 +54,30 @@ namespace CorySynthUI.ViewModel
 
         public void GenerateWaveTable()
         {
+            StopPlaying();
             _noteModel.InitSamples();
         }
 
         public PadSound PadSound { get { return _noteModel as PadSound; } }
 
+        public EffectsFilter EffectsFilter { get { return _effects; } }
 
         public MainViewModel(CoreDispatcher dispatcher)
         {
-            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,2);
+            _dispatcher = dispatcher;
+
+        }
+
+        void _player_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            CanPlay = true;
+            IsPlaying = false;
+        }
+
+        private void BuildSignalChain()
+        {
+            HeadSampleProvider = null;
+            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
             //_noteModel = new SignalGeneretedSound(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1))
             //{
             //    AttackSeconds=0.5f,
@@ -65,11 +86,11 @@ namespace CorySynthUI.ViewModel
             //};
             _noteModel = new PadSound(baseWaveFormat)
             {
-                Harmonics=64,
-                Bandwidth=20,
-                BandwidthScale=1.0f,
-                SampleSize=(int)Math.Pow(2,15) *2,//baseWaveFormat.SampleRate * 2,
-                AttackSeconds=0.5f,
+                Harmonics = 64,
+                Bandwidth = 20,
+                BandwidthScale = 1.0f,
+                SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
+                AttackSeconds = 0.5f,
                 ReleaseSeconds = 0.5f
             };
             _noteModel.InitSamples();
@@ -79,13 +100,7 @@ namespace CorySynthUI.ViewModel
                 ReverbDecay = 0.5f,
                 ReverbDelay = 0.25f
             };
-            _player = new WaveOutPlayer();
-            _dispatcher = dispatcher;
-            MidiDevices = new ObservableCollection<DeviceInformation>();
-
-            _watcher = new MidiDeviceWatcher();
-            _watcher.MidiDevicesChanged += _watcher_MidiDevicesChanged;
-            _watcher.Start();
+            HeadSampleProvider = _effects;
         }
 
         void _watcher_MidiDevicesChanged(MidiDeviceWatcher sender)
@@ -106,16 +121,29 @@ namespace CorySynthUI.ViewModel
 
         public void StartPlaying()
         {
-            _player.StartPlayback(_effects);
+            if (HeadSampleProvider != null)
+            {
+                _player.StartPlayback(HeadSampleProvider);
+                IsPlaying = true;
+            }
         }
         public void StopPlaying()
         {
+            CanPlay = false;
             _player.EndPlayback();
             if (_midiIn != null)
             {
+                _midiIn.MessageReceived -= _midiIn_MessageReceived;
                 _midiIn.Dispose();
                 _midiIn = null;
             }
+        }
+
+        private bool _canPlay;
+        public bool CanPlay
+        {
+            get { return _canPlay; }
+            set { Set(ref _canPlay, value); }
         }
 
         private bool _isPlaying;
@@ -138,7 +166,6 @@ namespace CorySynthUI.ViewModel
                     if (_midiIn == null)
                         throw new InvalidOperationException("Could not get midi device");
                     _midiIn.MessageReceived += _midiIn_MessageReceived;
-
                 });
             }
 
@@ -203,23 +230,20 @@ namespace CorySynthUI.ViewModel
 
         public ObservableCollection<DeviceInformation> MidiDevices { get; private set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected bool Set<T>(ref T field, T newValue = default(T), [CallerMemberName] string propertyName = null)
+        public void Init()
         {
-            if (EqualityComparer<T>.Default.Equals(field, newValue))
-                return false;
+            BuildSignalChain();
+            _player = new WaveOutPlayer();
+            _player.PlaybackStopped += _player_PlaybackStopped;
+            MidiDevices = new ObservableCollection<DeviceInformation>();
 
-            OnPropertyChanged(propertyName);
-            return true;
-        }
+            _watcher = new MidiDeviceWatcher();
+            _watcher.MidiDevicesChanged += _watcher_MidiDevicesChanged;
+            _watcher.Start();
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            if(PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            CanPlay = true;
+            IsPlaying = false;
         }
     }
 }

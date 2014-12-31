@@ -1,6 +1,7 @@
 ﻿using CorySynthUI.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -28,6 +29,7 @@ namespace CorySynthUI
             this.Init();
 
             this.InitializeComponent();
+            this.ViewModel.Init();
         }
 
         private MainViewModel _viewModel;
@@ -39,6 +41,14 @@ namespace CorySynthUI
         public void Init()
         {
             _viewModel = new MainViewModel(this.Dispatcher);
+            _viewModel.PropertyChanged += _viewModel_PropertyChanged;
+       }
+
+        void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Debug.WriteLine("In property changed: {0}", e); ;
+            StartButton.IsEnabled = ViewModel.CanPlay && !ViewModel.IsPlaying;
+            StopButton.IsEnabled = ViewModel.IsPlaying;
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
