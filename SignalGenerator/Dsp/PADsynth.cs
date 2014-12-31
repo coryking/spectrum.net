@@ -161,7 +161,7 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         protected virtual double relF(int nh)
         {
-            return nh * (1.0 + nh * 0.1);
+            return nh;// nh * (1.0 + nh * 0.1);
         }
         /// <summary>
         /// This is the profile of one harmonic
