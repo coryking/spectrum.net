@@ -128,11 +128,23 @@
     <Compile Include="..\SignalGenerator\Filters\GhettoReverb.cs">
       <Link>Filters\GhettoReverb.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Filters\JSNetEffect.cs">
+      <Link>Filters\JSNetEffect.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Filters\NormalizingFilter.cs">
       <Link>Filters\NormalizingFilter.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
       <Link>Filters\SuperPitch.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\JSNet\Effect.cs">
+      <Link>JSNet\Effect.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\JSNet\Slider.cs">
+      <Link>JSNet\Slider.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\JSNet\SuperPitch.cs">
+      <Link>JSNet\SuperPitch.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Models\Adsr.cs">
       <Link>Models\Adsr.cs</Link>

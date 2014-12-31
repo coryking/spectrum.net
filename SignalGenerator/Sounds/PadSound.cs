@@ -18,6 +18,21 @@ namespace CorySignalGenerator.Sounds
     public class PadSound : ISoundModel
     {
 
+        private readonly int[] notesToSample = new int[]{
+            9, // octave -1
+            21, 23, // octave 0
+            24, 25, 27, 31, 35, // octave 1
+            36, 38, 40, 41, 43, 45, 47, // octave 2
+            48, 50, 52, 53, 55, 57, 59, // octave 3
+            60, 62, 64, 65, 67, 69, 71, // octave 4
+            72, 74, 76, 77, 79, 81, 83, // octave 5
+            84, 86, 88, 89, 91, 93, 95, // octave 6
+            96, 98, 101, 105, // octave 7
+            108, 116, // octave 8
+            120, 127 // octave 9
+        };
+
+
         /// <summary>
         /// Wave lookup table.  Each key is a midi note number
         /// </summary>
@@ -80,13 +95,19 @@ namespace CorySignalGenerator.Sounds
             var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
             ISampleProvider outputProvider;
             var noteDelta = noteNumber - nearestNote.Note;
-            Debug.WriteLineIf((noteDelta != 0), String.Format("Gonna have to pitch shift note {0} ({1}hz) to {2}", noteNumber, frequency, nearestNote));
-            if(noteNumber != 0)
+            if(noteDelta != 0)
             {
+
+                var windowSize = 50; // 6 * 1000 * 1 / nearestNote.FundamentalFrequency;
+                var overlapSize = 20; // windowSize * 2 / 5f;
+                Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
+
                 outputProvider = new SuperPitch(music_sampler)
                 {
                     PitchOctaves=0f,
                     PitchSemitones=noteDelta,
+                    WindowSize=windowSize,
+                    OverlapSize = overlapSize
                 };
             }
             else
@@ -106,9 +127,10 @@ namespace CorySignalGenerator.Sounds
         {
             var allNotes = MidiNotes.GenerateNotes();
             var notesToGen = new List<MidiNote>();
-            for (var i = 9; i < allNotes.Keys.Count; i += 12)
+            for (var i = 0; i < notesToSample.Length; i++)
             {
-                notesToGen.Add(allNotes[i]);
+                var notenumber = notesToSample[i];
+                notesToGen.Add(allNotes[notenumber]);
             }
 
             Debug.WriteLine("Min Freq: {0}, Max Freq: {1}", notesToGen.Min(x=>x.Frequency), notesToGen.Max(x=>x.Frequency));
