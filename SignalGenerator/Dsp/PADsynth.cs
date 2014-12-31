@@ -33,7 +33,12 @@ namespace CorySignalGenerator.Dsp
         public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int sampleSize, int sampleRate,int channels=1)
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. harmonics: {1}, bw: {2}, bwscale: {3}", freq, numberHarmonics, bw, bwscale);
-            var synth = new PADsynth(sampleSize, sampleRate, numberHarmonics);
+
+            var a = new float[] { 1f, 2f, 1f, 3f, 0, 0, 1f, 0 };
+            var a_rescaled = Dsp.LinearInterpolator.Rescale(a, 440f / freq);
+            //for (var i = 1; i < number_harmonics; i++)
+            //    A[i] = Convert.ToSingle(1.0 / i);
+            var synth = new PADsynth(sampleSize, sampleRate, a_rescaled);
             var sampleData = synth.synth(freq, bw, bwscale);
 
             var outputData = new float[sampleData.Length * channels];
@@ -57,14 +62,14 @@ namespace CorySignalGenerator.Dsp
         /// <param name="n">is the samplesize (eg: 262144)</param>
         /// <param name="samplerate">samplerate (eg. 44100)</param>
         /// <param name="number_harmonics">the number of harmonics that are computed</param>
-        public PADsynth(int n, int samplerate, int number_harmonics)
+        public PADsynth(int n, int samplerate, float[] a)
         {
             rnd = new System.Random();
             N=n;
             this.samplerate=samplerate;
-            this.number_harmonics=number_harmonics;
+            this.number_harmonics=a.Length;
 
-            A = new float[number_harmonics];
+            A = a; // new float[number_harmonics];
             freq_amp = new float[N/2];
         }
         /// <summary>
@@ -100,8 +105,6 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         public float[] synth(float f, float bw, float bwscale)
         {
-            for (var i = 1; i < number_harmonics; i++)
-                A[i] = Convert.ToSingle(1.0 / i);
 
             Array.Clear(freq_amp, 0, freq_amp.Length);
             for (var nh = 1; nh < number_harmonics; nh++)

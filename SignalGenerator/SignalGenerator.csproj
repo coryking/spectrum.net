@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
+    <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Filters\DynamicConvolvingFilter.cs" />

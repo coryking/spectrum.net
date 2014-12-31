@@ -86,7 +86,7 @@ namespace CorySynthUI.ViewModel
             //};
             _noteModel = new PadSound(baseWaveFormat)
             {
-                Harmonics = 64,
+                Harmonics = 32,
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,

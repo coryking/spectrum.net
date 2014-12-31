@@ -10,6 +10,7 @@ using MoreLinq;
 using System.Collections.Concurrent;
 using CorySignalGenerator.Extensions;
 using CorySignalGenerator.Models;
+using System.Diagnostics;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -85,11 +86,14 @@ namespace CorySignalGenerator.Sounds
         public void InitSamples()
         {
             var freqs = MidiNotes.GenerateNotes().Values.Select(x => (float)x.Frequency);
+            Debug.WriteLine("Min Freq: {0}, Max Freq: {1}", freqs.Min(), freqs.Max());
             //var freqs = new float[] { 440f };
             Parallel.ForEach(freqs, (frequency) =>
             {
+                var harmonics = Harmonics * 440 / (int)frequency;
+
                 var sample =
-                     PADsynth.GenerateWaveTable(frequency, Bandwidth, BandwidthScale, Harmonics, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                     PADsynth.GenerateWaveTable(frequency, Bandwidth, BandwidthScale, harmonics, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
                 WaveTable.AddOrUpdate(frequency, sample, (key, value) => sample);
 
             });
