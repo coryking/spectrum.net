@@ -116,6 +116,9 @@
     <Compile Include="..\SignalGenerator\Filters\DynamicConvolvingFilter.cs">
       <Link>Filters\DynamicConvolvingFilter.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Filters\Effect.cs">
+      <Link>Filters\Effect.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Filters\EffectsFilter.cs">
       <Link>Filters\EffectsFilter.cs</Link>
     </Compile>
@@ -127,6 +130,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\NormalizingFilter.cs">
       <Link>Filters\NormalizingFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
+      <Link>Filters\SuperPitch.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Models\Adsr.cs">
       <Link>Models\Adsr.cs</Link>

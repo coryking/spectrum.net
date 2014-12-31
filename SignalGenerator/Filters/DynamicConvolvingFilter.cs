@@ -8,39 +8,42 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public class DynamicConvolvingFilter :ISampleProvider
+    public class DynamicConvolvingFilter :Effect
     {
         private List<DynamicConvolver> convolvers;
-        private ISampleProvider source;
-        public DynamicConvolvingFilter(ISampleProvider source, bool normalize=true)
+        private ISampleProvider _head;
+        private bool normalizeSample;
+        public DynamicConvolvingFilter(ISampleProvider source, bool normalize=true) : base(source)
         {
-            if (normalize)
-                this.source = new NormalizingFilter(source);
+            normalizeSample = normalize;
+        }
+        protected override void Init()
+        {
+            base.Init();
+            if (normalizeSample)
+                _head = new NormalizingFilter(Source);
             else
-                this.source = source;
+                _head = Source;
+
             convolvers = new List<DynamicConvolver>();
-            for (var channel = 0; channel < source.WaveFormat.Channels; channel++)
+            for (var channel = 0; channel < WaveFormat.Channels; channel++)
             {
-                convolvers.Add(new DynamicConvolver(source.WaveFormat.SampleRate, 2, 1000));
+                convolvers.Add(new DynamicConvolver(SampleRate, 2, 1000));
             }
         }
 
-        public int Read(float[] buffer, int offset, int count)
+        public override int Read(float[] buffer, int offset, int count)
         {
-            var samplesRead = source.Read(buffer, offset, count);
+            var samplesRead = _head.Read(buffer, offset, count);
             for (var i = 0; i < samplesRead; i++)
             {
-                var channel = i % source.WaveFormat.Channels;
+                var channel = i % Source.WaveFormat.Channels;
                 buffer[i+offset] = convolvers[channel].Operator(buffer[i+offset]);
             }
             return samplesRead;
         }
 
-        public WaveFormat WaveFormat
-        {
-            get { return source.WaveFormat; }
-        }
-
+       
 
     }
 }

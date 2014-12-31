@@ -16,6 +16,6 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         void InitSamples();
 
-        ISampleProvider GetProvider(float frequency, int velocity);
+        ISampleProvider GetProvider(float frequency, int velocity, int noteNumber);
     }
 }

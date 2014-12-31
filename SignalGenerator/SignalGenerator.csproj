@@ -52,10 +52,12 @@
     <Compile Include="Dsp\PADsynth.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Filters\DynamicConvolvingFilter.cs" />
+    <Compile Include="Filters\Effect.cs" />
     <Compile Include="Filters\EffectsFilter.cs" />
     <Compile Include="Filters\FourPolesLowPassFilter.cs" />
     <Compile Include="Filters\GhettoReverb.cs" />
     <Compile Include="Filters\NormalizingFilter.cs" />
+    <Compile Include="Filters\SuperPitch.cs" />
     <Compile Include="Models\Adsr.cs" />
     <Compile Include="Models\PropertyChangeModel.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />

@@ -8,19 +8,21 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public class GhettoReverb : ISampleProvider
+    public class GhettoReverb : Effect
     {
 
 
-        public GhettoReverb(ISampleProvider source)
+        public GhettoReverb(ISampleProvider source) : base(source)
         {
-            Source = source;
-            _waveFormat = source.WaveFormat;
-            _decayBuffer = new Queue<float>(); ;
         }
 
+        protected override void Init()
+        {
+            _decayBuffer = new Queue<float>(); ;
+            
+        }
 
-        public int Read(float[] buffer, int offset, int count)
+        public override int Read(float[] buffer, int offset, int count)
         {
             var samplesRead = Source.Read(buffer, offset, count);
             // if there is nothing to do... bail now.
@@ -62,23 +64,24 @@ namespace CorySignalGenerator.Filters
             get { return _decayBuffer; }
         }
 
-      
+        private float _delay;
         /// <summary>
         /// The reverb delay, in milliseconds
         /// </summary>
         public float Delay
         {
-            get;
-            set;
+            get { return _delay; }
+            set { Set(ref _delay, value); }
         }
 
+        private float _decay;
         /// <summary>
         /// Gets / Sets the decay for the reverb.  Values should be between 0 (no reverb) and 1 (no decay)
         /// </summary>
         public float Decay
         {
-            get;
-            set;
+            get { return _decay; }
+            set { Set(ref _decay, value); }
         }
         /// <summary>
         /// Gets the number of samples to delay something
@@ -88,25 +91,8 @@ namespace CorySignalGenerator.Filters
             get
             {
                 // ms * samples/s * s/ms = samples
-                return (int)(Delay * WaveFormat.SampleRate / 1000);
+                return (int)(Delay * SampleRate / 1000);
             }
         }
-
-        private ISampleProvider _source;
-
-        public ISampleProvider Source
-        {
-            get { return _source; }
-            private set { _source = value; }
-        }
-
-
-        private WaveFormat _waveFormat;
-
-        public WaveFormat WaveFormat
-        {
-            get { return _waveFormat; }
-        }
-
     }
 }

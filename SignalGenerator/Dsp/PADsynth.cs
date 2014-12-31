@@ -29,8 +29,9 @@ namespace CorySignalGenerator.Dsp
         /// <param name="bw">bandwidth in cents of the fundamental frequency (eg. 25 cents)</param>
         /// <param name="bwscale"> how the bandwidth increase on the higher harmonics (recomanded value: 1.0)</param>
         /// <param name="channels">Number of channels</param>
+        /// <param name="midiNote">The midi note number</param>
         /// <returns></returns>
-        public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int sampleSize, int sampleRate,int channels=1)
+        public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int midiNote, int sampleSize, int sampleRate,int channels=1)
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. harmonics: {1}, bw: {2}, bwscale: {3}", freq, numberHarmonics, bw, bwscale);
 
@@ -54,7 +55,7 @@ namespace CorySignalGenerator.Dsp
                     outputData[outputPos] = sampleData[inputPos];
                 }
             }
-            return new SampleSource(outputData, true, true, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels));
+            return new SampleSource(outputData,freq, midiNote, true, true, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels));
         }
 
         /// <summary>

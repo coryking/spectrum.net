@@ -12,17 +12,15 @@ namespace CorySignalGenerator.Filters
     /// A "Four Poles" low pass filter
     /// </summary>
     /// <remarks>See http://musicalagents.googlecode.com/svn/trunk/ensemble/src/ensemble/audio/dsp/FilterProcessing.java </remarks>
-    public class FourPolesLowPassFilter : PropertyChangeModel, ISampleProvider
+    public class FourPolesLowPassFilter : Effect
     {
-        private WaveFormat waveFormat;
-        private ISampleProvider source;
         
         // if true, the parameters have changed...
         private bool dirtyParams;
 
         private List<NAudio.Dsp.BiQuadFilter> _filters;
 
-        public List<NAudio.Dsp.BiQuadFilter> Filters
+        protected List<NAudio.Dsp.BiQuadFilter> Filters
         {
             get { return _filters; }
             private set { _filters = value; }
@@ -50,19 +48,21 @@ namespace CorySignalGenerator.Filters
         }
 
 
-        public FourPolesLowPassFilter(ISampleProvider source)
+        public FourPolesLowPassFilter(ISampleProvider source) :base(source)
+        {
+            
+
+        }
+        protected override void Init()
         {
             _filters = new List<NAudio.Dsp.BiQuadFilter>();
-            this.source = source;
-            waveFormat = source.WaveFormat;
             Frequency = 600.0f;
             Q = 0.5f;
-            for (var i = 0; i < source.WaveFormat.Channels; i++)
+            for (var i = 0; i < WaveFormat.Channels; i++)
             {
-                Filters.Add(NAudio.Dsp.BiQuadFilter.LowPassFilter(source.WaveFormat.SampleRate, Frequency, Q));
+                Filters.Add(NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, Frequency, Q));
                 dirtyParams = false;
             }
-
         }
 
         protected override void HandlePropertyChanged(string propertyName)
@@ -70,11 +70,10 @@ namespace CorySignalGenerator.Filters
             dirtyParams = true;
         }
         
-
-        public int Read(float[] buffer, int offset, int sampleCount)
+        public override int Read(float[] buffer, int offset, int sampleCount)
         {
             //var sourceBuffer = new float[sampleCount];
-            int samplesRead = source.Read(buffer, 0, sampleCount);
+            int samplesRead = Source.Read(buffer, 0, sampleCount);
             if (Frequency < 1.0f || Q < 0.01f)
                 return samplesRead;
 
@@ -82,13 +81,13 @@ namespace CorySignalGenerator.Filters
             {
                 foreach (var filter in Filters)
                 {
-                    filter.SetLowPassFilter(WaveFormat.SampleRate, Frequency, Q);
+                    filter.SetLowPassFilter(SampleRate, Frequency, Q);
                 }
                 dirtyParams = false;
             }
-            for (var channel = 0; channel < waveFormat.Channels; channel++)
+            for (var channel = 0; channel < WaveFormat.Channels; channel++)
             {
-                for (int i = offset + channel; i < samplesRead; i+=waveFormat.Channels)
+                for (int i = offset + channel; i < samplesRead; i+=WaveFormat.Channels)
                 {
                     buffer[i] = Filters[channel].Transform(buffer[i]);
 
@@ -99,9 +98,5 @@ namespace CorySignalGenerator.Filters
 
         }
 
-        public WaveFormat WaveFormat
-        {
-            get { return waveFormat; }
-        }
     }
 }

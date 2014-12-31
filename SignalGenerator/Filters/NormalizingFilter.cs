@@ -10,17 +10,15 @@ namespace CorySignalGenerator.Filters
     /// <summary>
     /// This filter does its best to make sure the sample buffer values never go above zero
     /// </summary>
-    public class NormalizingFilter :ISampleProvider
+    public class NormalizingFilter : Effect
     {
-        private ISampleProvider source;
         float maxValue = 0;
-        public NormalizingFilter(ISampleProvider source)
+        public NormalizingFilter(ISampleProvider source) : base(source)
         {
-            this.source = source;
         }
-        public int Read(float[] buffer, int offset, int count)
+        public override int Read(float[] buffer, int offset, int count)
         {
-            var samplesRead = source.Read(buffer, offset, count);
+            var samplesRead = Source.Read(buffer, offset, count);
             for (int n = 0; n < samplesRead; n++)
             {
                 maxValue = Math.Max(maxValue, Math.Abs(buffer[n + offset]));
@@ -32,10 +30,6 @@ namespace CorySignalGenerator.Filters
             }
             return samplesRead;
         }
-
-        public WaveFormat WaveFormat
-        {
-            get { return source.WaveFormat; }
-        }
+       
     }
 }

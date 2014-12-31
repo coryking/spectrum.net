@@ -26,25 +26,36 @@ namespace CorySignalGenerator.SampleProviders
                 {
                     throw new InvalidOperationException(String.Format("Couldn't read the whole sample, expected {0} samples, got {1}", n, sourceSamples));
                 }
-                var ss = new SampleSource(sampleData, false, false, sp.WaveFormat);
+                var ss = new SampleSource(sampleData, float.NaN, 0, false, false, sp.WaveFormat);
                 return ss;
             }
         }
 #endif
-        public SampleSource(float[] sampleData,bool isLoopable, bool isRandomStart, WaveFormat waveFormat) :
-            this(sampleData, isLoopable, isRandomStart, waveFormat, 0, sampleData.Length)
+        public SampleSource(float[] sampleData,float fundamentalFrequency, int midiNote, bool isLoopable, bool isRandomStart, WaveFormat waveFormat) :
+            this(sampleData, fundamentalFrequency, midiNote, isLoopable, isRandomStart, waveFormat, 0, sampleData.Length)
         {
         }
 
-        public SampleSource(float[] sampleData, bool isLoopable, bool isRandomStart, WaveFormat waveFormat, int startIndex, int length)
+        public SampleSource(float[] sampleData, float fundamentalFrequency, int midiNote, bool isLoopable, bool isRandomStart, WaveFormat waveFormat, int startIndex, int length)
         {
             this.SampleData = sampleData;
+            this.FundamentalFrequency = fundamentalFrequency;
+            this.Note = midiNote;
             this.SampleWaveFormat = waveFormat;
             this.StartIndex = startIndex;
             this.Length = length;
             this.IsLoopable = isLoopable;
             this.IsRandomStart = isRandomStart;
         }
+
+        /// <summary>
+        /// The fundamental frequency of this sample (if known)
+        /// </summary>
+        public float FundamentalFrequency { get; private set; }
+        /// <summary>
+        /// The midi note number (if known)
+        /// </summary>
+        public int Note { get; private set; }
 
         /// <summary>
         /// Sample data
@@ -66,5 +77,11 @@ namespace CorySignalGenerator.SampleProviders
         public bool IsLoopable { get; private set; }
 
         public bool IsRandomStart { get; private set; }
+
+        public override string ToString()
+        {
+            return String.Format("SampleSource.  Len {0}, Note: {1}, Freq: {2}, Loopable: {3}, Randomizable: {4}",
+                Length, Note, FundamentalFrequency, IsLoopable, IsRandomStart);
+        }
     }
 }

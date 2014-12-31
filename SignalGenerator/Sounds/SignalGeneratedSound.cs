@@ -27,7 +27,7 @@ namespace CorySignalGenerator.Sounds
             private set;
         }
 
-        public ISampleProvider GetProvider(float frequency, int velocity)
+        public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
             return new SignalGeneratorNote(WaveFormat)
             {

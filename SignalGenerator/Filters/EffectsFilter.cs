@@ -12,22 +12,22 @@ using System.Windows;
 
 namespace CorySignalGenerator.Filters
 {
-    public class EffectsFilter : PropertyChangeModel, ISampleProvider
+    public class EffectsFilter : Effect
     {
-        private ISampleProvider _source;
         private ISampleProvider _headProvider;
         
-        public EffectsFilter(ISampleProvider source, int outputChannels)
+        public EffectsFilter(ISampleProvider source, int outputChannels) : base(source)
         {
             WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, outputChannels);
-            _source = source;
+            
+        }
+        protected override void Init()
+        {
             RebuildSignalChain();
             LowPassCutoff = 22000.0f;
             Q = 0.5f;
             ReverbDelay = 100;
             ReverbDecay = 0.2f;
-           
-
         }
 
         private FourPolesLowPassFilter lfoFilter;
@@ -36,8 +36,8 @@ namespace CorySignalGenerator.Filters
         private void RebuildSignalChain()
         {
 
-            lfoFilter = new FourPolesLowPassFilter(_source);
-            if (WaveFormat.Channels == 2 && _source.WaveFormat.Channels != WaveFormat.Channels)
+            lfoFilter = new FourPolesLowPassFilter(Source);
+            if (WaveFormat.Channels == 2 && Source.WaveFormat.Channels != WaveFormat.Channels)
             {
                 _headProvider = new MonoToStereoSampleProvider(lfoFilter);
             }
@@ -98,16 +98,11 @@ namespace CorySignalGenerator.Filters
             reverbFilter.Delay = ReverbDelay;
         }
 
-        public int Read(float[] buffer, int offset, int count)
+        public override int Read(float[] buffer, int offset, int count)
         {
             SetFilterValues();
             return _headProvider.Read(buffer, offset, count);
         }
 
-        public WaveFormat WaveFormat
-        {
-            get;
-            private set;
-        }
     }
 }

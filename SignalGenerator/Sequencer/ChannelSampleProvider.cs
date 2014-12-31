@@ -55,7 +55,7 @@ namespace CorySignalGenerator.Sequencer
         {
             var provider = Tracker.PlayNote(noteNumber, (freq) =>
             {
-                return _noteProvider.GetProvider(freq, velocity);
+                return _noteProvider.GetProvider(freq, velocity, noteNumber);
             });
             if(provider != null)
                 _mixer.AddMixerInput(provider);
