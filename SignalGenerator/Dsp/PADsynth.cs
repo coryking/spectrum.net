@@ -35,11 +35,11 @@ namespace CorySignalGenerator.Dsp
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. harmonics: {1}, bw: {2}, bwscale: {3}", freq, numberHarmonics, bw, bwscale);
 
-            var a = new float[] {4f, 2f, 2.1f, 3.5f, 1f, 2f, 1f, 3f, 0, 0, 1f, 0 };
-            var a_rescaled = Dsp.LinearInterpolator.Rescale(a, 440f / freq);
-            //var a_rescaled = new float[(int)Math.Ceiling(numberHarmonics * 440f / freq)];
-            //for (var i = 1; i < a_rescaled.Length; i++)
-            //    a_rescaled[i] = Convert.ToSingle(1.0 / i);
+            //var a = new float[] {4f, 0f, 0f, 0.4f, 1f, 2f, 1f, 0.2f, 0, 1.2f, 1f, 0 };
+            //var a_rescaled = a;// Dsp.LinearInterpolator.Rescale(a, 440f / freq);
+            var a_rescaled = new float[(int)Math.Ceiling(numberHarmonics * 440f / freq)];
+            for (var i = 1; i < a_rescaled.Length; i++)
+                a_rescaled[i] = Convert.ToSingle(1.0 / i);
             var synth = new PADsynth(sampleSize, sampleRate, a_rescaled);
             var sampleData = synth.synth(freq, bw, bwscale);
 

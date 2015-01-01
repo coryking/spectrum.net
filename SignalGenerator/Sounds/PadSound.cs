@@ -19,6 +19,19 @@ namespace CorySignalGenerator.Sounds
     public class PadSound : ISoundModel
     {
 
+        //private readonly int[] notesToSample = new int[]{
+        //    9, // octave -1
+        //    21, 23, // octave 0
+        //    24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, // octave 1
+        //    36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, // octave 2
+        //    48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, // octave 3
+        //    60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, // octave 4
+        //    72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, // octave 5
+        //    84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, // octave 6
+        //    96, 97, 98, 101, 105, // octave 7
+        //    108, 116, // octave 8
+        //    120, 127 // octave 9
+        //};
         private readonly int[] notesToSample = new int[]{
             9, // octave -1
             21, 23, // octave 0
@@ -32,7 +45,6 @@ namespace CorySignalGenerator.Sounds
             108, 116, // octave 8
             120, 127 // octave 9
         };
-
 
         /// <summary>
         /// Wave lookup table.  Each key is a midi note number
@@ -92,9 +104,11 @@ namespace CorySignalGenerator.Sounds
         {
             if (!IsWaveTableLoaded)
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
-            var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
-            var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
+            //var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
+            //var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
+            var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
             var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
+            //return music_sampler;
             var volumeProvider = new VolumeSampleProvider(music_sampler)
             {
                 Volume = velocity / 128.0f
@@ -108,15 +122,15 @@ namespace CorySignalGenerator.Sounds
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)
             {
-                var windowFactor = 16 * noteNumber / 128;
-                var windowSize = windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
-                var overlapSize = 0.5f; //windowSize * 2 / 5f;
+                var windowFactor = 4 + 4 * noteNumber / 128;
+                var windowSize = 50f; //windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
+                var overlapSize = windowSize * 2 / 5f;
                 Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
 
-                outputProvider = new PitchDown(adsrProvider) //new SuperPitch(adsrProvider)
+                outputProvider = new SuperPitch(adsrProvider)
                 {
                     PitchOctaves=0f,
-                    PitchSemitones=(float)Math.Abs(noteDelta),
+                    PitchSemitones=noteDelta,
                     WindowSize=windowSize,
                     OverlapSize = overlapSize
                 };
@@ -134,6 +148,7 @@ namespace CorySignalGenerator.Sounds
         {
             var allNotes = MidiNotes.GenerateNotes();
             var notesToGen = new List<MidiNote>();
+            //var notesToSample = new int[] { 60 };
             for (var i = 0; i < notesToSample.Length; i++)
             {
                 var notenumber = notesToSample[i];
