@@ -52,6 +52,8 @@
             <Slider Minimum="0" Maximum="2" Name="PadAttack" Value="{Binding AttackSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Release (seconds)</TextBlock>
             <Slider Minimum="0" Maximum="2" Name="PadRelease" Value="{Binding ReleaseSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
+            <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
             <Button Name="RegeneratePadSound" Click="RegeneratePadSound_Click">Rebuild Pad Sound</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" DataContext="{Binding EffectsFilter,Mode=TwoWay}">
@@ -63,7 +65,7 @@
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
             <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding ReverbDelay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
-            <Slider Maximum="0.49" Minimum="0.1" Name="EffectsReverbDecay" Value="{Binding ReverbDecay, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+            <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding ReverbDecay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
 
         </StackPanel>
        

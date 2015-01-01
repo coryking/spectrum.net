@@ -62,6 +62,7 @@ namespace CorySynthUI.ViewModel
 
         public EffectsFilter EffectsFilter { get { return _effects; } }
 
+
         public MainViewModel(CoreDispatcher dispatcher)
         {
             _dispatcher = dispatcher;
@@ -86,7 +87,7 @@ namespace CorySynthUI.ViewModel
             //};
             _noteModel = new PadSound(baseWaveFormat)
             {
-                Harmonics = 32,
+                Harmonics = 12,
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,

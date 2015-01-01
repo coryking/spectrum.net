@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Dsp
 {
+    public enum HarmonicType
+    {
+        Linear,
+        Non_Harmonic,
+    }
+
     public class PADsynth
     {
         private float[] A;
@@ -31,7 +37,7 @@ namespace CorySignalGenerator.Dsp
         /// <param name="channels">Number of channels</param>
         /// <param name="midiNote">The midi note number</param>
         /// <returns></returns>
-        public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, int midiNote, int sampleSize, int sampleRate,int channels=1)
+        public static SampleSource GenerateWaveTable(float freq, float bw, float bwscale, int numberHarmonics, HarmonicType harmonicType, int midiNote, int sampleSize, int sampleRate,int channels=1)
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. harmonics: {1}, bw: {2}, bwscale: {3}", freq, numberHarmonics, bw, bwscale);
 
@@ -40,7 +46,7 @@ namespace CorySignalGenerator.Dsp
             var a_rescaled = new float[(int)Math.Ceiling(numberHarmonics * 440f / freq)];
             for (var i = 1; i < a_rescaled.Length; i++)
                 a_rescaled[i] = Convert.ToSingle(1.0 / i);
-            var synth = new PADsynth(sampleSize, sampleRate, a_rescaled);
+            var synth = new PADsynth(sampleSize, sampleRate, a_rescaled, harmonicType);
             var sampleData = synth.synth(freq, bw, bwscale);
 
             var outputData = new float[sampleData.Length * channels];
@@ -64,13 +70,13 @@ namespace CorySignalGenerator.Dsp
         /// <param name="n">is the samplesize (eg: 262144)</param>
         /// <param name="samplerate">samplerate (eg. 44100)</param>
         /// <param name="number_harmonics">the number of harmonics that are computed</param>
-        public PADsynth(int n, int samplerate, float[] a)
+        public PADsynth(int n, int samplerate, float[] a, HarmonicType harmonicType)
         {
             rnd = new System.Random();
             N=n;
             this.samplerate=samplerate;
             this.number_harmonics=a.Length;
-
+            this.harmonicType = harmonicType;
             A = a; // new float[number_harmonics];
             freq_amp = new float[N/2];
         }
@@ -166,7 +172,10 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         protected virtual double relF(int nh)
         {
-            return nh;// nh * (1.0 + nh * 0.1);
+            if (harmonicType == HarmonicType.Linear)
+                return nh;
+            else
+                return nh * (1.0 + nh * 0.1);
         }
         /// <summary>
         /// This is the profile of one harmonic
@@ -194,5 +203,7 @@ namespace CorySignalGenerator.Dsp
         {
             return (float)rnd.NextDouble();
         }
+
+        protected HarmonicType harmonicType { get; set; }
     }
 }

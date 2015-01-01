@@ -84,13 +84,29 @@ namespace CorySignalGenerator.Sounds
         public float AttackSeconds { get; set; }
         public float ReleaseSeconds { get; set; }
 
+        private List<string> _harmonicTypeList = new List<string>()
+        {
+            CorySignalGenerator.Dsp.HarmonicType.Linear.ToString(),
+            CorySignalGenerator.Dsp.HarmonicType.Non_Harmonic.ToString(),
+        };
+
+        public List<string> HarmonicTypeList
+        {
+            get { return _harmonicTypeList; }
+        }
+
+        public String HarmonicTypeString { get; set; }
+
+        public HarmonicType HarmonicType { get { return (HarmonicType)Enum.Parse(typeof(HarmonicType), HarmonicTypeString); } }
+
         public PadSound(WaveFormat waveFormat)
         {
             Bandwidth = 25f;
             BandwidthScale = 1.0f;
-            Harmonics = 10;
+            Harmonics = 6;
             WaveFormat = waveFormat;
             SampleSize = waveFormat.SampleRate;
+            HarmonicTypeString = HarmonicType.Non_Harmonic.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
         }
 
@@ -159,10 +175,10 @@ namespace CorySignalGenerator.Sounds
             //var freqs = new float[] { 440f };
             Parallel.ForEach(notesToGen, (note) =>
             {
-                var harmonics = Harmonics * 440 / (int)note.Frequency;
+                var harmonics = (int)Math.Max(4, Harmonics * 440 / (int)note.Frequency);
 
                 var sample =
-                     PADsynth.GenerateWaveTable((float)note.Frequency, Bandwidth, BandwidthScale, harmonics, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                     PADsynth.GenerateWaveTable((float)note.Frequency, Bandwidth, BandwidthScale, harmonics, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
                 WaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
 
             });
