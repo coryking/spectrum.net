@@ -16,6 +16,10 @@ using CorySignalGenerator.Filters;
 using CorySignalGenerator.Wave;
 using CorySignalGenerator.Sounds;
 using NAudio.Wave;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using NAudioWin8Demo;
 
 namespace CorySynthUI.ViewModel
 {
@@ -31,6 +35,7 @@ namespace CorySynthUI.ViewModel
         private ISoundModel _noteModel;
         private ChannelSampleProvider _sampler;
         private EffectsFilter _effects;
+        private ReverbFilter _reverb;
         private WaveOutPlayer _player;
 
         public ISampleProvider HeadSampleProvider
@@ -102,6 +107,23 @@ namespace CorySynthUI.ViewModel
                 ReverbDelay = 0.25f
             };
             HeadSampleProvider = _effects;
+            
+        }
+
+        private void SetReverbFilter()
+        {
+            if (selectedStream != null)
+            {
+                _reverb = new ReverbFilter(_effects);
+                _reverb.LoadImpuseResponseWaveStream(GetWaveStream());
+                HeadSampleProvider = _reverb;
+            }
+            else
+            {
+                HeadSampleProvider = _effects;
+                _reverb = null;
+            }
+            
         }
 
         void _watcher_MidiDevicesChanged(MidiDeviceWatcher sender)
@@ -118,6 +140,31 @@ namespace CorySynthUI.ViewModel
                 }
             });
            
+        }
+
+        private WaveStream GetWaveStream()
+        {
+            if (selectedStream != null)
+                return new MediaFoundationReaderRT(selectedStream);
+            else
+                return null;
+        }
+
+
+        private IRandomAccessStream selectedStream;
+
+        public async void LoadReverb()
+        {
+            var picker = new FileOpenPicker();
+            picker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+            picker.FileTypeFilter.Add("*");
+            var file = await picker.PickSingleFileAsync();
+            if (file == null) return;
+            var stream = await file.OpenAsync(FileAccessMode.Read);
+            if (stream == null) return;
+            this.selectedStream = stream;
+            CanPlay = true;
+            this.SetReverbFilter();
         }
 
         public void StartPlaying()

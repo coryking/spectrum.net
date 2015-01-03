@@ -29,6 +29,7 @@
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>
             <Button  Content="Stop" Name="StopButton" Click="StopButton_Click"/>
+            <Button Content="Load Reverb" Name="LoadReverb" Click="LoadReverb_Click"/>
             <ComboBox Name="MidiDevList" ItemsSource="{Binding MidiDevices}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>

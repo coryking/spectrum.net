@@ -107,11 +107,17 @@
     <Compile Include="..\SignalGenerator\Dsp\DynamicConvolver.cs">
       <Link>Dsp\DynamicConvolver.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Dsp\FFTConvolver.cs">
+      <Link>Dsp\FFTConvolver.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Dsp\LinearInterpolator.cs">
       <Link>Dsp\LinearInterpolator.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Dsp\PADsynth.cs">
       <Link>Dsp\PADsynth.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Extensions\EnumerableExtensions.cs">
+      <Link>Extensions\EnumerableExtensions.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\DynamicConvolvingFilter.cs">
       <Link>Filters\DynamicConvolvingFilter.cs</Link>
@@ -136,6 +142,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\PitchDown.cs">
       <Link>Filters\PitchDown.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Filters\ReverbFilter.cs">
+      <Link>Filters\ReverbFilter.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
       <Link>Filters\SuperPitch.cs</Link>
@@ -198,7 +207,6 @@
       <Link>Utils\CircularBuffer.cs</Link>
     </Compile>
     <Compile Include="Class1.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
+    <Compile Include="Dsp\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Filters\JSNetEffect.cs" />
     <Compile Include="Filters\NormalizingFilter.cs" />
     <Compile Include="Filters\PitchDown.cs" />
+    <Compile Include="Filters\ReverbFilter.cs" />
     <Compile Include="Filters\SuperPitch.cs" />
     <Compile Include="JSNet\Effect.cs" />
     <Compile Include="JSNet\PitchDown.cs" />

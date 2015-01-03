@@ -15,11 +15,10 @@ namespace CorySignalGenerator.Filters
     public class EffectsFilter : Effect
     {
         private ISampleProvider _headProvider;
-        
+
         public EffectsFilter(ISampleProvider source, int outputChannels) : base(source)
         {
             WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, outputChannels);
-            
         }
         protected override void Init()
         {
@@ -31,7 +30,7 @@ namespace CorySignalGenerator.Filters
         }
 
         private FourPolesLowPassFilter lfoFilter;
-        private GhettoReverb reverbFilter;
+        private ReverbFilter reverbFilter;
 
         private void RebuildSignalChain()
         {
@@ -45,8 +44,6 @@ namespace CorySignalGenerator.Filters
             {
                 _headProvider = lfoFilter;
             }
-            reverbFilter = new GhettoReverb(_headProvider);
-            _headProvider = reverbFilter; 
         }
 
 
@@ -94,8 +91,8 @@ namespace CorySignalGenerator.Filters
         {
             lfoFilter.Frequency = LowPassCutoff;
             lfoFilter.Q = Q;
-            reverbFilter.Decay = ReverbDecay;
-            reverbFilter.Delay = ReverbDelay;
+            //reverbFilter.Decay = ReverbDecay;
+            //reverbFilter.Delay = ReverbDelay;
         }
 
         public override int Read(float[] buffer, int offset, int count)
