@@ -44,7 +44,11 @@ namespace CorySignalGenerator.Filters
 
         public override int Read(float[] buffer, int offset, int count)
         {
-            var bufferSize = Convert.ToInt32((convolvers[0].FFTSize * WaveFormat.Channels) / count) * count;
+            
+            var bufferSize = (convolvers[0].FFTSize * WaveFormat.Channels);
+            if (bufferSize > count)
+                throw new InvalidOperationException(
+                    String.Format("Not enough latency, sorry.  Need to be able to write a buffer at least {0} samples long but only have {1}", bufferSize, count));
             var fftBuffer = new float[bufferSize];
             var samplesRead = Source.Read(fftBuffer, 0, bufferSize);
 
@@ -53,8 +57,8 @@ namespace CorySignalGenerator.Filters
             for (int i = 0; i < WaveFormat.Channels; i++)
             {
                 var channel = fftBuffer.TakeChannel(i);
-                var channelOut = new float[bufferSize/WaveFormat.Channels];
-                samplesTaken += convolvers[i].Process(channel, 0, channelOut, 0, bufferSize/WaveFormat.Channels);
+                var channelOut = new float[channel.Length];
+                samplesTaken += convolvers[i].Process(channel, 0, channelOut, 0,channel.Length);
                 channelOut.Interleave(buffer, WaveFormat.Channels, offset + i);
                 
             }

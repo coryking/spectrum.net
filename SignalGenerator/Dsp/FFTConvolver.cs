@@ -50,7 +50,7 @@ namespace CorySignalGenerator.Dsp
             m_M = (int)Math.Log(fftSize, 2.0);
         }
 
-        public int FFTSize { get { return FFTSize; } }
+        public int FFTSize { get { return m_fftSize; } }
 
         public int Process(float[] sourceP, int sourceOffset, float[] destP, int destOffset, int framesToProcess)
         {
@@ -58,7 +58,7 @@ namespace CorySignalGenerator.Dsp
             int halfSize = m_fftSize / 2;
             // framesToProcess must be an exact multiple of halfSize,
             // or halfSize is a multiple of framesToProcess when halfSize > framesToProcess.
-            var isGood = (halfSize % framesToProcess==0) && (framesToProcess % halfSize ==0);
+            var isGood = !((halfSize % framesToProcess==0) && (framesToProcess % halfSize ==0));
             if (!isGood)
                 return copied;
 

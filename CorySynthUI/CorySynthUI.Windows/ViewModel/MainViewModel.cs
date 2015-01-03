@@ -29,6 +29,8 @@ namespace CorySynthUI.ViewModel
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
 
+        private readonly int m_latency = Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
 
@@ -282,7 +284,8 @@ namespace CorySynthUI.ViewModel
         public void Init()
         {
             BuildSignalChain();
-            _player = new WaveOutPlayer();
+            Debug.WriteLine("Latency: {0}", m_latency);
+            _player = new WaveOutPlayer(m_latency);
             _player.PlaybackStopped += _player_PlaybackStopped;
             MidiDevices = new ObservableCollection<DeviceInformation>();
 
