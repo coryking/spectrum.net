@@ -26,6 +26,13 @@ namespace CorySignalGenerator.Filters
         private const int outputBufferSize = 32768; // 2^15
         private int fftSize;
 
+        // Empirical gain calibration tested across many impulse responses to ensure perceived volume is same as dry (unprocessed) signal
+        static readonly double GainCalibration = -58;
+        static readonly double GainCalibrationSampleRate = 44100;
+
+        // A minimum power value to when normalizing a silent (or very quiet) impulse response
+        static readonly double MinPower = 0.000125f;
+
         /// <summary>
         /// The total number of samples needed before doing an FFT convolution
         /// </summary>
@@ -60,12 +67,12 @@ namespace CorySignalGenerator.Filters
         {
             if (WaveFormat.SampleRate != stream.WaveFormat.SampleRate)
                 throw new InvalidOperationException("Different sample rates!");
-
+            var scale = CalculateNormalizationScale(stream, SampleRate);
             if (WaveFormat.Channels == stream.WaveFormat.Channels)
             {
                 for (int i = 0; i < WaveFormat.Channels; i++)
                 {
-                    convolvers.Add(FFTConvolver.InitFromWaveStream(stream, i));
+                    convolvers.Add(FFTConvolver.InitFromWaveStream(stream, i, scale));
                 }
                 fftSize = convolvers[0].FFTSize;
                 inputBuffer = new CircularBuffer(fftSize * 2);
@@ -161,6 +168,49 @@ namespace CorySignalGenerator.Filters
                 samplesRead= outputBuffer.Read(buffer, offset, (int)Math.Min(count, outputBuffer.Count));
             }
             return samplesRead;
+        }
+
+        /// <summary>
+        /// Taken from https://code.google.com/p/chromium/codesearch#chromium/src/third_party/WebKit/Source/platform/audio/Reverb.cpp
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="sampleRate"></param>
+        /// <returns></returns>
+        public static float CalculateNormalizationScale(WaveStream stream, int sampleRate)
+        {
+            stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+            int bufferlen = 2048 * stream.WaveFormat.Channels;
+            int samples = (int)stream.Length / stream.WaveFormat.BlockAlign;
+            samples = samples % 2 == 0 ? samples : samples + 1;
+            var buffer = new float[bufferlen];
+            var sampleProvider = stream.ToSampleProvider();
+            var count = sampleProvider.Read(buffer,0,bufferlen);
+            double power = 0;
+
+            while(count > 0){
+                for (int i = 0; i < stream.WaveFormat.Channels; i++)
+                {
+                    var channelPower = buffer.SumOfSquares(bufferlen / stream.WaveFormat.Channels, i, stream.WaveFormat.Channels);
+                    power += channelPower;
+                }
+                count = sampleProvider.Read(buffer, 0, bufferlen);
+            }
+
+            power = (float)Math.Sqrt(power / (stream.WaveFormat.Channels * samples));
+            power = (float)Math.Min(power, MinPower);
+
+            var scale = 1 / power;
+            scale *= Math.Pow(10, GainCalibration * 0.05); // calibrate to make perceived volume same as unprocessed
+
+            // Scale depends on sample-rate.
+            scale *= GainCalibrationSampleRate / sampleRate;
+
+            // Scale depends on channels
+            if (stream.WaveFormat.Channels == 4)
+                scale *= 0.5f;
+            return (float)scale;
+
         }
     }
 }

@@ -69,6 +69,7 @@ namespace CorySignalGenerator.Dsp
             {
                 Array.Copy(sourceP, sourceOffset, m_inputBuffer, m_readWriteIndex, divisionSize);
                 Array.Copy(m_outputBuffer, m_readWriteIndex, destP, destOffset, divisionSize);
+                destP.Scale(destOffset, divisionSize, 10.0f);
                 copied += divisionSize;
                 m_readWriteIndex += divisionSize;
 
@@ -106,14 +107,15 @@ namespace CorySignalGenerator.Dsp
             return (x & (x - 1)) == 0;
         }
 
-        public static FFTConvolver InitFromWaveStream(WaveStream waveStream, int channel)
+        public static FFTConvolver InitFromWaveStream(WaveStream waveStream, int channel, float scale)
         {
+            waveStream.Seek(0, System.IO.SeekOrigin.Begin);
             var bufferSize = Convert.ToInt32(waveStream.Length  / waveStream.WaveFormat.BlockAlign);
             bufferSize = bufferSize % 2 == 0 ? bufferSize : bufferSize + 1;
             var buffer = new float[bufferSize];
             var sampleProvider = waveStream.ToSampleProvider();
             var samplesRead = sampleProvider.Read(buffer, 0, bufferSize);
-
+            buffer.Scale(scale);
             var fftBuffer = buffer.TakeChannel(channel, bufferSize / waveStream.WaveFormat.Channels, channels:waveStream.WaveFormat.Channels);
 
             var fftConvolver = new FFTConvolver(fftBuffer.Length);

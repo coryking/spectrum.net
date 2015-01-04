@@ -144,5 +144,29 @@ namespace CorySignalGenerator.Extensions
 
         }
 
+        public static void Scale(this IList<float> buffer, float scale)
+        {
+            for (int i = 0; i < buffer.Count; i++)
+            {
+                buffer[i] *= scale;
+            }
+        }
+        public static void Scale(this IList<float> buffer, int offset, int count, float scale)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                buffer[i + offset] *= scale;
+            }
+        }
+
+        public static float SumOfSquares(this IList<float> buffer, int count, int channel, int channels = 2)
+        {
+            float sum = 0;
+            foreach (var item in buffer.TakeChannel(channel, count, channels: channels))
+            {
+                sum += item * item;
+            }
+            return sum;
+        }
     }
 }
