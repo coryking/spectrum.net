@@ -70,6 +70,7 @@ namespace CorySignalGenerator.Dsp
                 Array.Copy(sourceP, sourceOffset, m_inputBuffer, m_readWriteIndex, divisionSize);
                 Array.Copy(m_outputBuffer, m_readWriteIndex, destP, destOffset, divisionSize);
                 copied += divisionSize;
+                m_readWriteIndex += divisionSize;
 
                 // Check if it's time to perform the next FFT
                 if (m_readWriteIndex == halfSize)

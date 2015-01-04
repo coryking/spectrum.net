@@ -59,7 +59,8 @@ namespace CorySignalGenerator.Utils
                 {
                     Debug.Assert(writePosition == 0);
                     // must have wrapped round. Write to start
-                    Buffer.BlockCopy(data, SINGLE_BYTES * (offset + bytesWritten), buffer, SINGLE_BYTES * writePosition, ( count - bytesWritten) * SINGLE_BYTES);
+                    Buffer.BlockCopy(
+                        data, SINGLE_BYTES * (offset + bytesWritten), buffer, SINGLE_BYTES * writePosition, (count - bytesWritten) * SINGLE_BYTES);
 
                     //Array.Copy(data, offset + bytesWritten, buffer, writePosition, count - bytesWritten);
                     writePosition += (count - bytesWritten);
@@ -152,6 +153,11 @@ namespace CorySignalGenerator.Utils
                 readPosition += count;
                 readPosition %= MaxLength;
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("CircularBuffer(max: {0}, count: {0})", Count, MaxLength);
         }
     }
 }

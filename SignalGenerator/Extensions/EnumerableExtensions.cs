@@ -75,12 +75,12 @@ namespace CorySignalGenerator.Extensions
         /// <param name="offset">the offset in the output buffer</param>
         /// <param name="outputBuffer">the buffer to write into</param>
         /// <returns>how many items were output</returns>
-        public static int ToReal(this IEnumerable<Complex> input, IList<float> outputBuffer, int offset=0)
+        public static int ToReal(this IList<Complex> input, IList<float> outputBuffer, int offset=0)
         {
             var origOffset = offset;
-            foreach (var item in input)
+            for (int i = 0; i < input.Count; i++)
             {
-                outputBuffer[offset++] = item.X;
+                outputBuffer[offset++] = input[i].X;
             }
             return offset - origOffset;
         }

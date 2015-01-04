@@ -14,6 +14,9 @@ namespace UnitTests
 
             CollectionAssert.AreEqual(new float[] { 1, 3 }, result);
 
+            result = floats.TakeChannel(0, 1);
+            CollectionAssert.AreEqual(new float[] { 1 }, result);
+
         }
 
         [TestMethod]
@@ -24,17 +27,12 @@ namespace UnitTests
 
             CollectionAssert.AreEqual(new float[] { 2, 4 }, result);
 
-        }
-        [TestMethod]
-        public void TestWithChannel2Length()
-        {
-            var floats = new float[] { 1, 2, 3, 4 };
-            var result = floats.TakeChannel(1,1);
-
+            result = floats.TakeChannel(1, 1);
             CollectionAssert.AreEqual(new float[] { 2 }, result);
 
-        }
 
+        }
+        
         [TestMethod]
         public void TestInterleave()
         {

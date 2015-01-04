@@ -125,46 +125,42 @@ namespace CorySignalGenerator.Filters
             var totalSamplesProcessed = 0;
             for (int i = 0; i < WaveFormat.Channels; i++)
             {
-                totalSamplesProcessed += ProcessChannel(samplesPerChannel, i);
+                totalSamplesProcessed += ProcessChannel(fftSampleBuffer, samplesPerChannel, i);
             }
             outputBuffer.Write(fftOutputSampleBuffer, 0, totalSamplesProcessed);
             return totalSamplesProcessed;
         }
 
-        private int ProcessChannel(int samplesPerChannel,int channel)
+        private int ProcessChannel(float[] buffer, int samplesPerChannel,int channel)
         {
             Array.Clear(fftInputSampleBuffer[channel], 0, outputBufferSize);
 
-            var channelBuffer = fftSampleBuffer.TakeChannel(channel, samplesPerChannel, channels: Channels);
-            var samplesProcessed = convolvers[channel].Process(channelBuffer, 0, fftInputSampleBuffer[channel], 0, channelBuffer.Length);
+            var channelBuffer = buffer.TakeChannel(channel, samplesPerChannel, channels: Channels);
+            var samplesProcessed = convolvers[channel].Process(channelBuffer, 0, fftInputSampleBuffer[channel], 0, samplesPerChannel);
             fftInputSampleBuffer[channel].InterleaveChannel(fftOutputSampleBuffer, channel, 0, samplesProcessed, channels: Channels);
             return samplesProcessed;
         }
 
         public override int Read(float[] buffer, int offset, int count)
         {
-
-            var samplesRead = FillInputBuffer(count);
-            ProcessFFT();
-
+            //FillInputBuffer(count);
+            //ProcessFFT();
+            while(outputBuffer.Count < count && !isEndOfStream )
+            {
+                FillInputBuffer(count);
+                ProcessFFT();
+            }
+            int samplesRead;
             // this will probably fail in the case were the input buffer still has data in it...
             if (!isEndOfStream)
             {
-                if (count > outputBuffer.Count)
-                {
-                    // we need to wait until we have enough in the buffer
-                    return ReadZeros(buffer, offset, count);
-                }
-                else
-                {
-                    return outputBuffer.Read(buffer, offset, count);
-                }
+                samplesRead= outputBuffer.Read(buffer, offset, count);
             }
             else
             {
-                return outputBuffer.Read(buffer, offset, (int)Math.Min(count, outputBuffer.Count));
+                samplesRead= outputBuffer.Read(buffer, offset, (int)Math.Min(count, outputBuffer.Count));
             }
-
+            return samplesRead;
         }
     }
 }
