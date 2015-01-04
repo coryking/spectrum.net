@@ -81,6 +81,7 @@
     <Compile Include="SampleProviders\SignalGeneratorNote.cs" />
     <Compile Include="Sequencer\ChannelSampleProvider.cs" />
     <Compile Include="Sequencer\NoteTracker.cs" />
+    <Compile Include="Utils\BasicCircularBuffer.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
   </ItemGroup>
   <ItemGroup>

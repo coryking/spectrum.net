@@ -203,6 +203,9 @@
     <Compile Include="..\SignalGenerator\Sounds\SignalGeneratedSound.cs">
       <Link>Sounds\SignalGeneratedSound.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Utils\BasicCircularBuffer.cs">
+      <Link>Utils\BasicCircularBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Utils\CircularBuffer.cs">
       <Link>Utils\CircularBuffer.cs</Link>
     </Compile>

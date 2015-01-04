@@ -104,21 +104,44 @@ namespace CorySignalGenerator.Extensions
             return outputOffset - origOffset;
         }
 
-        public static T[] TakeChannel<T>(this IList<T> input, int channel,int channels=2)
+        /// <summary>
+        /// Take a channel from an audio array
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <param name="channel">Which channel to take</param>
+        /// <param name="count">Number of samples to take</param>
+        /// <param name="channels">Number of interleaved channels</param>
+        /// <returns></returns>
+        public static T[] TakeChannel<T>(this IList<T> input, int channel ,int count, int channels=2)
         {
-            var outSize = Convert.ToInt32(input.Count / channels); ;
-            var output = new T[outSize];
-            return input.Skip(channel).Where((elem, idx) => idx % channels == 0).ToArray();
+            var output = new T[count];
+            return input.Skip(channel).Where((elem, idx) => idx % channels == 0).Take(count).ToArray();
             
         }
 
-        public static void Interleave<T>(this IList<T> input, IList<T> output, int every, int offset)
+        /// <summary>
+        /// Interleave a channel into some buffer
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input">source channel</param>
+        /// <param name="output">output stream</param>
+        /// <param name="channel">which channel the <paramref name="input"/> is</param>
+        /// <param name="offset">offset in the <paramref name="output"/> buffer</param>
+        /// <param name="count">how many samples to interleave</param>
+        /// <param name="channels">total number of channels</param>
+        public static void InterleaveChannel<T>(this IList<T> input, IList<T> output, int channel, int offset, int count, int channels=2)
         {
-            foreach (var item in input)
+            if (count > input.Count || (count * channel + offset) > output.Count)
+                throw new IndexOutOfRangeException("Trying to read more than possible!");
+
+            offset += channel;
+            for (int i = 0; i < count; i++)
             {
-                output[offset] = item;
-                offset += every;
+                output[offset] = input[i];
+                offset += channels;
             }
+
         }
 
     }
