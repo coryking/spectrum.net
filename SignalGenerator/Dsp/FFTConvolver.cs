@@ -113,7 +113,7 @@ namespace CorySignalGenerator.Dsp
             var sampleProvider = waveStream.ToSampleProvider();
             var samplesRead = sampleProvider.Read(buffer, 0, bufferSize);
 
-            var fftBuffer = buffer.TakeChannel(channel, waveStream.WaveFormat.Channels);
+            var fftBuffer = buffer.TakeChannel(channel, bufferSize / waveStream.WaveFormat.Channels, channels:waveStream.WaveFormat.Channels);
 
             var fftConvolver = new FFTConvolver(fftBuffer.Length);
             fftConvolver.InitKernel(fftBuffer);

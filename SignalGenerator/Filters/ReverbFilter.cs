@@ -14,12 +14,14 @@ namespace CorySignalGenerator.Filters
     {
         List<FFTConvolver> convolvers = new List<FFTConvolver>();
 
-        CircularBuffer<float> inputBuffer;
-        CircularBuffer<float> outputBuffer;
+        CircularBuffer inputBuffer;
+        CircularBuffer outputBuffer;
         float[] inputSampleBuffer;
         float[] fftSampleBuffer;
         List<float[]> fftInputSampleBuffer;
         float[] fftOutputSampleBuffer;
+        bool isEndOfStream; // will be true if source.Read suggests we are done...
+        const int SINGLE_BYTES = 4; // four bytes per float
 
         private const int outputBufferSize = 32768; // 2^15
         private int fftSize;
@@ -45,7 +47,7 @@ namespace CorySignalGenerator.Filters
             inputSampleBuffer = new float[outputBufferSize];
             fftSampleBuffer = new float[outputBufferSize];
             fftOutputSampleBuffer = new float[outputBufferSize];
-            outputBuffer = new CircularBuffer<float>(outputBufferSize);
+            outputBuffer = new CircularBuffer(outputBufferSize);
             fftInputSampleBuffer = new List<float[]>();
 
             for (int i = 0; i < WaveFormat.Channels; i++)
@@ -66,7 +68,7 @@ namespace CorySignalGenerator.Filters
                     convolvers.Add(FFTConvolver.InitFromWaveStream(stream, i));
                 }
                 fftSize = convolvers[0].FFTSize;
-                inputBuffer = new CircularBuffer<float>(fftSize * 2);
+                inputBuffer = new CircularBuffer(fftSize * 2);
 
             }
             else
@@ -84,7 +86,10 @@ namespace CorySignalGenerator.Filters
             samplesWritten += inputBuffer.Write(inputSampleBuffer, 0, samplesRead);
             // we are at the end of some stream.... we need to pad our output buffer so it is a multiple of fftSize
             if (samplesRead < count)
+            {
                 samplesWritten += inputBuffer.Write(inputSampleBuffer, samplesRead, ConvolverBlockSize - inputBuffer.Count);
+                isEndOfStream = true;
+            }
 
             return samplesWritten;
         }
@@ -99,7 +104,9 @@ namespace CorySignalGenerator.Filters
         private int ReadZeros(float[] buffer, int offset, int count)
         {
             Array.Clear(fftSampleBuffer, 0, fftSampleBuffer.Length);
-            Array.Copy(fftSampleBuffer, 0, buffer, offset, count);
+            Buffer.BlockCopy(fftSampleBuffer,0, buffer, SINGLE_BYTES * offset, count * SINGLE_BYTES);
+
+            //Array.Copy(fftSampleBuffer, 0, buffer, offset, count);
             return count;
         }
 
@@ -140,7 +147,23 @@ namespace CorySignalGenerator.Filters
             var samplesRead = FillInputBuffer(count);
             ProcessFFT();
 
-            return outputBuffer.Read(buffer, offset, (int)Math.Min(count, outputBuffer.Count));
+            // this will probably fail in the case were the input buffer still has data in it...
+            if (!isEndOfStream)
+            {
+                if (count > outputBuffer.Count)
+                {
+                    // we need to wait until we have enough in the buffer
+                    return ReadZeros(buffer, offset, count);
+                }
+                else
+                {
+                    return outputBuffer.Read(buffer, offset, count);
+                }
+            }
+            else
+            {
+                return outputBuffer.Read(buffer, offset, (int)Math.Min(count, outputBuffer.Count));
+            }
 
         }
     }
