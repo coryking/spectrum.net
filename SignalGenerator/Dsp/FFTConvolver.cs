@@ -77,12 +77,7 @@ namespace CorySignalGenerator.Dsp
                 if (m_readWriteIndex == halfSize)
                 {
                     // The input buffer is now filled (get frequency-domain version)
-                    var frame = m_inputBuffer.ToComplexArray();
-                    FastFourierTransform.FFT(true, m_M, frame);
-                    var multiplied = frame.MultiplyComplexNumbers(m_convolutionKernel).ToArray();
-                    FastFourierTransform.FFT(false, m_M, multiplied);
-                    multiplied.ToReal(m_outputBuffer);
-
+                    FFTConvolverHelper.ConvolveFrames(m_inputBuffer, m_outputBuffer, m_M, m_convolutionKernel);
                     m_lastOverlapBuffer.AddWithScale(m_outputBuffer, halfSize);
                     Array.Copy(m_outputBuffer, halfSize, m_lastOverlapBuffer, 0, halfSize);
                     m_readWriteIndex = 0;
@@ -99,7 +94,7 @@ namespace CorySignalGenerator.Dsp
         public void InitKernel(float[] samples)
         {
             m_convolutionKernel = samples.ToComplexArray();
-            FastFourierTransform.FFT(true, m_M, m_convolutionKernel);
+            FFTConvolverHelper.FFTTransform(true, m_M, m_convolutionKernel);
         }
 
         bool IsPowerOfTwo(int x)
@@ -124,5 +119,24 @@ namespace CorySignalGenerator.Dsp
 
         }
 
+        
+
+    }
+
+    public static class FFTConvolverHelper
+    {
+        public static void ConvolveFrames(float[] inputBuffer, float[] outputBuffer, int m, Complex[] kernel)
+        {
+            var frame = inputBuffer.ToComplexArray();
+            FFTTransform(true, m, frame);
+            var multiplied = frame.MultiplyComplexNumbers(kernel).ToArray();
+            FFTTransform(false, m, multiplied);
+            multiplied.ToReal(outputBuffer);
+        }
+
+        public static void FFTTransform(bool forward, int m, Complex[] data)
+        {
+            FastFourierTransform.FFT(forward, m, data);
+        }
     }
 }

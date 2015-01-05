@@ -35,6 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NAudio, Version=1.7.2.19, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NAudio.1.7.2\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Fakes">
+      <HintPath>FakesAssemblies\NAudio.Fakes.dll</HintPath>
+    </Reference>
+    <Reference Include="SignalGenerator.Fakes">
+      <HintPath>FakesAssemblies\SignalGenerator.Fakes.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -51,6 +62,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CircularBufferTests.cs" />
+    <Compile Include="FFTConvolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InterpolatorTest.cs" />
     <Compile Include="ExtensionTests.cs" />
@@ -60,6 +72,13 @@
       <Project>{46e75465-22e8-4e1f-b16a-97b795586065}</Project>
       <Name>SignalGenerator</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Fakes Include="Fakes\NAudio.fakes">
+      <SubType>Designer</SubType>
+    </Fakes>
+    <Fakes Include="Fakes\SignalGenerator.fakes" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
