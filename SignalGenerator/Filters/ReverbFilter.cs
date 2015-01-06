@@ -59,6 +59,7 @@ namespace CorySignalGenerator.Filters
             if (WaveFormat.SampleRate != impulseResponseStream.WaveFormat.SampleRate)
                 throw new InvalidOperationException("Different sample rates!");
             var scale = CalculateNormalizationScale(impulseResponseStream, SampleRate);
+            impulseResponseStream.Seek(0, System.IO.SeekOrigin.Begin);
             var sourceStream = impulseResponseStream.ToSampleProvider();
             int sourceStreamLen = (int)impulseResponseStream.WaveFormat.Channels * (int)impulseResponseStream.Length / impulseResponseStream.BlockAlign;
             var sourceBuffer = new float[sourceStreamLen];
