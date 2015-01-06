@@ -62,7 +62,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CircularBufferTests.cs" />
-    <Compile Include="FFTConvolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InterpolatorTest.cs" />
     <Compile Include="ExtensionTests.cs" />

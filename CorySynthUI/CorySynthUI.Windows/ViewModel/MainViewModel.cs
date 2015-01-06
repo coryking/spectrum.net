@@ -25,6 +25,15 @@ namespace CorySynthUI.ViewModel
 {
     public class MainViewModel : PropertyChangeModel
     {
+        // Note about empirical tuning:
+        // The maximum FFT size affects reverb performance and accuracy.
+        // If the reverb is single-threaded and processes entirely in the real-time audio thread,
+        // it's important not to make this too high.  In this case 8192 is a good value.
+        // But, the Reverb object is multi-threaded, so we want this as high as possible without losing too much accuracy.
+        // Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
+        static readonly int MaxFFTSize = 32768;
+
+
         private MidiDeviceWatcher _watcher;
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
@@ -116,8 +125,12 @@ namespace CorySynthUI.ViewModel
         {
             if (selectedStream != null)
             {
-                _reverb = new ReverbFilter(_effects);
-                _reverb.LoadImpuseResponseWaveStream(GetWaveStream());
+                var renderSliceSize = m_latency * 44100/1000;
+                using (var stream = GetWaveStream())
+                {
+                    _reverb = new ReverbFilter(_effects, renderSliceSize, MaxFFTSize, true);
+                    _reverb.LoadImpuseResponseWaveStream(stream);
+                }
                 HeadSampleProvider = _reverb;
             }
             else

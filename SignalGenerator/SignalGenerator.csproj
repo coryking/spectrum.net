@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
-    <Compile Include="Dsp\FFTConvolver.cs" />
+    <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
@@ -68,6 +68,12 @@
     <Compile Include="JSNet\SuperPitch.cs" />
     <Compile Include="Models\Adsr.cs" />
     <Compile Include="Models\PropertyChangeModel.cs" />
+    <Compile Include="Reverb\DirectConvolver.cs" />
+    <Compile Include="Reverb\FFTFrame.cs" />
+    <Compile Include="Reverb\ReverbAccumulationBuffer.cs" />
+    <Compile Include="Reverb\ReverbConvolver.cs" />
+    <Compile Include="Reverb\ReverbConvolverStage.cs" />
+    <Compile Include="Reverb\ReverbInputBuffer.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
@@ -83,6 +89,7 @@
     <Compile Include="Sequencer\NoteTracker.cs" />
     <Compile Include="Utils\BasicCircularBuffer.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
+    <Compile Include="Utils\VectorMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
