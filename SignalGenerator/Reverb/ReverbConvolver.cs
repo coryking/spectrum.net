@@ -78,6 +78,9 @@ namespace CorySignalGenerator.Reverb
             m_stages=new List<ReverbConvolverStage>();
             m_backgroundStages = new List<ReverbConvolverStage>();
             m_useBackgroundThreads = useBackgroundThreads;
+            m_minFFTSize = MinFFTSize;
+            m_maxFFTSize = maxFFTSize;
+            m_inputBuffer = new ReverbInputBuffer(InputBufferSize);
 
             // If we are using background threads then don't exceed this FFT size for the
             // stages which run in the real-time thread.  This avoids having only one or two

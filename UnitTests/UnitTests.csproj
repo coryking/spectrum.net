@@ -65,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InterpolatorTest.cs" />
     <Compile Include="ExtensionTests.cs" />
+    <Compile Include="ReadRateChangeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SignalGenerator\SignalGenerator.csproj">

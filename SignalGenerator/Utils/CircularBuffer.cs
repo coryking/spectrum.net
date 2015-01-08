@@ -35,11 +35,11 @@ namespace CorySignalGenerator.Utils
         /// <summary>
         /// Write data to the buffer
         /// </summary>
-        /// <param name="data">Data to write</param>
+        /// <param name="srcBuffer">Data to write</param>
         /// <param name="offset">Offset into data</param>
         /// <param name="count">Number of bytes to write</param>
         /// <returns>number of bytes written</returns>
-        public int Write(float[] data, int offset, int count)
+        public int Write(float[] srcBuffer, int offset, int count)
         {
             lock (lockObject)
             {
@@ -51,7 +51,7 @@ namespace CorySignalGenerator.Utils
                 // write to end
                 int writeToEnd = Math.Min(buffer.Length - writePosition, count);
                 //Array.Copy(data, offset, buffer, writePosition, writeToEnd);
-                Buffer.BlockCopy(data, offset * SINGLE_BYTES, buffer, writePosition * SINGLE_BYTES, writeToEnd * SINGLE_BYTES);
+                Buffer.BlockCopy(srcBuffer, offset * SINGLE_BYTES, buffer, writePosition * SINGLE_BYTES, writeToEnd * SINGLE_BYTES);
                 writePosition += writeToEnd;
                 writePosition %= buffer.Length;
                 bytesWritten += writeToEnd;
@@ -60,7 +60,7 @@ namespace CorySignalGenerator.Utils
                     Debug.Assert(writePosition == 0);
                     // must have wrapped round. Write to start
                     Buffer.BlockCopy(
-                        data, SINGLE_BYTES * (offset + bytesWritten), buffer, SINGLE_BYTES * writePosition, (count - bytesWritten) * SINGLE_BYTES);
+                        srcBuffer, SINGLE_BYTES * (offset + bytesWritten), buffer, SINGLE_BYTES * writePosition, (count - bytesWritten) * SINGLE_BYTES);
 
                     //Array.Copy(data, offset + bytesWritten, buffer, writePosition, count - bytesWritten);
                     writePosition += (count - bytesWritten);
@@ -74,11 +74,11 @@ namespace CorySignalGenerator.Utils
         /// <summary>
         /// Read from the buffer
         /// </summary>
-        /// <param name="data">Buffer to read into</param>
+        /// <param name="dstBuffer">Buffer to read into</param>
         /// <param name="offset">Offset into read buffer</param>
         /// <param name="count">Bytes to read</param>
         /// <returns>Number of bytes actually read</returns>
-        public int Read(float[] data, int offset, int count)
+        public int Read(float[] dstBuffer, int offset, int count)
         {
             lock (lockObject)
             {
@@ -88,7 +88,7 @@ namespace CorySignalGenerator.Utils
                 }
                 int bytesRead = 0;
                 int readToEnd = Math.Min(buffer.Length - readPosition, count);
-                Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, data, offset * SINGLE_BYTES, readToEnd * SINGLE_BYTES);
+                Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, offset * SINGLE_BYTES, readToEnd * SINGLE_BYTES);
                 //Array.Copy(buffer, readPosition, data, offset, readToEnd);
                 bytesRead += readToEnd;
                 readPosition += readToEnd;
@@ -98,7 +98,7 @@ namespace CorySignalGenerator.Utils
                 {
                     // must have wrapped round. Read from start
                     Debug.Assert(readPosition == 0);
-                    Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, data, SINGLE_BYTES * (offset + bytesRead), (count-bytesRead) * SINGLE_BYTES);
+                    Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, SINGLE_BYTES * (offset + bytesRead), (count-bytesRead) * SINGLE_BYTES);
 
                     //Array.Copy(buffer, readPosition, data, offset + bytesRead, count - bytesRead);
                     readPosition += (count - bytesRead);

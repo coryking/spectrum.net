@@ -38,7 +38,7 @@ namespace CorySynthUI.ViewModel
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
 
-        private readonly int m_latency = 15; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+        private readonly int m_latency = 5; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
 
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
@@ -48,6 +48,16 @@ namespace CorySynthUI.ViewModel
         private EffectsFilter _effects;
         private ReverbFilter _reverb;
         private WaveOutPlayer _player;
+
+
+        public void GenerateWaveTable()
+        {
+            StopPlaying();
+            _noteModel.InitSamples();
+        }
+
+        #region Properties
+
 
         public ISampleProvider HeadSampleProvider
         {
@@ -60,6 +70,22 @@ namespace CorySynthUI.ViewModel
             get { return TicksPerBeat * BeatsPerMinute; }
         }
 
+
+        private bool _canPlay;
+        public bool CanPlay
+        {
+            get { return _canPlay; }
+            set { Set(ref _canPlay, value); }
+        }
+
+        private bool _isPlaying;
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set { Set(ref _isPlaying, value); }
+        }
+
+
         /// <summary>
         /// Gets the number of ticks per millisecond
         /// </summary>
@@ -67,17 +93,11 @@ namespace CorySynthUI.ViewModel
         {
             get { return TicksPerMinute / (60.0 * 1000.0); }
         }
-
-        public void GenerateWaveTable()
-        {
-            StopPlaying();
-            _noteModel.InitSamples();
-        }
-
         public PadSound PadSound { get { return _noteModel as PadSound; } }
 
         public EffectsFilter EffectsFilter { get { return _effects; } }
 
+        #endregion
 
         public MainViewModel(CoreDispatcher dispatcher)
         {
@@ -200,20 +220,6 @@ namespace CorySynthUI.ViewModel
                 _midiIn.Dispose();
                 _midiIn = null;
             }
-        }
-
-        private bool _canPlay;
-        public bool CanPlay
-        {
-            get { return _canPlay; }
-            set { Set(ref _canPlay, value); }
-        }
-
-        private bool _isPlaying;
-        public bool IsPlaying
-        {
-            get { return _isPlaying; }
-            set { Set(ref _isPlaying, value); }
         }
 
         public void StartListening(DeviceInformation device)

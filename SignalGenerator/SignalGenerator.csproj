@@ -75,6 +75,7 @@
     <Compile Include="Reverb\ReverbConvolverStage.cs" />
     <Compile Include="Reverb\ReverbInputBuffer.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />
+    <Compile Include="SampleProviders\ReadRateChangeProvider.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
     <Compile Include="Sounds\ISoundModel.cs" />

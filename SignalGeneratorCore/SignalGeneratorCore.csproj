@@ -200,6 +200,9 @@
     <Compile Include="..\SignalGenerator\SampleProviders\MusicSampleProvider.cs">
       <Link>SampleProviders\MusicSampleProvider.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\ReadRateChangeProvider.cs">
+      <Link>SampleProviders\ReadRateChangeProvider.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\SampleSource.cs">
       <Link>SampleProviders\SampleSource.cs</Link>
     </Compile>

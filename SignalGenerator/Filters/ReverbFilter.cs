@@ -92,7 +92,7 @@ namespace CorySignalGenerator.Filters
         {
             // Do a fairly comprehensive sanity check.
             // If these conditions are satisfied, all of the source and destination pointers will be valid for the various matrixing cases.
-            bool isSafeToProcess = count <= MaxFrameSize;
+            bool isSafeToProcess = count <= MaxFrameSize * Channels;
             Debug.Assert(isSafeToProcess);
             if (!isSafeToProcess)
                 return 0;
