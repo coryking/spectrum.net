@@ -58,7 +58,7 @@ namespace CorySignalGenerator.Reverb
                 output.Y = input.X * scale.Y + input.Y * scale.X;
                 Data[i] = output;
             }
-            Data = Data.MultiplyComplexNumbers(fftKernel.Data).ToArray();
+            //Data = Data.MultiplyComplexNumbers(fftKernel.Data).ToArray();
         }
 
         public void DoInverseFFT(float[] m_outputBuffer)
