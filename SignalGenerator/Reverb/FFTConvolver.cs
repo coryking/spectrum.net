@@ -83,7 +83,7 @@ namespace CorySignalGenerator.Reverb
                 // Copy samples to input buffer (note contraint above!)
                 var inputP = m_inputBuffer;
                 bool isCopyGood1 = m_readWriteIndex + divisionSize <= m_inputBuffer.Length;
-                Debug.Assert(isCopyGood1);
+                Debug.Assert(isCopyGood1,"isCopyGood1");
                 if (!isCopyGood1)
                     return;
 
@@ -93,7 +93,7 @@ namespace CorySignalGenerator.Reverb
                 // Copy samples from output buffer
                 var outputP = m_outputBuffer;
                 bool isCopyGood2 = m_readWriteIndex + divisionSize <= m_outputBuffer.Length;
-                Debug.Assert(isCopyGood2);
+                Debug.Assert(isCopyGood2, "isCopyGood2");
                 if (!isCopyGood2)
                     return;
 
@@ -108,7 +108,7 @@ namespace CorySignalGenerator.Reverb
                     VectorMath.vadd(m_outputBuffer, 0, 1, m_lastOverlapBuffer, 0, 1, m_outputBuffer, 0, 1, halfSize);
 
                     bool isCopyGood3 = m_outputBuffer.Length == 2 * halfSize && m_lastOverlapBuffer.Length == halfSize;
-                    Debug.Assert(isCopyGood3);
+                    Debug.Assert(isCopyGood3, "isCopyGood3");
                     if (!isCopyGood3)
                         return;
 

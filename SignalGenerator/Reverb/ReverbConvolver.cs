@@ -211,6 +211,6 @@ namespace CorySignalGenerator.Reverb
 
 
 
-        public ReverbInputBuffer InputBuffer { get; set; }
+        public ReverbInputBuffer InputBuffer { get { return m_inputBuffer; } }
     }
 }

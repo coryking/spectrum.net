@@ -60,7 +60,7 @@ namespace CorySignalGenerator.Reverb
         public void Write(float[] source, int offset, int numberOfFrames)
         {
             var bufferLength = m_buffer.Length;
-            bool isCopySafe = m_writeIndex + numberOfFrames < bufferLength;
+            bool isCopySafe = m_writeIndex + numberOfFrames <= bufferLength;
             Debug.Assert(isCopySafe);
             if (!isCopySafe)
                 return;
