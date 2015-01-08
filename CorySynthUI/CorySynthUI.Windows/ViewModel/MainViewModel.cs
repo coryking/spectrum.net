@@ -38,7 +38,7 @@ namespace CorySynthUI.ViewModel
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
 
-        private readonly int m_latency = 5; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+        private readonly int m_latency = 10; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
 
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
@@ -145,10 +145,10 @@ namespace CorySynthUI.ViewModel
         {
             if (selectedStream != null)
             {
-                var renderSliceSize = m_latency * 44100/1000;
+                //var renderSliceSize = m_latency * 44100/1000;
                 using (var stream = GetWaveStream())
                 {
-                    _reverb = new ReverbFilter(_effects, renderSliceSize, MaxFFTSize, true);
+                    _reverb = new ReverbFilter(_effects, MaxFFTSize, true);
                     _reverb.LoadImpuseResponseWaveStream(stream);
                 }
                 HeadSampleProvider = _reverb;

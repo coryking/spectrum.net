@@ -15,11 +15,15 @@ namespace CorySignalGenerator.SampleProviders
     /// </summary>
     public class FuncSampleProvider :ISampleProvider
     {
-        public FuncSampleProvider(WaveFormat format,SampleProviderRead readFunction)
+        public FuncSampleProvider(WaveFormat format)
         {
             WaveFormat = format;
-            Function = readFunction;
+        }
 
+        public FuncSampleProvider(WaveFormat format, SampleProviderRead sampleFunction)
+            : this(format)
+        {
+            Function = sampleFunction;
         }
 
         public SampleProviderRead Function { get; set; }

@@ -68,7 +68,7 @@ namespace CorySignalGenerator.Reverb
             int halfSize = FFTSize / 2;
             // framesToProcess must be an exact multiple of halfSize,
             // or halfSize is a multiple of framesToProcess when halfSize > framesToProcess.
-            bool isGood = (halfSize % framesToProcess ==0 && framesToProcess % halfSize ==0);
+            bool isGood = !(halfSize % framesToProcess !=0 && framesToProcess % halfSize !=0);
             Debug.Assert(isGood);
             if (!isGood)
                 return;
@@ -125,6 +125,11 @@ namespace CorySignalGenerator.Reverb
         {
             Array.Clear(m_lastOverlapBuffer, 0, m_lastOverlapBuffer.Length);
             m_readWriteIndex = 0;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("FFTConvolver: (fftsize: {0}, halfsize: {1})", FFTSize, FFTSize / 2);
         }
     }
 

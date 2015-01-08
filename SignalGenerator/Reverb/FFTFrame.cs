@@ -71,5 +71,10 @@ namespace CorySignalGenerator.Reverb
             FastFourierTransform.FFT(false, this.m, Data);
             Data.ToReal(m_outputBuffer, 0);
         }
+
+        public override string ToString()
+        {
+            return String.Format("FFTFrame: (len: {0}, m: {1})", fftSize, m);
+        }
     }
 }

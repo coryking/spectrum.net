@@ -75,13 +75,17 @@ namespace CorySignalGenerator.Reverb
         // If not doing multi-threaded convolution, then should not go > 8192.
         public ReverbConvolver(IEnumerable<float> impulseResponse, int renderSliceSize, int maxFFTSize, int convolverRenderPhase, bool useBackgroundThreads)
         {
+
+            var totalResponseLength = impulseResponse.Count();
+
             m_stages=new List<ReverbConvolverStage>();
             m_backgroundStages = new List<ReverbConvolverStage>();
             m_useBackgroundThreads = useBackgroundThreads;
             m_minFFTSize = MinFFTSize;
             m_maxFFTSize = maxFFTSize;
             m_inputBuffer = new ReverbInputBuffer(InputBufferSize);
-
+            m_accumulationBuffer = new ReverbAccumulationBuffer(totalResponseLength + renderSliceSize);
+            
             // If we are using background threads then don't exceed this FFT size for the
             // stages which run in the real-time thread.  This avoids having only one or two
             // large stages (size 16384 or so) at the end which take a lot of time every several
@@ -93,7 +97,6 @@ namespace CorySignalGenerator.Reverb
             bool hasRealtimeConstraint = useBackgroundThreads;
 
             var response = impulseResponse;
-            var totalResponseLength = impulseResponse.Count();
 
             // The total latency is zero because the direct-convolution is used in the leading portion.
             int reverbTotalLatency = 0;
@@ -159,7 +162,7 @@ namespace CorySignalGenerator.Reverb
             m_accumulationBuffer.ReadAndClear(destinationChannel, destinationChannelOffset, framesToProcess);
 
             // Now that we've buffered more input, post another task to the background thread.
-            if (m_useBackgroundThreads)
+            if (m_useBackgroundThreads && m_backgroundStages.Count > 0)
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
                     this.ProcessInBackground(sourceChannelOffset);

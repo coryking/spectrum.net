@@ -56,16 +56,27 @@ namespace CorySignalGenerator.Reverb
         int m_preReadWriteIndex;
         int m_framesProcessed;
 
+        int m_stageOffset;
+        int m_stageLength;
+
         float[] m_temporaryBuffer;
         bool m_directMode;
 
         float[] m_directKernel;
         DirectConvolver m_directConvolver;
+
+        public override string ToString()
+        {
+            return String.Format("ReverbConvolverStage: (offset: {0}, len: {1}, kernel: {2}, dir:{3})", m_stageOffset, m_stageLength, m_fftConvolver, m_directConvolver);
+        }
+
         // renderPhase is useful to know so that we can manipulate the pre versus post delay so that stages will perform
         // their heavy work (FFT processing) on different slices to balance the load in a real-time thread.
         public ReverbConvolverStage(IEnumerable<float> impulseResponse, int responseLength, int reverbTotalLatency, int stageOffset, int stageLength, int fftSize, int renderPhase, int renderSliceSize, ReverbAccumulationBuffer buffer, bool directMode = false)
         {
-  
+
+            m_stageOffset = stageOffset;
+            m_stageLength = stageLength;
             m_accumulationBuffer = buffer;
             m_directMode = directMode;
             if (!m_directMode)
@@ -150,7 +161,7 @@ namespace CorySignalGenerator.Reverb
                 preDelayedSourceOffset = offset;
                 temporaryBuffer = m_preDelayBuffer;
                 temporaryBufferOffset = 0;
-                isTemporaryBufferSafe = framesToProcess < m_preDelayBuffer.Length;
+                isTemporaryBufferSafe = framesToProcess <= m_preDelayBuffer.Length;
             }
 
             Debug.Assert(isTemporaryBufferSafe);

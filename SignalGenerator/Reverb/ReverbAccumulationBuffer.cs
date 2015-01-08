@@ -63,7 +63,7 @@ namespace CorySignalGenerator.Reverb
         {
             var bufferLength = m_buffer.Length;
 
-            bool isCopySafe = m_readIndex <= bufferLength && numberOfFrames < bufferLength;
+            bool isCopySafe = m_readIndex <= bufferLength && numberOfFrames <= bufferLength;
             Debug.Assert(isCopySafe);
             if (!isCopySafe)
                 return;
@@ -99,23 +99,26 @@ namespace CorySignalGenerator.Reverb
             int bufferLength = m_buffer.Length;
             int writeindex = (readIndex + delayFrames) % bufferLength;
 
+            // update callers read index.
             readIndex = (readIndex + numberOfFrames) % bufferLength;
+
 
             int framesAvailable = bufferLength - writeindex;
             int numberOfFrames1 = (int)Math.Min(numberOfFrames, framesAvailable);
             int numberOfFrames2 = numberOfFrames - numberOfFrames1;
 
-            bool isSafe = writeindex < bufferLength && numberOfFrames1 + writeindex < bufferLength && numberOfFrames2 <= bufferLength;
+            bool isSafe = writeindex <= bufferLength && numberOfFrames1 + writeindex <= bufferLength && numberOfFrames2 <= bufferLength;
             Debug.Assert(isSafe);
             if (!isSafe)
                 return 0;
 
-            VectorMath.vadd(source, offset, 1, m_buffer, writeindex, 1, m_buffer, writeindex, 1, numberOfFrames);
+            VectorMath.vadd(source, offset, 1, m_buffer, writeindex, 1, m_buffer, writeindex, 1, numberOfFrames1);
 
             if (numberOfFrames2 > 0)
             {
                 VectorMath.vadd(source, numberOfFrames1, 1, m_buffer, 0, 1, m_buffer, 0, 1, numberOfFrames2);
             }
+
             return writeindex;
         }
 

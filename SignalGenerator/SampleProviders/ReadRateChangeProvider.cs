@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using CorySignalGenerator.Extensions;
 namespace CorySignalGenerator.SampleProviders
 {
     /// <summary>
@@ -47,7 +47,6 @@ namespace CorySignalGenerator.SampleProviders
 
             var framesToWrite = (int)Math.Min(m_outputBuffer.Count, count);
             var framesWritten = m_outputBuffer.Read(buffer, offset, framesToWrite);
-
             return framesWritten;
         }
 

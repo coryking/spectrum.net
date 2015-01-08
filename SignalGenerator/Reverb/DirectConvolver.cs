@@ -42,7 +42,7 @@ namespace CorySignalGenerator.Reverb
         public DirectConvolver(int inputBlockSize)
         {
             m_inputBlockSize = inputBlockSize;
-            m_buffer = new float[inputBlockSize];
+            m_buffer = new float[inputBlockSize*2];
         }
 
         public void Process(float[] convolutionKernel, float[] source, int sourceOffset, float[] destination, int destinationOffset, int framesToProcess)
@@ -82,6 +82,11 @@ namespace CorySignalGenerator.Reverb
         public void Reset()
         {
             Array.Clear(m_buffer, 0, m_buffer.Length);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("DirectConvolver: (blocksize: {0}, buffer_len: {1})", m_inputBlockSize, m_buffer.Length);
         }
     }
 }

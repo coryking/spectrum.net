@@ -9,12 +9,14 @@ using CorySignalGenerator.Extensions;
 using CorySignalGenerator.Utils;
 using CorySignalGenerator.Reverb;
 using System.Diagnostics;
+using CorySignalGenerator.SampleProviders;
 
 namespace CorySignalGenerator.Filters
 {
     public class ReverbFilter : Effect
     {
-        static readonly int MaxFrameSize = 256;
+        public static readonly int MaxFrameSize = 256;
+        public static readonly int ProcessingSizeInFrames = 128;
         List<ReverbConvolver> m_convolvers;
 
 
@@ -30,15 +32,25 @@ namespace CorySignalGenerator.Filters
 
         int m_maxFFTSize;
         bool m_useBackgroundThreads;
+    
+        // renderSliceSize is a rendering hint, so the FFTs can be optimized to not all occur at the same time (very bad when rendering on a real-time thread).
         int m_renderSliceSize;
 
-        public ReverbFilter(ISampleProvider source, int renderSliceSize, int maxFFTSize, bool useBackgroundThreads) : base(source)
+        ReadRateChangeProvider m_rateChanger;
+        FuncSampleProvider m_funcProvider;
+
+        public ReverbFilter(ISampleProvider source, int maxFFTSize, bool useBackgroundThreads) : base(source)
         {
 
             m_convolvers = new List<ReverbConvolver>();
-            m_renderSliceSize = renderSliceSize;
+            m_renderSliceSize = ProcessingSizeInFrames;
             m_maxFFTSize = maxFFTSize;
             m_useBackgroundThreads = useBackgroundThreads;
+            m_funcProvider = new FuncSampleProvider(source.WaveFormat)
+            {
+                Function = this.ProcessSample
+            };
+            m_rateChanger = new ReadRateChangeProvider(m_funcProvider, ProcessingSizeInFrames * source.WaveFormat.Channels);
         }
 
 
@@ -79,16 +91,7 @@ namespace CorySignalGenerator.Filters
 
         }
 
-       
-
-        /// <summary>
-        /// This read method will always return something even if the source material has long ago stopped producing samples...
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public override int Read(float[] buffer, int offset, int count)
+        private int ProcessSample(float[] buffer, int offset, int count)
         {
             // Do a fairly comprehensive sanity check.
             // If these conditions are satisfied, all of the source and destination pointers will be valid for the various matrixing cases.
@@ -106,11 +109,12 @@ namespace CorySignalGenerator.Filters
                 var framesToProcess = count / 2;
                 var leftBuffer = new float[framesToProcess];
                 var rightBuffer = new float[framesToProcess];
-                m_convolvers[0].Process(sourceBuffer.TakeChannel(0, framesToProcess).ToArray(),0, leftBuffer,0,framesToProcess);
+                m_convolvers[0].Process(sourceBuffer.TakeChannel(0, framesToProcess).ToArray(), 0, leftBuffer, 0, framesToProcess);
                 m_convolvers[1].Process(sourceBuffer.TakeChannel(1, framesToProcess).ToArray(), 0, rightBuffer, 0, framesToProcess);
 
                 leftBuffer.InterleaveChannel(buffer, 0, 0, framesToProcess);
                 rightBuffer.InterleaveChannel(buffer, 1, 0, framesToProcess);
+                buffer.Scale(offset, count, 100);
                 return count;
             }
             else
@@ -118,6 +122,19 @@ namespace CorySignalGenerator.Filters
                 Array.Copy(sourceBuffer, 0, buffer, offset, sourceSize);
                 return sourceSize;
             }
+        }
+       
+
+        /// <summary>
+        /// This read method will always return something even if the source material has long ago stopped producing samples...
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public override int Read(float[] buffer, int offset, int count)
+        {
+            return m_rateChanger.Read(buffer, offset, count);
         }
 
         /// <summary>
