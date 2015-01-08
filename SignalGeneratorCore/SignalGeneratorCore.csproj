@@ -194,6 +194,9 @@
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrSampleProvider.cs">
       <Link>SampleProviders\AdsrSampleProvider.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\FuncSampleProvider.cs">
+      <Link>SampleProviders\FuncSampleProvider.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\IStoppableSample.cs">
       <Link>SampleProviders\IStoppableSample.cs</Link>
     </Compile>
