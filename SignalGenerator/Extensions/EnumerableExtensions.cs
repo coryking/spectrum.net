@@ -35,10 +35,13 @@ namespace CorySignalGenerator.Extensions
             });
         }
 
+        
         public static Complex[] ToComplexArray(this float[] source)
         {
             return source.ToComplex().ToArray();
         }
+
+        
 
         /// <summary>
         /// Vector complex multiplication on a complex number.
@@ -81,6 +84,16 @@ namespace CorySignalGenerator.Extensions
             for (int i = 0; i < input.Count; i++)
             {
                 outputBuffer[offset++] = input[i].X;
+            }
+            return offset - origOffset;
+        }
+
+        public static int ToReal(this IList<System.Numerics.Complex> input, IList<float> outputBuffer, int offset = 0)
+        {
+            var origOffset = offset;
+            for (int i = 0; i < input.Count; i++)
+            {
+                outputBuffer[offset++] = (float)input[i].Real;
             }
             return offset - origOffset;
         }

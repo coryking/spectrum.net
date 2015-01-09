@@ -109,8 +109,12 @@ namespace CorySignalGenerator.Reverb
             // This is coordinated with the other stages, so they don't all do their FFTs at the same time...
             int maxPreDelayLength = (int)Math.Min(halfSize, totalDelay);
             m_preDelayLength = totalDelay > 0 ? renderPhase % maxPreDelayLength : 0;
+            if (m_preDelayLength > totalDelay)
+                m_preDelayLength = 0;
+
+            m_postDelayLength = totalDelay - m_preDelayLength;
             m_preReadWriteIndex = 0;
-            m_framesProcessed = 0;
+            m_framesProcessed = 0; // total frames processed so far....
 
             int delayBufferSize = m_preDelayLength < fftSize ? fftSize : m_preDelayLength;
             delayBufferSize = delayBufferSize < renderSliceSize ? renderSliceSize : delayBufferSize;
@@ -170,15 +174,21 @@ namespace CorySignalGenerator.Reverb
 
             if (m_framesProcessed < m_preDelayLength)
             {
+                // For the first m_preDelayLength frames don't process the convolver, instead simply buffer in the pre-delay.
+                // But while buffering the pre-delay, we still need to update our index.
                 m_accumulationBuffer.UpdateReadIndex(ref m_accumulationReadIndex, framesToProcess);
             }
             else
             {
-                if (!m_directMode)
-                    m_fftConvolver.Process(m_fftKernel, preDelayedSource, preDelayedSourceOffset, temporaryBuffer, temporaryBufferOffset, framesToProcess);
-                else
+                if (m_directMode)
                     m_directConvolver.Process(m_directKernel, preDelayedSource, preDelayedSourceOffset, temporaryBuffer, temporaryBufferOffset, framesToProcess);
+                else
+                    // Now, run the convolution (into the delay buffer).
+                    // An expensive FFT will happen every fftSize / 2 frames.
+                    // We process in-place here...
+                    m_fftConvolver.Process(m_fftKernel, preDelayedSource, preDelayedSourceOffset, temporaryBuffer, temporaryBufferOffset, framesToProcess);
 
+                // Now accumulate into reverb's accumulation buffer.
                 m_accumulationBuffer.Accumulate(temporaryBuffer, temporaryBufferOffset, framesToProcess, ref m_accumulationReadIndex, m_postDelayLength);
             }
 

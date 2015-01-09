@@ -28,6 +28,20 @@ namespace CorySignalGenerator.Reverb
             private set;
         }
 
+        /// <summary>
+        /// Do the reverb stuff...
+        /// </summary>
+        /// <param name="kernel">The FFT kernel to convolve with</param>
+        /// <param name="sample">The sample</param>
+        /// <param name="output">An output buffer</param>
+        /// <param name="outputOffset">Offset into output buffer</param>
+        public void FFTConvolve(FFTFrame kernel, float[] sample, float[] output, int outputOffset)
+        {
+            this.DoFFT(sample);
+            this.Multiply(kernel);
+            this.DoInverseFFT(output,outputOffset);
+        }
+
         public void DoPaddedFFT(IEnumerable<float> data, int offset, int dataSize)
         {
             // Pad our sample until we hit FFTSize
@@ -66,7 +80,7 @@ namespace CorySignalGenerator.Reverb
             //Data = Data.MultiplyComplexNumbers(fftKernel.Data).ToArray();
         }
 
-        public void DoInverseFFT(float[] m_outputBuffer)
+        public void DoInverseFFT(float[] m_outputBuffer, int offset=0)
         {
             bool isGood = (m_outputBuffer != null && m_outputBuffer.Length >= fftSize);
             Debug.Assert(isGood);
@@ -74,7 +88,7 @@ namespace CorySignalGenerator.Reverb
                 return;
             MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
             //FastFourierTransform.FFT(false, this.m, Data);
-            //Data.ToReal(m_outputBuffer, 0);
+            Data.ToReal(m_outputBuffer, offset);
         }
 
         public override string ToString()

@@ -34,9 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - .NET|AnyCPU'">
-    <OutputPath>bin\Release - .NET\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="NAudio, Version=1.7.2.19, Culture=neutral, processorArchitecture=MSIL">
@@ -69,6 +66,9 @@
     <Compile Include="InterpolatorTest.cs" />
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="ReadRateChangeTests.cs" />
+    <Compile Include="FFTConvolverTests.cs" />
+    <Compile Include="ReverbConvolverTests.cs" />
+    <Compile Include="BaseShimTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SignalGenerator\SignalGenerator.csproj">

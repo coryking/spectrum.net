@@ -105,9 +105,7 @@ namespace CorySignalGenerator.Reverb
                 m_readWriteIndex += divisionSize;
                 if (m_readWriteIndex == halfSize)
                 {
-                    m_frame.DoFFT(m_inputBuffer);
-                    m_frame.Multiply(fftKernel);
-                    m_frame.DoInverseFFT(m_outputBuffer);
+                    m_frame.FFTConvolve(fftKernel, m_inputBuffer, m_outputBuffer, 0);
 
                     VectorMath.vadd(m_outputBuffer, 0, 1, m_lastOverlapBuffer, 0, 1, m_outputBuffer, 0, 1, halfSize);
 
