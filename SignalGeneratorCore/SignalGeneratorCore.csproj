@@ -239,6 +239,9 @@
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.3.4.0\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="MoreLinq.Portable">
       <HintPath>..\packages\MoreLinq.Portable.1.1.0\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\MoreLinq.Portable.dll</HintPath>
     </Reference>
@@ -251,6 +254,18 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - .NET|AnyCPU'">
+    <OutputPath>bin\Release - .NET\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - .NET|ARM'">
+    <OutputPath>bin\ARM\Release - .NET\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - .NET|x64'">
+    <OutputPath>bin\x64\Release - .NET\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - .NET|x86'">
+    <OutputPath>bin\x86\Release - .NET\</OutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

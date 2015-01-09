@@ -55,6 +55,10 @@ namespace CorySignalGenerator.Reverb
 
         public FFTConvolver(int fftSize)
         {
+#if USE_MKL
+            MathNet.Numerics.Control.UseNativeMKL();
+#endif
+            
             // TODO: Complete member initialization
             this.m_fftSize = fftSize;
             this.m_frame = new FFTFrame(fftSize);

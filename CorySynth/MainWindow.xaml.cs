@@ -25,107 +25,37 @@ namespace CorySignalGenerator
     /// </summary>
     public partial class MainWindow : Window
     {   
-        private WasapiOut waveOut;
-        private MidiIn midiIn;
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
-            this.Model.SignalPathChanged +=Model_SignalPathChanged;
-        }
+            DataContext = new MainViewModel(this.Dispatcher);
+            this.Model.Init();
 
-        private void Model_SignalPathChanged(object sender)
-        {
-            if (IsPlaying && waveOut != null)
-            {
-                waveOut.Init(Model.GetAudioChain());
-            }
         }
 
 
 
-        public MainWindowViewModel Model { get { return this.DataContext as MainWindowViewModel; } }
+        public MainViewModel Model { get { return this.DataContext as MainViewModel; } }
 
 
         public void Play()
         {
             IsPlaying = true;
-            GenerateAudioChain();
-            Model.Start();
-
-        }
-
-        public void RecordMidi()
-        {
-            if (midiIn == null)
-            {
-                midiIn = new MidiIn(this.MidiDevicePicker.SelectedIndex); ;
-                midiIn.MessageReceived += midiIn_MessageReceived;
-            }
-            GenerateAudioChain();
-            midiIn.Start();
-            IsRecording = true;
+            Model.StartPlaying();
+            Model.StartListening(this.MidiDevicePicker.SelectedIndex);
             
         }
 
-        private void GenerateAudioChain()
-        {
-            if (waveOut == null)
-            {
-                waveOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
-                waveOut.PlaybackStopped += waveOut_PlaybackStopped;
-
-                waveOut.Init(Model.GetAudioChain());
-                waveOut.Play();
-
-            }
-        }
-
-        void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
-        {
-            // Ignore clock events
-            if (e.MidiEvent.CommandCode == MidiCommandCode.TimingClock || e.MidiEvent.CommandCode == MidiCommandCode.AutoSensing)
-                return;
-            Console.WriteLine(" > Got Midi Event, Invoking Main Thread! {0}", e.MidiEvent);
-            this.Dispatcher.Invoke(() => { Model.PlayNote(e.MidiEvent); });
-            //Model.PlayNote(e.MidiEvent);
-        
-        }
-
-        void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
-        {
-            IsPlaying = false;
-            DisposeAudioDevices();
-        }
-
-        private void DisposeAudioDevices()
-        {
-            if (waveOut != null)
-            {
-                waveOut.Dispose();
-                waveOut = null;
-            }
-            if (midiIn != null)
-            {
-                midiIn.Dispose();
-                midiIn = null;
-            }
-        }
-
+       
         public void Stop()
         {
             if(IsPlaying)
-                Model.Stop(); 
+                Model.StopPlaying(); 
 
             IsPlaying = false;
             IsRecording = false;
             
-            if(waveOut != null)
-                waveOut.Stop();
-
-            if (midiIn != null)
-                midiIn.Stop();
         }
 
 
@@ -171,6 +101,11 @@ namespace CorySignalGenerator
 
         #endregion
 
+        private void OpenReverbExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Model.LoadReverb();
+        }
+
         private void CanPlay(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = !IsPlaying && !IsRecording;
@@ -197,13 +132,15 @@ namespace CorySignalGenerator
 
         }
 
-        private void RecordExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            RecordMidi();
-        }
+     
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Stop();
+        }
+
+        private void RecordExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Play();
         }
     }
 }
