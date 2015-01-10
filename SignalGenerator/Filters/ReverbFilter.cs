@@ -109,8 +109,8 @@ namespace CorySignalGenerator.Filters
                 var framesToProcess = count / 2;
                 var leftBuffer = new float[framesToProcess];
                 var rightBuffer = new float[framesToProcess];
-                m_convolvers[0].Process(sourceBuffer.TakeChannel(0, framesToProcess).ToArray(), 0, leftBuffer, 0, framesToProcess);
-                m_convolvers[1].Process(sourceBuffer.TakeChannel(1, framesToProcess).ToArray(), 0, rightBuffer, 0, framesToProcess);
+                m_convolvers[0].Process(sourceBuffer.TakeChannel(0, framesToProcess).ToArray(),  leftBuffer, framesToProcess);
+                m_convolvers[1].Process(sourceBuffer.TakeChannel(1, framesToProcess).ToArray(),  rightBuffer, framesToProcess);
 
                 leftBuffer.InterleaveChannel(buffer, 0, 0, framesToProcess);
                 rightBuffer.InterleaveChannel(buffer, 1, 0, framesToProcess);

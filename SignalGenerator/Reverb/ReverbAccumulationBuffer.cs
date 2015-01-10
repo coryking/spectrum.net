@@ -59,7 +59,7 @@ namespace CorySignalGenerator.Reverb
         /// </summary>
         /// <param name="destination"></param>
         /// <param name="numberOfFrames"></param>
-        public void ReadAndClear(float[] destination, int offset, int numberOfFrames)
+        public void ReadAndClear(float[] destination, int numberOfFrames)
         {
             var bufferLength = m_buffer.Length;
 
@@ -72,11 +72,11 @@ namespace CorySignalGenerator.Reverb
             var numberOfFrames1 = (int)Math.Min(framesAvailable, numberOfFrames);
             var numberOfFrames2 = numberOfFrames - numberOfFrames1;
 
-            Array.Copy(m_buffer, ReadIndex, destination, offset, numberOfFrames1);
+            Array.Copy(m_buffer, ReadIndex, destination, 0, numberOfFrames1);
             Array.Clear(m_buffer, ReadIndex, numberOfFrames1);
             if (numberOfFrames2 > 0)
             {
-                Array.Copy(m_buffer, 0, destination, offset + numberOfFrames1, numberOfFrames2);
+                Array.Copy(m_buffer, 0, destination,  numberOfFrames1, numberOfFrames2);
                 Array.Clear(m_buffer, 0, numberOfFrames2);
             }
             m_readIndex = (m_readIndex + numberOfFrames) % bufferLength;

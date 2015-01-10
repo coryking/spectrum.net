@@ -38,22 +38,23 @@ namespace CorySignalGenerator.Reverb
     {
         const int InputBufferSize = 8 * 16384;
 
-        // We only process the leading portion of the impulse response in the real-time thread.  We don't exceed this length.
-        // It turns out then, that the background thread has about 278msec of scheduling slop.
-        // Empirically, this has been found to be a good compromise between giving enough time for scheduling slop,
-        // while still minimizing the amount of processing done in the primary (high-priority) thread.
-        // This was found to be a good value on Mac OS X, and may work well on other platforms as well, assuming
-        // the very rough scheduling latencies are similar on these time-scales.  Of course, this code may need to be
-        // tuned for individual platforms if this assumption is found to be incorrect.
-        const int RealtimeFrameLimit = 8192 + 4096; // ~278msec @ 44.1KHz
+        /// <summary>
+        /// We only process the leading portion of the impulse response in the real-time thread.  We don't exceed this length.
+        /// It turns out then, that the background thread has about 278msec of scheduling slop.
+        /// Empirically, this has been found to be a good compromise between giving enough time for scheduling slop,
+        /// while still minimizing the amount of processing done in the primary (high-priority) thread.
+        /// This was found to be a good value on Mac OS X, and may work well on other platforms as well, assuming
+        /// the very rough scheduling latencies are similar on these time-scales.  Of course, this code may need to be
+        /// tuned for individual platforms if this assumption is found to be incorrect.
+        /// </summary>
+        public const int RealtimeFrameLimit = 8192 + 4096; // ~278msec @ 44.1KHz
 
-        const int MinFFTSize = 128;
-        const int MaxRealtimeFFTSize = 2048;
+        public const int MinFFTSize = 128;
+        public const int MaxRealtimeFFTSize = 2048;
 
 
         List<ReverbConvolverStage> m_stages;
         List<ReverbConvolverStage> m_backgroundStages;
-        int m_inpulseResponseLength;
 
         ReverbAccumulationBuffer m_accumulationBuffer;
 
@@ -146,31 +147,31 @@ namespace CorySignalGenerator.Reverb
 
         }
 
-        public void Process(float[] sourceChannel, int sourceChannelOffset, float[] destinationChannel, int destinationChannelOffset, int framesToProcess)
+        public void Process(float[] sourceChannel, float[] destinationChannel, int framesToProcess)
         {
-            bool isSafe = sourceChannel != null & destinationChannel != null && (sourceChannel.Length + sourceChannelOffset) >= framesToProcess && (destinationChannel.Length + destinationChannelOffset) >= framesToProcess;
+            bool isSafe = sourceChannel != null & destinationChannel != null && sourceChannel.Length >= framesToProcess && destinationChannel.Length >= framesToProcess;
             Debug.Assert(isSafe);
             if (!isSafe)
                 return;
 
-            m_inputBuffer.Write(sourceChannel, sourceChannelOffset, framesToProcess);
+            m_inputBuffer.Write(sourceChannel, framesToProcess);
 
             foreach (var stage in m_stages)
             {
-                stage.Process(sourceChannel, sourceChannelOffset, framesToProcess);
+                stage.Process(sourceChannel, framesToProcess);
             }
-            m_accumulationBuffer.ReadAndClear(destinationChannel, destinationChannelOffset, framesToProcess);
+            m_accumulationBuffer.ReadAndClear(destinationChannel, framesToProcess);
 
             // Now that we've buffered more input, post another task to the background thread.
             if (m_useBackgroundThreads && m_backgroundStages.Count > 0)
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
-                    this.ProcessInBackground(sourceChannelOffset);
+                    this.ProcessInBackground();
                 });
 
         }
 
-        protected void ProcessInBackground(int offset)
+        protected void ProcessInBackground()
         {
             // Process all of the stages until their read indices reach the input buffer's write index
             var writeIndex = m_inputBuffer.WriteIndex;
@@ -184,7 +185,7 @@ namespace CorySignalGenerator.Reverb
                 int SliceSize = MinFFTSize / 2;
                 foreach (var backgroundStage in m_backgroundStages)
                 {
-                    backgroundStage.ProcessInBackground(this, offset, SliceSize);
+                    backgroundStage.ProcessInBackground(this, SliceSize);
                 }
 
             }
@@ -209,7 +210,19 @@ namespace CorySignalGenerator.Reverb
         /// </summary>
         public int LatencyFrames { get { return 0; } }
 
-
+        /// <summary>
+        /// Gets if this convolver is using any background processing.
+        /// </summary>
+        public bool HasBackgroundFrames
+        {
+            get
+            {
+                if (m_backgroundStages != null && m_backgroundStages.Count > 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
 
         public ReverbInputBuffer InputBuffer { get { return m_inputBuffer; } }
     }

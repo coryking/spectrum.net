@@ -128,18 +128,18 @@ namespace CorySignalGenerator.Reverb
         /// <param name="source"></param>
         /// <param name="offset"></param>
         /// <param name="framesToProcess"></param>
-        public void Process(float[] source, int offset, int framesToProcess)
+        public void Process(float[] source, int framesToProcess)
         {
             Debug.Assert(source != null && source.Length > 0);
             if (source == null || source.Length == 0)
                 return;
 
             float[] preDelayedSource;
-            var preDelayedSourceOffset = offset;
+            int preDelayedSourceOffset = 0;
             float[] preDelayedDestination;
-            var preDelayedDestinationOffset = 0;
+            int preDelayedDestinationOffset = 0;
             float[] temporaryBuffer;
-            var temporaryBufferOffset = 0;
+            int temporaryBufferOffset = 0;
             bool isTemporaryBufferSafe = false;
             if (m_preDelayLength > 0)
             {
@@ -155,16 +155,13 @@ namespace CorySignalGenerator.Reverb
                 preDelayedSource = preDelayedDestination;
                 preDelayedSourceOffset = preDelayedDestinationOffset;
                 temporaryBuffer = m_temporaryBuffer;
-                temporaryBufferOffset = 0;
             }
             else
             {
                 // Zero delay
                 preDelayedDestination = null;
                 preDelayedSource = source;
-                preDelayedSourceOffset = offset;
                 temporaryBuffer = m_preDelayBuffer;
-                temporaryBufferOffset = 0;
                 isTemporaryBufferSafe = framesToProcess <= m_preDelayBuffer.Length;
             }
 
@@ -194,7 +191,7 @@ namespace CorySignalGenerator.Reverb
 
             if (m_preDelayLength > 0)
             {
-                Array.Copy(source, offset, preDelayedDestination, preDelayedDestinationOffset, framesToProcess);
+                Array.Copy(source, 0, preDelayedDestination, preDelayedDestinationOffset, framesToProcess);
                 m_preReadWriteIndex += framesToProcess;
 
                 Debug.Assert(m_preReadWriteIndex <= m_preDelayLength);
@@ -206,11 +203,11 @@ namespace CorySignalGenerator.Reverb
         }
 
 
-        public void ProcessInBackground(ReverbConvolver convolver, int offset, int framesToProcess)
+        public void ProcessInBackground(ReverbConvolver convolver, int framesToProcess)
         {
             ReverbInputBuffer inputBuffer = convolver.InputBuffer;
             var source = inputBuffer.DirectReadFrom(ref m_inputReadIndex, framesToProcess);
-            Process(source, offset, framesToProcess);
+            Process(source, framesToProcess);
         }
         public void Reset()
         {

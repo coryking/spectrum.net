@@ -30,7 +30,6 @@ namespace CorySignalGenerator.Filters
         }
 
         private FourPolesLowPassFilter lfoFilter;
-        private ReverbFilter reverbFilter;
 
         private void RebuildSignalChain()
         {

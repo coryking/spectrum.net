@@ -101,7 +101,6 @@ Global
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|Mixed Platforms.ActiveCfg = Release|x86
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|Mixed Platforms.Build.0 = Release|x86
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|x64.ActiveCfg = Release|x64
-		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|x64.Build.0 = Release|x64
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|x86.ActiveCfg = Release|x86
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release - .NET|x86.Build.0 = Release|x86
 		{2DAB0DE4-D2C7-4E08-AC56-0DA172D4D689}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -152,8 +151,6 @@ Global
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|Mixed Platforms.Build.0 = Release|x86
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|Mixed Platforms.Deploy.0 = Release|x86
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x64.ActiveCfg = Release|x64
-		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x64.Build.0 = Release|x64
-		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x64.Deploy.0 = Release|x64
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x86.ActiveCfg = Release|x86
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x86.Build.0 = Release|x86
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C}.Release - .NET|x86.Deploy.0 = Release|x86
