@@ -22,7 +22,7 @@ namespace CorySignalGenerator.Reverb
             this.m = (int)Math.Log(fftSize, 2.0);
         }
 
-        public System.Numerics.Complex[] Data
+        public Complex[] Data
         {
             get;
             private set;
@@ -45,8 +45,9 @@ namespace CorySignalGenerator.Reverb
         public void DoPaddedFFT(IEnumerable<float> data, int offset, int dataSize)
         {
             // Pad our sample until we hit FFTSize
-            Data = data.Skip(offset).Take(dataSize).Pad(fftSize, 0).Select(x => new System.Numerics.Complex(x, 0)).ToArray(); //.ToComplex().ToArray();
-            MathNet.Numerics.IntegralTransforms.Fourier.Radix2Forward(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
+            Data = data.Skip(offset).Take(dataSize).Pad(fftSize, 0).Select(x => new Complex(){X=x}).ToArray(); //.ToComplex().ToArray();
+            NAudio.Dsp.FastFourierTransform.FFT(true, this.m, Data);
+            //MathNet.Numerics.IntegralTransforms.Fourier.Forward(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
             //FastFourierTransform.FFT(true, this.m, Data);
 
         }
@@ -55,8 +56,9 @@ namespace CorySignalGenerator.Reverb
         public void DoFFT(IEnumerable<float> data)
         {
             //Data = data.ToComplex().ToArray();
-            Data = data.Select(x => new System.Numerics.Complex(x, 0)).ToArray();
-            MathNet.Numerics.IntegralTransforms.Fourier.Radix2Forward(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
+            Data = data.Select(x => new Complex() { X = x }).ToArray();//new System.Numerics.Complex(x, 0)).ToArray();
+            NAudio.Dsp.FastFourierTransform.FFT(true, this.m, Data);
+            //MathNet.Numerics.IntegralTransforms.Fourier.Forward(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
 //            FastFourierTransform.FFT(true, this.m, Data);
 
         }
@@ -70,12 +72,13 @@ namespace CorySignalGenerator.Reverb
 
             for (int i = 0; i < fftSize; i++)
             {
-                //Complex input = Data[i];
-                //Complex scale = fftKernel.Data[i];
-                //Complex output;
-                //output.X = input.X * scale.X - input.Y * scale.Y;
-                //output.Y = input.X * scale.Y + input.Y * scale.X;
-                Data[i] = System.Numerics.Complex.Multiply(Data[i], fftKernel.Data[i]); // output;
+                Complex input = Data[i];
+                Complex scale = fftKernel.Data[i];
+                Complex output;
+                output.X = input.X * scale.X - input.Y * scale.Y;
+                output.Y = input.X * scale.Y + input.Y * scale.X;
+                Data[i] = output;
+                //Data[i] = System.Numerics.Complex.Multiply(Data[i], fftKernel.Data[i]); // output;
             }
             //Data = Data.MultiplyComplexNumbers(fftKernel.Data).ToArray();
         }
@@ -86,8 +89,8 @@ namespace CorySignalGenerator.Reverb
             Debug.Assert(isGood);
             if (!isGood)
                 return;
-            MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
-            //FastFourierTransform.FFT(false, this.m, Data);
+            //MathNet.Numerics.IntegralTransforms.Fourier.Inverse(Data, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
+            FastFourierTransform.FFT(false, this.m, Data);
             Data.ToReal(m_outputBuffer, offset);
         }
 

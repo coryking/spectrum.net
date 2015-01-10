@@ -123,7 +123,7 @@ namespace CorySignalGenerator.Reverb
         }
 
         /// <summary>
-        // WARNING: framesToProcess must be such that it evenly divides the delay buffer size (stage_offset).
+        /// WARNING: framesToProcess must be such that it evenly divides the delay buffer size (stage_offset).
         /// </summary>
         /// <param name="source"></param>
         /// <param name="offset"></param>

@@ -100,9 +100,11 @@ namespace CorySignalGenerator.Reverb
             }
             // the original code returned a pointer to the offset of m_buffer...
             // can't return pointers in c# so we return a copy instead...
-            var result = m_buffer.Skip(readIndex).Take(numberOfFrames);
+            var outBuffer = new float[numberOfFrames];
+            Array.Copy(m_buffer, readIndex, outBuffer, 0, numberOfFrames);
+            //var result = m_buffer.Skip(readIndex).Take(numberOfFrames);
             readIndex = (readIndex + numberOfFrames) % bufferLength;
-            return result.ToArray();
+            return outBuffer; // result.ToArray();
 
         }
         public void Reset()

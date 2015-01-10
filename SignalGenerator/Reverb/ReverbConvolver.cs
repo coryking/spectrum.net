@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 /*
  * Copyright (C) 2010 Google Inc. All rights reserved.
@@ -70,6 +72,11 @@ namespace CorySignalGenerator.Reverb
 
         bool m_useBackgroundThreads;
 
+        bool m_wantsToExit;
+        bool m_moreInputBuffered;
+        object m_backgroundThreadLock = new object();
+        Thread m_workerThread;
+
         // maxFFTSize can be adjusted (from say 2048 to 32768) depending on how much precision is necessary.
         // For certain tweaky de-convolving applications the phase errors add up quickly and lead to non-sensical results with
         // larger FFT sizes and single-precision floats.  In these cases 2048 is a good size.
@@ -105,6 +112,7 @@ namespace CorySignalGenerator.Reverb
             int stageOffset = 0;
             int i = 0;
             int fftSize = m_minFFTSize;
+
 
             while (stageOffset < totalResponseLength)
             {
@@ -144,11 +152,38 @@ namespace CorySignalGenerator.Reverb
                     fftSize = m_maxFFTSize;
 
             }
+            if (useBackgroundThreads && m_backgroundStages.Count > 0)
+            {
+                m_workerThread = new Thread(new ThreadStart(this.BackgrounThreadEntry))
+                {
+                    Name="Convolver Thread",
+                    Priority = ThreadPriority.AboveNormal,
+                    IsBackground=true
+                };
+                m_workerThread.Start();
+            }
 
+        }
+
+        public void BackgrounThreadEntry()
+        {
+            while (!m_wantsToExit)
+            {
+                m_moreInputBuffered = false;
+                lock(m_backgroundThreadLock)
+                {
+                    while (!m_moreInputBuffered && !m_wantsToExit)
+                        Monitor.Wait(m_backgroundThreadLock);
+
+                    this.ProcessInBackground();
+                }
+            }
         }
 
         public void Process(float[] sourceChannel, float[] destinationChannel, int framesToProcess)
         {
+
+
             bool isSafe = sourceChannel != null & destinationChannel != null && sourceChannel.Length >= framesToProcess && destinationChannel.Length >= framesToProcess;
             Debug.Assert(isSafe);
             if (!isSafe)
@@ -163,12 +198,21 @@ namespace CorySignalGenerator.Reverb
             m_accumulationBuffer.ReadAndClear(destinationChannel, framesToProcess);
 
             // Now that we've buffered more input, post another task to the background thread.
-            if (m_useBackgroundThreads && m_backgroundStages.Count > 0)
-                System.Threading.Tasks.Task.Factory.StartNew(() =>
+            if (m_useBackgroundThreads && m_workerThread != null)
+            {
+                if (Monitor.TryEnter(m_backgroundThreadLock))
                 {
-                    this.ProcessInBackground();
-                });
-
+                    try
+                    {
+                        m_moreInputBuffered = true;
+                        Monitor.Pulse(m_backgroundThreadLock);
+                    }
+                    finally
+                    {
+                        Monitor.Exit(m_backgroundThreadLock);
+                    }
+                }
+            }
         }
 
         protected void ProcessInBackground()
