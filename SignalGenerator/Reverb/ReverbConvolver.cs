@@ -157,7 +157,7 @@ namespace CorySignalGenerator.Reverb
                 m_workerThread = new Thread(new ThreadStart(this.BackgrounThreadEntry))
                 {
                     Name="Convolver Thread",
-                    Priority = ThreadPriority.AboveNormal,
+                    Priority = ThreadPriority.BelowNormal,
                     IsBackground=true
                 };
                 m_workerThread.Start();

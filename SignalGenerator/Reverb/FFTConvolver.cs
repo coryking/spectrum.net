@@ -106,7 +106,6 @@ namespace CorySignalGenerator.Reverb
                 if (m_readWriteIndex == halfSize)
                 {
                     m_frame.FFTConvolve(fftKernel, m_inputBuffer, m_outputBuffer, 0);
-
                     VectorMath.vadd(m_outputBuffer, 0, 1, m_lastOverlapBuffer, 0, 1, m_outputBuffer, 0, 1, halfSize);
 
                     bool isCopyGood3 = m_outputBuffer.Length == 2 * halfSize && m_lastOverlapBuffer.Length == halfSize;
