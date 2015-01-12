@@ -100,8 +100,10 @@ namespace CorySignalGenerator.Filters
             if (!isSafeToProcess)
                 return 0;
 
+            Debug.WriteLine("ProcessSample Pre-Read");
             float[] sourceBuffer = new float[count];
             var sourceSize = Source.Read(sourceBuffer, 0, count);
+            Debug.WriteLine("ProcessSample Post-Read");
             var numReverbChannels = m_convolvers.Count;
 
             if (Channels == 2 && numReverbChannels == 2)
@@ -115,6 +117,7 @@ namespace CorySignalGenerator.Filters
                 leftBuffer.InterleaveChannel(buffer, 0, 0, framesToProcess);
                 rightBuffer.InterleaveChannel(buffer, 1, 0, framesToProcess);
                 buffer.Scale(offset, count, 100);
+                Debug.WriteLine("ProcessSample Gonna Bail {0}", count);
                 return count;
             }
             else

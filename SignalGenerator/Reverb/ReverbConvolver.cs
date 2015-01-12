@@ -154,13 +154,13 @@ namespace CorySignalGenerator.Reverb
             }
             if (useBackgroundThreads && m_backgroundStages.Count > 0)
             {
-                m_workerThread = new Thread(new ThreadStart(this.BackgrounThreadEntry))
+                /*m_workerThread = new Thread(new ThreadStart(this.BackgrounThreadEntry))
                 {
                     Name="Convolver Thread",
                     Priority = ThreadPriority.Normal,
                     IsBackground=true
                 };
-                m_workerThread.Start();
+                m_workerThread.Start();*/
             }
 
         }
@@ -198,19 +198,29 @@ namespace CorySignalGenerator.Reverb
             m_accumulationBuffer.ReadAndClear(destinationChannel, framesToProcess);
 
             // Now that we've buffered more input, post another task to the background thread.
-            if (m_useBackgroundThreads && m_workerThread != null)
+            if (m_useBackgroundThreads && m_backgroundStages.Count > 0)
             {
-                if (Monitor.TryEnter(m_backgroundThreadLock))
+                if (m_workerThread != null)
                 {
-                    try
+                    if (Monitor.TryEnter(m_backgroundThreadLock))
                     {
-                        m_moreInputBuffered = true;
-                        Monitor.Pulse(m_backgroundThreadLock);
+                        try
+                        {
+                            m_moreInputBuffered = true;
+                            Monitor.Pulse(m_backgroundThreadLock);
+                        }
+                        finally
+                        {
+                            Monitor.Exit(m_backgroundThreadLock);
+                        }
                     }
-                    finally
+                }
+                else
+                {
+                    Task.Run(() =>
                     {
-                        Monitor.Exit(m_backgroundThreadLock);
-                    }
+                        this.ProcessInBackground();
+                    });
                 }
             }
         }
