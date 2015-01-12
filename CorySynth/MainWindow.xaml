@@ -1,9 +1,6 @@
 ﻿<Window x:Class="CorySignalGenerator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:CorySignalGenerator"
-        xmlns:providers="clr-namespace:NAudio.Wave.SampleProviders;assembly=NAudio"
-        xmlns:models="clr-namespace:CorySignalGenerator.Models"
         Closing="Window_Closing"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
