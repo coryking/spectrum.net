@@ -157,9 +157,10 @@ namespace CorySignalGenerator.Extensions
 
         }
 
-        public static void Scale(this IList<float> buffer, float scale)
+        public static void Scale(this float[] buffer, float scale)
         {
-            for (int i = 0; i < buffer.Count; i++)
+            var bufferSize = buffer.Length;
+            for (int i = 0; i < bufferSize; i++)
             {
                 buffer[i] *= scale;
             }

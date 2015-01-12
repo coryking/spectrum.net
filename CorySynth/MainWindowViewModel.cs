@@ -147,7 +147,7 @@ namespace CorySignalGenerator
                 //var renderSliceSize = m_latency * 44100/1000;
                 using (var stream = new AudioFileReader(reverbFile))
                 {
-                    _reverb = new ReverbFilter(_effects, MaxFFTSize, false);
+                    _reverb = new ReverbFilter(_effects, MaxFFTSize, true);
                     _reverb.LoadImpuseResponseWaveStream(stream);
                 }
                 HeadSampleProvider = _reverb;
