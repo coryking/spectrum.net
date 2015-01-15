@@ -29,6 +29,7 @@
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>
             <Button  Content="Stop" Name="StopButton" Click="StopButton_Click"/>
+            <Button Content="Load Reverb" Name="LoadReverb" Click="LoadReverb_Click"/>
             <ComboBox Name="MidiDevList" ItemsSource="{Binding MidiDevices}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -62,6 +63,13 @@
             <Slider Maximum="22050" Minimum="1" Name="EffectsCutoff" Value="{Binding LowPassCutoff, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Q</TextBlock>
             <Slider Maximum="0.99" Minimum="0.01" Name="EffectsQ" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Filter</TextBlock>
+            <ComboBox SelectedValue="{Binding ReverbFilterTypeString, Mode=TwoWay}">
+                <ComboBox.Items>
+                    <ComboBoxItem>GhettoReverb</ComboBoxItem>
+                    <ComboBoxItem>ConvolvingReverb</ComboBoxItem>
+                </ComboBox.Items>
+            </ComboBox>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
             <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding ReverbDelay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>

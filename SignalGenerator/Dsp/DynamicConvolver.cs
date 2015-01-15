@@ -13,8 +13,8 @@ namespace CorySignalGenerator.Dsp
         private const int STEPS = 258; // number of amplitude regions
         private const int DV = STEPS - 2;
 
-        private CircularBuffer<double> x = new CircularBuffer<double>(L);
-        private CircularBuffer<int> S = new CircularBuffer<int>(L);
+        private BasicCircularBuffer<double> x = new BasicCircularBuffer<double>(L);
+        private BasicCircularBuffer<int> S = new BasicCircularBuffer<int>(L);
         //private double[] x = new double[L];
         //private int[] S = new int[L];
 

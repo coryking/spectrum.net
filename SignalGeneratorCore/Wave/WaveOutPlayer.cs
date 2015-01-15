@@ -13,9 +13,11 @@ namespace CorySignalGenerator.Wave
 
         public event EventHandler<NAudio.Wave.StoppedEventArgs> PlaybackStopped;
 
-        public WaveOutPlayer()
-        {
+        public int Latency { get; private set; }
 
+        public WaveOutPlayer(int latency)
+        {
+            Latency = latency;
         }
 
         public bool IsActive
@@ -31,7 +33,7 @@ namespace CorySignalGenerator.Wave
         {
             if (waveOut == null)
             {
-                waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 10);
+                waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
                 waveOut.Init(provider);
                 waveOut.Play();

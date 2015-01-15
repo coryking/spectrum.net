@@ -10,274 +10,266 @@ using System.ComponentModel;
 using NAudio.Midi;
 using System.Windows.Threading;
 using System.Timers;
+using CorySignalGenerator.Models;
+using CorySignalGenerator.Sounds;
+using CorySignalGenerator.Sequencer;
+using CorySignalGenerator.Filters;
+using System.Diagnostics;
 namespace CorySignalGenerator
 {
-    public delegate void SignalPathChangedArgs(object sender);
-
-    public class MainWindowViewModel
+    public class MainViewModel : PropertyChangeModel
     {
-        private MixingSampleProvider _mixer;
-        private ISampleProvider _headProvider;
-        private Timer timer;
+        // Note about empirical tuning:
+        // The maximum FFT size affects reverb performance and accuracy.
+        // If the reverb is single-threaded and processes entirely in the real-time audio thread,
+        // it's important not to make this too high.  In this case 8192 is a good value.
+        // But, the Reverb object is multi-threaded, so we want this as high as possible without losing too much accuracy.
+        // Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
+        static readonly int MaxFFTSize = 32768;
+
+
+
+        private readonly int m_latency = 15; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
+
+        private ISoundModel _noteModel;
+        private ChannelSampleProvider _sampler;
+        private EffectsFilter _effects;
+        private ReverbFilter _reverb;
+        private WaveOutPlayer _player;
+        private Dispatcher _dispatcher;
+        private NAudio.Midi.MidiIn _midiIn;
+
+        private String reverbFile;
+
+        public void GenerateWaveTable()
+        {
+            StopPlaying();
+            _noteModel.InitSamples();
+        }
+
+        #region Properties
+
+
+        public ISampleProvider HeadSampleProvider
+        {
+            get;
+            private set;
+        }
 
         public double TicksPerMinute
         {
             get { return TicksPerBeat * BeatsPerMinute; }
         }
 
+
+        private bool _canPlay;
+        public bool CanPlay
+        {
+            get { return _canPlay; }
+            set { Set(ref _canPlay, value); }
+        }
+
+        private bool _isPlaying;
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set { Set(ref _isPlaying, value); }
+        }
+
+        public List<MidiInCapabilities> MidiDevices { get; private set; }
+
         /// <summary>
         /// Gets the number of ticks per millisecond
         /// </summary>
         public double TicksPerMs
         {
-            get { return TicksPerMinute / (60.0 * 1000.0);  }
+            get { return TicksPerMinute / (60.0 * 1000.0); }
         }
+        public PadSound PadSound { get { return _noteModel as PadSound; } }
 
-        private Filters.FourPolesLowPassFilter lfoFilter;
-        private Filters.GhettoReverb reverbFilter;
+        public EffectsFilter EffectsFilter { get { return _effects; } }
 
-        public MainWindowViewModel()
+        #endregion
+
+        public MainViewModel(Dispatcher dispatcher)
         {
-            Adsr = new Models.Adsr();
-            Signal = new Models.SignalModel();
-            Signal.PropertyChanged +=Signal_PropertyChanged;
-            RebuildSignalChain();
-            
+            _dispatcher = dispatcher;
             this.MidiDevices = new List<MidiInCapabilities>();
             for (var i = 0; i < MidiIn.NumberOfDevices; i++)
             {
                 MidiDevices.Add(MidiIn.DeviceInfo(i));
             }
-
-            Sequence = new MidiEventCollection(0, TicksPerBeat);
-            AddSimpleNote(72, 4);
-            AddSimpleNote(76, 4);
-            AddSimpleNote(79, 4);
-            AddSimpleNote(84, 4);
-            AddStartNote(72);
-            AddStartNote(76, 1);
-            AddStartNote(79, 1);
-            AddStartNote(84, 1);
-            AddEndNote(72, 1);
-            AddEndNote(76);
-            AddEndNote(79);
-            AddEndNote(84);
-
-            //Sequence.AddEvent(new NoteOnEvent(0, 10, 60, 100, 15), 10);
-            //Sequence.AddEvent(new NoteOnEvent(15, 10, 60, 100, 15), 10);
-            //Sequence.AddEvent(new NoteOnEvent(30, 10, 60, 100, 15), 10);
-            SequencePlayer = new Player(Sequence);
-            SequencePlayer.NewMidiEvents += SequencePlayer_NewMidiEvents;
-            SequencePlayer.SequenceEnded += SequencePlayer_SequenceEnded;
-            Tracker = new NoteTracker();
-
-            timer = new Timer();
-            timer.Interval = (1.0 / (TicksPerMinute)) * 60.0 * 1000.0;
-            timer.Elapsed += timer_Elapsed;
-            Console.WriteLine("Timer Interval: {0}", timer.Interval); 
-            //timer.Interval = TimeSpan.FromSeconds(1 / (100 * Sequence.DeltaTicksPerQuarterNote));
-            //timer.Tick += timer_Tick;
         }
 
-        private void RebuildSignalChain()
+        void _player_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, 1)); ;
-            _mixer.ReadFully = true;
-            lfoFilter = new Filters.FourPolesLowPassFilter(_mixer)
+            CanPlay = true;
+            IsPlaying = false;
+        }
+
+        private void BuildSignalChain()
+        {
+            HeadSampleProvider = null;
+            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
+            //_noteModel = new SignalGeneretedSound(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1))
+            //{
+            //    AttackSeconds=0.5f,
+            //    ReleaseSeconds=0.5f,
+            //    Type=NAudio.Wave.SampleProviders.SignalGeneratorType.Square,
+            //};
+            _noteModel = new PadSound(baseWaveFormat)
             {
-                Frequency = (float)Signal.LowPassCutoff,
-                Q = Signal.Q,
+                Harmonics = 12,
+                Bandwidth = 20,
+                BandwidthScale = 1.0f,
+                SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
+                AttackSeconds = 0.5f,
+                ReleaseSeconds = 0.5f
             };
-            if (Channels == AudioChannels.STEREO)
+            _noteModel.InitSamples();
+            _sampler = new ChannelSampleProvider(_noteModel);
+            _effects = new EffectsFilter(_sampler, 2)
             {
-                _headProvider = new NAudio.Wave.SampleProviders.MonoToStereoSampleProvider(lfoFilter);
+                ReverbDecay = 0.5f,
+                ReverbDelay = 0.25f
+            };
+            HeadSampleProvider = _effects;
+
+        }
+
+        private void SetReverbFilter()
+        {
+            if (!String.IsNullOrEmpty(reverbFile))
+            {
+                //var renderSliceSize = m_latency * 44100/1000;
+                using (var stream = new AudioFileReader(reverbFile))
+                {
+                    _reverb = new ReverbFilter(_effects, MaxFFTSize, true);
+                    _reverb.LoadImpuseResponseWaveStream(stream);
+                }
+                HeadSampleProvider = _reverb;
             }
             else
             {
-                _headProvider = lfoFilter;
+                HeadSampleProvider = _effects;
+                _reverb = null;
             }
-            reverbFilter = new Filters.GhettoReverb(_headProvider)
+
+        }
+
+
+        public void LoadReverb()
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = "*.wav";
+            dlg.Filter = "Wave Files (.wav)|*.wav";
+            var result = dlg.ShowDialog();
+            if (result == true)
             {
-                Decay = 0.2f,
-                Delay = 100
-            };
-            _headProvider = reverbFilter;
-        }
-
-        private void Signal_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            lfoFilter.Frequency = (float)Signal.LowPassCutoff;
-            lfoFilter.Q = (float)Signal.Q;
-            reverbFilter.Decay = Signal.ReverbDecay;
-            reverbFilter.Delay = Signal.ReverbDelay;
-            
-        }
-
-        public List<MidiInCapabilities> MidiDevices { get; private set; }
-
-        private void AddSimpleNote(int noteNumber, int beats, int deltaBeats=0)
-        {
-            Sequence.AddEvent(new NoteOnEvent(TicksPerBeat * deltaBeats, 1, noteNumber,100, 15), 1);
-            Sequence.AddEvent(new NoteEvent(TicksPerBeat * beats, 1, MidiCommandCode.NoteOff,noteNumber, 0), 1);
-            
-        }
-
-        private void AddStartNote(int noteNumber, int deltaBeats = 0)
-        {
-            Sequence.AddEvent(new NoteOnEvent(deltaBeats * TicksPerBeat, 1, noteNumber, 100, 15), 1);
-
-        }
-        private void AddEndNote(int noteNumber, int deltaBeats = 0)
-        {
-            Sequence.AddEvent(new NoteEvent(TicksPerBeat * deltaBeats, 1, MidiCommandCode.NoteOff, noteNumber, 0), 1);
-
-        }
-
-        void timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            NextTick(); ;
-        }
-
-        public void Start()
-        {
-            SequencePlayer.Reset();
-            timer.Start();
-        }
-        public void Stop()
-        {
-            timer.Stop();
-        }
-
-        void SequencePlayer_SequenceEnded(Player sender)
-        {
-            timer.Stop();
-        }
-        void timer_Tick(object sender, EventArgs e)
-        {
-            NextTick();
-        }
-
-        void SequencePlayer_NewMidiEvents(Player sender, Queue<MidiEvent> newEvents)
-        {
-            while (newEvents != null && newEvents.Count > 0)
-            {
-                var midiEvent = newEvents.Dequeue();
-                HandleMidiEvent(midiEvent);
-
-
+                CanPlay = true;
+                reverbFile = dlg.FileName;
+                this.SetReverbFilter();
             }
         }
 
-        private void HandleMidiEvent(MidiEvent midiEvent)
+        public void StartPlaying()
+        {
+            if (HeadSampleProvider != null)
+            {
+                _player.StartPlayback(HeadSampleProvider);
+                IsPlaying = true;
+            }
+        }
+        public void StopPlaying()
+        {
+            CanPlay = false;
+            _player.EndPlayback();
+            if (_midiIn != null)
+            {
+                _midiIn.Stop();
+                _midiIn.MessageReceived -= _midiIn_MessageReceived;
+                _midiIn.Dispose();
+                _midiIn = null;
+            }
+        }
+
+        public void StartListening(int deviceNo)
+        {
+            if (_midiIn == null)
+            {
+                _midiIn = new MidiIn(deviceNo);
+                _midiIn.MessageReceived += _midiIn_MessageReceived;
+                _midiIn.Start();
+            }
+
+        }
+
+        void _midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
         {
 
-            switch (midiEvent.CommandCode)
+            if (_sampler == null || !_player.IsActive)
+                return;
+
+            switch (e.MidiEvent.CommandCode)
             {
-                case MidiCommandCode.NoteOn:
-                    if (((NoteEvent)midiEvent).Velocity > 0)
-                        AddNewNote((NoteOnEvent)midiEvent);
-                    else
-                        StopNote((NoteEvent)midiEvent);
+                case MidiCommandCode.AutoSensing:
+                    break;
+                case MidiCommandCode.ChannelAfterTouch:
+                    break;
+                case MidiCommandCode.ContinueSequence:
+                    break;
+                case MidiCommandCode.ControlChange:
+                    break;
+                case MidiCommandCode.Eox:
+                    break;
+                case MidiCommandCode.KeyAfterTouch:
+                    break;
+                case MidiCommandCode.MetaEvent:
                     break;
                 case MidiCommandCode.NoteOff:
-                    StopNote((NoteEvent)midiEvent);
+                    var offNote = (NAudio.Midi.NoteEvent)e.MidiEvent;
+                    _sampler.StopNote(offNote.NoteNumber);
+                    break;
+                case MidiCommandCode.NoteOn:
+                    var onNote = (NAudio.Midi.NoteOnEvent)e.MidiEvent;
+                    if (onNote.Velocity > 0)
+                        _sampler.PlayNote(onNote.NoteNumber, onNote.Velocity);
+                    else
+                        _sampler.StopNote(onNote.NoteNumber);
+                    break;
+                case MidiCommandCode.PatchChange:
+                    break;
+                case MidiCommandCode.PitchWheelChange:
+                    break;
+                case MidiCommandCode.StartSequence:
+                    break;
+                case MidiCommandCode.StopSequence:
+                    break;
+                case MidiCommandCode.Sysex:
+                    break;
+                case MidiCommandCode.TimingClock:
                     break;
                 default:
                     break;
             }
         }
 
-        private void StopNote(NoteEvent noteEvent)
+
+        public void Init()
         {
-            var provider = Tracker.StopNote(noteEvent.NoteNumber);
-            if (provider is AdsrSampleProvider)
-            {
-                ((AdsrSampleProvider)provider).Stop();
-            }
-        }
+            BuildSignalChain();
+            Debug.WriteLine("Latency: {0}", m_latency);
+            _player = new WaveOutPlayer(m_latency);
+            _player.PlaybackStopped += _player_PlaybackStopped;
 
-        private void AddNewNote(NoteOnEvent noteOnEvent)
-        {
-            var provider = Tracker.PlayNote(noteOnEvent.NoteNumber, (freq) =>
-            {
-                var wave = new SignalGenerator(SampleRate, 1)
-                {
-                    Frequency = freq,
-                    Type = Signal.Type
-                };
-                var volume = new VolumeSampleProvider(wave)
-                {
-                    Volume = noteOnEvent.Velocity / 128.0f
-                };
-                return new AdsrSampleProvider(volume)
-                {
-                    ReleaseSeconds=Adsr.ReleaseSeconds,
-                    AttackSeconds=Adsr.AttackSeconds
-                };
-            });
-            _mixer.AddMixerInput(provider);
-
-        }
-
-        public MidiEventCollection Sequence { get; set; }
-
-        public Models.Adsr Adsr { get; set; }
-
-        public Models.SignalModel Signal { get; set; }
-
-        public Player SequencePlayer { get; set; }
-
-        public NoteTracker Tracker { get; set; }
-        
-        public int SampleRate { get { return 44100; } }
-
-        private AudioChannels _channels;
-        public AudioChannels Channels
-        {
-            get { return _channels; }
-            set
-            {
-                if (_channels != value)
-                {
-                    _channels = value;
-                    RebuildSignalChain();
-                }
-            }
-        }
-
-        public ISampleProvider GetAudioChain()
-        {
-            return _headProvider;
+            CanPlay = true;
+            IsPlaying = false;
         }
 
 
-
-        public void NextTick()
-        {
-            SequencePlayer.NextTick();
-        }
-
-        internal void PlayNote(MidiEvent midiEvent)
-        {
-            HandleMidiEvent(midiEvent);
-        }
-
-
-        public event SignalPathChangedArgs SignalPathChanged;
-        private void OnSignalPathChanged()
-        {
-            if (SignalPathChanged != null)
-                SignalPathChanged(this);
-        }
     }
 
-    public enum AudioChannels
-    {
-        [Description("Mono")]
-        MONO=1,
-        [Description("Stereo")]
-        STEREO=2,
-    }
 }

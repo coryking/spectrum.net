@@ -16,14 +16,29 @@ using CorySignalGenerator.Filters;
 using CorySignalGenerator.Wave;
 using CorySignalGenerator.Sounds;
 using NAudio.Wave;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using NAudioWin8Demo;
 
 namespace CorySynthUI.ViewModel
 {
     public class MainViewModel : PropertyChangeModel
     {
+        // Note about empirical tuning:
+        // The maximum FFT size affects reverb performance and accuracy.
+        // If the reverb is single-threaded and processes entirely in the real-time audio thread,
+        // it's important not to make this too high.  In this case 8192 is a good value.
+        // But, the Reverb object is multi-threaded, so we want this as high as possible without losing too much accuracy.
+        // Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
+        static readonly int MaxFFTSize = 32768;
+
+
         private MidiDeviceWatcher _watcher;
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
+
+        private readonly int m_latency = 15; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
 
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
@@ -32,6 +47,16 @@ namespace CorySynthUI.ViewModel
         private ChannelSampleProvider _sampler;
         private EffectsFilter _effects;
         private WaveOutPlayer _player;
+
+
+        public void GenerateWaveTable()
+        {
+            StopPlaying();
+            _noteModel.InitSamples();
+        }
+
+        #region Properties
+
 
         public ISampleProvider HeadSampleProvider
         {
@@ -44,6 +69,22 @@ namespace CorySynthUI.ViewModel
             get { return TicksPerBeat * BeatsPerMinute; }
         }
 
+
+        private bool _canPlay;
+        public bool CanPlay
+        {
+            get { return _canPlay; }
+            set { Set(ref _canPlay, value); }
+        }
+
+        private bool _isPlaying;
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set { Set(ref _isPlaying, value); }
+        }
+
+
         /// <summary>
         /// Gets the number of ticks per millisecond
         /// </summary>
@@ -51,22 +92,15 @@ namespace CorySynthUI.ViewModel
         {
             get { return TicksPerMinute / (60.0 * 1000.0); }
         }
-
-        public void GenerateWaveTable()
-        {
-            StopPlaying();
-            _noteModel.InitSamples();
-        }
-
         public PadSound PadSound { get { return _noteModel as PadSound; } }
 
         public EffectsFilter EffectsFilter { get { return _effects; } }
 
+        #endregion
 
         public MainViewModel(CoreDispatcher dispatcher)
         {
             _dispatcher = dispatcher;
-
         }
 
         void _player_PlaybackStopped(object sender, StoppedEventArgs e)
@@ -102,6 +136,20 @@ namespace CorySynthUI.ViewModel
                 ReverbDelay = 0.25f
             };
             HeadSampleProvider = _effects;
+            
+        }
+
+        private void SetReverbFilter()
+        {
+            if (selectedStream != null)
+            {
+                //var renderSliceSize = m_latency * 44100/1000;
+                using (var stream = GetWaveStream())
+                {
+                    _effects.InitConvolvingReverbFilter(stream);
+                }
+            }
+            
         }
 
         void _watcher_MidiDevicesChanged(MidiDeviceWatcher sender)
@@ -118,6 +166,31 @@ namespace CorySynthUI.ViewModel
                 }
             });
            
+        }
+
+        private WaveStream GetWaveStream()
+        {
+            if (selectedStream != null)
+                return new MediaFoundationReaderRT(selectedStream);
+            else
+                return null;
+        }
+
+
+        private IRandomAccessStream selectedStream;
+
+        public async void LoadReverb()
+        {
+            var picker = new FileOpenPicker();
+            picker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+            picker.FileTypeFilter.Add("*");
+            var file = await picker.PickSingleFileAsync();
+            if (file == null) return;
+            var stream = await file.OpenAsync(FileAccessMode.Read);
+            if (stream == null) return;
+            this.selectedStream = stream;
+            CanPlay = true;
+            this.SetReverbFilter();
         }
 
         public void StartPlaying()
@@ -138,20 +211,6 @@ namespace CorySynthUI.ViewModel
                 _midiIn.Dispose();
                 _midiIn = null;
             }
-        }
-
-        private bool _canPlay;
-        public bool CanPlay
-        {
-            get { return _canPlay; }
-            set { Set(ref _canPlay, value); }
-        }
-
-        private bool _isPlaying;
-        public bool IsPlaying
-        {
-            get { return _isPlaying; }
-            set { Set(ref _isPlaying, value); }
         }
 
         public void StartListening(DeviceInformation device)
@@ -235,7 +294,8 @@ namespace CorySynthUI.ViewModel
         public void Init()
         {
             BuildSignalChain();
-            _player = new WaveOutPlayer();
+            Debug.WriteLine("Latency: {0}", m_latency);
+            _player = new WaveOutPlayer(m_latency);
             _player.PlaybackStopped += _player_PlaybackStopped;
             MidiDevices = new ObservableCollection<DeviceInformation>();
 

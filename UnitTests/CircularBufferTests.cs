@@ -13,7 +13,7 @@ namespace UnitTests
             int size=3;
 
 
-            CircularBuffer<int> circularBuffer = new CircularBuffer<int>(size);
+            BasicCircularBuffer<int> circularBuffer = new BasicCircularBuffer<int>(size);
 
             for (int n = 0; n < size; n++)
             {

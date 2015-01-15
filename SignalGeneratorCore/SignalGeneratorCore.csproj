@@ -113,6 +113,9 @@
     <Compile Include="..\SignalGenerator\Dsp\PADsynth.cs">
       <Link>Dsp\PADsynth.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Extensions\EnumerableExtensions.cs">
+      <Link>Extensions\EnumerableExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Filters\DynamicConvolvingFilter.cs">
       <Link>Filters\DynamicConvolvingFilter.cs</Link>
     </Compile>
@@ -136,6 +139,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\PitchDown.cs">
       <Link>Filters\PitchDown.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Filters\ReverbFilter.cs">
+      <Link>Filters\ReverbFilter.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
       <Link>Filters\SuperPitch.cs</Link>
@@ -161,17 +167,50 @@
     <Compile Include="..\SignalGenerator\Models\PropertyChangeModel.cs">
       <Link>Models\PropertyChangeModel.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\DirectConvolver.cs">
+      <Link>Reverb\DirectConvolver.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\FFTConvolver.cs">
+      <Link>Reverb\FFTConvolver.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\FFTFrame.cs">
+      <Link>Reverb\FFTFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\FFTFrameFactory.cs">
+      <Link>Reverb\FFTFrameFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\IFFTFrame.cs">
+      <Link>Reverb\IFFTFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\ReverbAccumulationBuffer.cs">
+      <Link>Reverb\ReverbAccumulationBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\ReverbConvolver.cs">
+      <Link>Reverb\ReverbConvolver.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\ReverbConvolverStage.cs">
+      <Link>Reverb\ReverbConvolverStage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\ReverbInputBuffer.cs">
+      <Link>Reverb\ReverbInputBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrNote.cs">
       <Link>SampleProviders\AdsrNote.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrSampleProvider.cs">
       <Link>SampleProviders\AdsrSampleProvider.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\FuncSampleProvider.cs">
+      <Link>SampleProviders\FuncSampleProvider.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\IStoppableSample.cs">
       <Link>SampleProviders\IStoppableSample.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\MusicSampleProvider.cs">
       <Link>SampleProviders\MusicSampleProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\ReadRateChangeProvider.cs">
+      <Link>SampleProviders\ReadRateChangeProvider.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\SampleSource.cs">
       <Link>SampleProviders\SampleSource.cs</Link>
@@ -194,15 +233,21 @@
     <Compile Include="..\SignalGenerator\Sounds\SignalGeneratedSound.cs">
       <Link>Sounds\SignalGeneratedSound.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Utils\BasicCircularBuffer.cs">
+      <Link>Utils\BasicCircularBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Utils\CircularBuffer.cs">
       <Link>Utils\CircularBuffer.cs</Link>
     </Compile>
     <Compile Include="Class1.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\VectorMath.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.3.5.0\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="MoreLinq.Portable">
       <HintPath>..\packages\MoreLinq.Portable.1.1.0\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\MoreLinq.Portable.dll</HintPath>
     </Reference>

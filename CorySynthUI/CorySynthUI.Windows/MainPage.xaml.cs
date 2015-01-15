@@ -65,5 +65,11 @@ namespace CorySynthUI
         {
             ViewModel.GenerateWaveTable();
         }
+
+        private void LoadReverb_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.LoadReverb();
+
+        }
     }
 }

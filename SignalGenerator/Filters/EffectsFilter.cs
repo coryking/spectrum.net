@@ -12,14 +12,24 @@ using System.Windows;
 
 namespace CorySignalGenerator.Filters
 {
+    public enum ReverbFilterType
+    {
+        GhettoReverb,
+        ConvolvingReberb
+    }
+
     public class EffectsFilter : Effect
     {
+        static readonly int MaxFFTSize = 32768;
+
         private ISampleProvider _headProvider;
-        
+        private GhettoReverb _reverbFilter;
+        private ReverbFilter _convolvingReverbFilter;
+        private FourPolesLowPassFilter _lfoFilter;
+
         public EffectsFilter(ISampleProvider source, int outputChannels) : base(source)
         {
             WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(source.WaveFormat.SampleRate, outputChannels);
-            
         }
         protected override void Init()
         {
@@ -31,22 +41,64 @@ namespace CorySignalGenerator.Filters
         }
 
         private FourPolesLowPassFilter lfoFilter;
-        private GhettoReverb reverbFilter;
 
         private void RebuildSignalChain()
         {
 
-            lfoFilter = new FourPolesLowPassFilter(Source);
+            _lfoFilter = new FourPolesLowPassFilter(Source);
+
             if (WaveFormat.Channels == 2 && Source.WaveFormat.Channels != WaveFormat.Channels)
             {
                 _headProvider = new MonoToStereoSampleProvider(lfoFilter);
             }
             else
             {
-                _headProvider = lfoFilter;
+                _headProvider = _lfoFilter;
             }
-            reverbFilter = new GhettoReverb(_headProvider);
-            _headProvider = reverbFilter; 
+            
+            // Always instantiate the reverb filter... just don't connect it to the signal chain unless we need it
+            _reverbFilter = new GhettoReverb(_headProvider);
+            _convolvingReverbFilter = new ReverbFilter(_headProvider, MaxFFTSize, true);
+            if (ReverbType == ReverbFilterType.GhettoReverb)
+                _headProvider = _reverbFilter;
+            else
+                _headProvider = _convolvingReverbFilter;
+            
+        }
+
+        public ReverbFilterType ReverbType
+        {
+            get
+            {
+                ReverbFilterType type;
+                Enum.TryParse(ReverbFilterTypeString, out type);
+                return type;
+            }
+        }
+
+        public void InitConvolvingReverbFilter(WaveStream stream)
+        {
+            if(_convolvingReverbFilter != null)
+                _convolvingReverbFilter.LoadImpuseResponseWaveStream(stream);
+        }
+
+
+        private string _reverbFilterTypeString = "GhettoReverb";
+
+        /// <summary>
+        /// Sets and gets the ReverbFilterType property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string ReverbFilterTypeString
+        {
+            get
+            {
+                return _reverbFilterTypeString;
+            }
+            set
+            {
+                Set( ref _reverbFilterTypeString, value);
+            }
         }
 
 
@@ -92,10 +144,10 @@ namespace CorySignalGenerator.Filters
 
         protected void SetFilterValues()
         {
-            lfoFilter.Frequency = LowPassCutoff;
-            lfoFilter.Q = Q;
-            reverbFilter.Decay = ReverbDecay;
-            reverbFilter.Delay = ReverbDelay;
+            _lfoFilter.Frequency = LowPassCutoff;
+            _lfoFilter.Q = Q;
+            _reverbFilter.Decay = ReverbDecay;
+            _reverbFilter.Delay = ReverbDelay;
         }
 
         public override int Read(float[] buffer, int offset, int count)
