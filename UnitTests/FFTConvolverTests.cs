@@ -5,6 +5,7 @@ using CorySignalGenerator.Reverb;
 using Microsoft.QualityTools.Testing.Fakes;
 namespace UnitTests
 {
+  
     [TestClass]
     public class FFTConvolverTests :BaseShimTests
     {
@@ -14,6 +15,13 @@ namespace UnitTests
         [TestMethod]
         public void TestFFTConvolver_HalfSize()
         {
+
+
+            ShimFFTFrameFactory.GetNewFFTFrameInt32 = (k) =>
+            {
+                return new DummyFFTFrame();
+            };
+
             var kernel_size = 4;
             var sample_size = 2;
 
@@ -26,12 +34,9 @@ namespace UnitTests
             var sample_data_3 = new float[] { 5, 6 };
             var kernel_data = GetData(kernel_size, (i) => { return i; });
 
-            ShimFFTFrame.AllInstances.FFTConvolveFFTFrameSingleArraySingleArrayInt32 = (t, k, source, output, offset) =>
-                {
-                    Array.Copy(source, output, source.Length);
-                };
 
-            var fftFrame = new ShimFFTFrame();
+
+            var fftFrame = new DummyFFTFrame();
             convolver.Process(fftFrame, sample_data_1, 0, output_buffer_1, 0, sample_size);
             convolver.Process(fftFrame, sample_data_2, 0, output_buffer_2, 0, sample_size);
             convolver.Process(fftFrame, sample_data_3, 0, output_buffer_3, 0, sample_size);
@@ -47,6 +52,13 @@ namespace UnitTests
         [TestMethod]
         public void TestFFTConvolver_FullSize()
         {
+
+
+            ShimFFTFrameFactory.GetNewFFTFrameInt32 = (k) =>
+            {
+                return new DummyFFTFrame();
+            };
+
             var kernel_size = 4;
             var sample_size = 4;
 
@@ -58,12 +70,8 @@ namespace UnitTests
             var sample_data_2 = new float[] { 5, 6, 7, 8 };
             var kernel_data = GetData(kernel_size, (i) => { return i; });
 
-            ShimFFTFrame.AllInstances.FFTConvolveFFTFrameSingleArraySingleArrayInt32 = (t, k, source, output, offset) =>
-                {
-                    Array.Copy(source, output, source.Length);
-                };
 
-            var fftFrame = new ShimFFTFrame();
+            var fftFrame = new DummyFFTFrame();
             convolver.Process(fftFrame, sample_data_1, 0, output_buffer_1, 0, sample_size);
             convolver.Process(fftFrame, sample_data_2, 0, output_buffer_2, 0, sample_size);
 

@@ -58,6 +58,53 @@ namespace CorySignalGenerator.Extensions
             return output;
 
         }
+        public static unsafe void MultiplyHalfComplex(this float[] input, float[] scale)
+        {
+            if (input.Length != scale.Length)
+                throw new ArgumentException("Different FFT sizes!");
+
+            int pos = 0;
+            int halfSize = input.Length / 2;
+            fixed (float* inputRealP = &input[0], scaleRealP = &scale[0])
+            {
+                float* inputReal = inputRealP;
+                float* scaleReal = scaleRealP;
+                float* inputComplex = inputReal + halfSize;
+                float* scaleComplex = scaleReal + halfSize;
+                while (pos < halfSize)
+                {
+                    float outReal = *inputReal * *scaleReal - *inputComplex * *scaleComplex;
+                    float outComplex = *inputReal * *scaleComplex + *inputComplex * *scaleReal;
+
+                    *inputReal = outReal;
+                    *inputComplex = outComplex;
+
+                    ++inputComplex; ++scaleComplex;
+                    ++inputReal; ++scaleReal;
+                    ++pos;
+                }
+            }
+
+        }
+        public static void MultiplyComplex(this Complex[] inputBuffer, Complex[] scaleBuffer)
+        {
+
+            if (inputBuffer.Length != scaleBuffer.Length)
+                throw new ArgumentException("Different FFT sizes!");
+
+            for (int i = 0; i < inputBuffer.Length; i++)
+            {
+                Complex input = inputBuffer[i];
+                Complex scale = scaleBuffer[i];
+                Complex output;
+                output.X = input.X * scale.X - input.Y * scale.Y;
+                output.Y = input.X * scale.Y + input.Y * scale.X;
+                inputBuffer[i] = output;
+                //Data[i] = System.Numerics.Complex.Multiply(Data[i], fftKernel.Data[i]); // output;
+            }
+        }
+
+
 
         /// <summary>
         /// Vector complex multiplication on an array of complex numbers.

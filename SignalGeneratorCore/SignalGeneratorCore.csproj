@@ -176,6 +176,12 @@
     <Compile Include="..\SignalGenerator\Reverb\FFTFrame.cs">
       <Link>Reverb\FFTFrame.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\FFTFrameFactory.cs">
+      <Link>Reverb\FFTFrameFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Reverb\IFFTFrame.cs">
+      <Link>Reverb\IFFTFrame.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Reverb\ReverbAccumulationBuffer.cs">
       <Link>Reverb\ReverbAccumulationBuffer.cs</Link>
     </Compile>

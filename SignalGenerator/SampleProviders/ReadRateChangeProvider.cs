@@ -39,17 +39,14 @@ namespace CorySignalGenerator.SampleProviders
             Debug.Assert(isGood);
             if (!isGood)
                 return 0;
-            Debug.WriteLine("ReadRateChanger: Start {0}", r_count);
             var readFrames = ReadIntoOutputBuffer();
             while(readFrames == m_sourceStride && m_outputBuffer.Count <= count)
             {
                 readFrames = ReadIntoOutputBuffer();
             }
 
-            Debug.WriteLine("ReadRateChanger: Mid {0}", r_count);
             var framesToWrite = (int)Math.Min(m_outputBuffer.Count, count);
             var framesWritten = m_outputBuffer.Read(buffer, offset, framesToWrite);
-            Debug.WriteLine("ReadRateChanger: End {0}", r_count);
             r_count++;
             return framesWritten;
         }

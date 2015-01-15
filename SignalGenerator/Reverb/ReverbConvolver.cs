@@ -75,13 +75,17 @@ namespace CorySignalGenerator.Reverb
         bool m_wantsToExit;
         bool m_moreInputBuffered;
         object m_backgroundThreadLock = new object();
+
+#if !NETFX_CORE
         Thread m_workerThread;
+#endif
+
 
         // maxFFTSize can be adjusted (from say 2048 to 32768) depending on how much precision is necessary.
         // For certain tweaky de-convolving applications the phase errors add up quickly and lead to non-sensical results with
         // larger FFT sizes and single-precision floats.  In these cases 2048 is a good size.
         // If not doing multi-threaded convolution, then should not go > 8192.
-        public ReverbConvolver(IEnumerable<float> impulseResponse, int renderSliceSize, int maxFFTSize, int convolverRenderPhase, bool useBackgroundThreads)
+        public ReverbConvolver(float[] impulseResponse, int renderSliceSize, int maxFFTSize, int convolverRenderPhase, bool useBackgroundThreads)
         {
 
             var totalResponseLength = impulseResponse.Count();
@@ -152,6 +156,7 @@ namespace CorySignalGenerator.Reverb
                     fftSize = m_maxFFTSize;
 
             }
+#if !NETFX_CORE
             if (useBackgroundThreads && m_backgroundStages.Count > 0)
             {
                 /*m_workerThread = new Thread(new ThreadStart(this.BackgrounThreadEntry))
@@ -162,7 +167,7 @@ namespace CorySignalGenerator.Reverb
                 };
                 m_workerThread.Start();*/
             }
-
+#endif
         }
 
         public void BackgrounThreadEntry()
@@ -200,6 +205,12 @@ namespace CorySignalGenerator.Reverb
             // Now that we've buffered more input, post another task to the background thread.
             if (m_useBackgroundThreads && m_backgroundStages.Count > 0)
             {
+#if NETFX_CORE
+                Task.Run(() =>
+                {
+                    this.ProcessInBackground();
+                });
+#else
                 if (m_workerThread != null)
                 {
                     if (Monitor.TryEnter(m_backgroundThreadLock))
@@ -222,8 +233,11 @@ namespace CorySignalGenerator.Reverb
                         this.ProcessInBackground();
                     });
                 }
+            
+#endif
             }
         }
+
 
         protected void ProcessInBackground()
         {

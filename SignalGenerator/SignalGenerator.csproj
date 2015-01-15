@@ -133,6 +133,9 @@
     <Compile Include="Models\PropertyChangeModel.cs" />
     <Compile Include="Reverb\DirectConvolver.cs" />
     <Compile Include="Reverb\FFTFrame.cs" />
+    <Compile Include="Reverb\FFTFrameFactory.cs" />
+    <Compile Include="Reverb\IFFTFrame.cs" />
+    <Compile Include="Reverb\NativeFFTFrame.cs" />
     <Compile Include="Reverb\ReverbAccumulationBuffer.cs" />
     <Compile Include="Reverb\ReverbConvolver.cs" />
     <Compile Include="Reverb\ReverbConvolverStage.cs" />

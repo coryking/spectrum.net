@@ -46,7 +46,7 @@ namespace CorySignalGenerator.Reverb
     {
         private int m_fftSize;
 
-        private FFTFrame m_frame;
+        private IFFTFrame m_frame;
 
         float[] m_inputBuffer;
         float[] m_outputBuffer;
@@ -61,13 +61,13 @@ namespace CorySignalGenerator.Reverb
             
             // TODO: Complete member initialization
             this.m_fftSize = fftSize;
-            this.m_frame = new FFTFrame(fftSize);
+            this.m_frame = FFTFrameFactory.GetNewFFTFrame(fftSize);
             m_inputBuffer = new float[fftSize];
             m_outputBuffer = new float[fftSize];
             m_lastOverlapBuffer = new float[fftSize / 2];
         }
         
-        public void Process(FFTFrame fftKernel, float[] source, int sourceOffset, float[] destination, int destinationOffset, int framesToProcess)
+        public void Process(IFFTFrame fftKernel, float[] source, int sourceOffset, float[] destination, int destinationOffset, int framesToProcess)
         {
             int halfSize = FFTSize / 2;
             // framesToProcess must be an exact multiple of halfSize,

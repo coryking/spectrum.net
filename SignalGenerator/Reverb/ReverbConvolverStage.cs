@@ -42,7 +42,7 @@ namespace CorySignalGenerator.Reverb
     /// </summary>
     public class ReverbConvolverStage
     {
-        FFTFrame m_fftKernel;
+        IFFTFrame m_fftKernel;
         FFTConvolver m_fftConvolver;
 
         float[] m_preDelayBuffer;
@@ -72,7 +72,7 @@ namespace CorySignalGenerator.Reverb
 
         // renderPhase is useful to know so that we can manipulate the pre versus post delay so that stages will perform
         // their heavy work (FFT processing) on different slices to balance the load in a real-time thread.
-        public ReverbConvolverStage(IEnumerable<float> impulseResponse, int responseLength, int reverbTotalLatency, int stageOffset, int stageLength, int fftSize, int renderPhase, int renderSliceSize, ReverbAccumulationBuffer buffer, bool directMode = false)
+        public ReverbConvolverStage(float[] impulseResponse, int responseLength, int reverbTotalLatency, int stageOffset, int stageLength, int fftSize, int renderPhase, int renderSliceSize, ReverbAccumulationBuffer buffer, bool directMode = false)
         {
 
             m_stageOffset = stageOffset;
@@ -81,7 +81,7 @@ namespace CorySignalGenerator.Reverb
             m_directMode = directMode;
             if (!m_directMode)
             {
-                m_fftKernel = new FFTFrame(fftSize);
+                m_fftKernel = FFTFrameFactory.GetNewFFTFrame(fftSize);
                 m_fftKernel.DoPaddedFFT(impulseResponse, stageOffset, stageLength);
                 m_fftConvolver = new FFTConvolver(fftSize);
             }
