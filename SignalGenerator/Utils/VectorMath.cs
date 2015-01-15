@@ -8,7 +8,16 @@ namespace CorySignalGenerator.Utils
 {
     public static class VectorMath
     {
-        public static void vadd(float[] source1, int offset1, int sourceStride1, float[] source2, int offset2, int sourceStride2, float[] destination, int destinationOffset, int destinationStride, int framesToProcess)
+        public static void vadd(float[] source1, float[] source2, float[] destrination, int framesToProcess)
+        {
+            vadd(source1, 0, 1, source2, 0, 1, destrination, 0, 1, framesToProcess);
+        }
+
+        public static void vadd(
+            float[] source1, int offset1, int sourceStride1, 
+            float[] source2, int offset2, int sourceStride2, 
+            float[] destination, int destinationOffset, int destinationStride, 
+            int framesToProcess)
         {
             var n = framesToProcess;
             var destP = destinationOffset;

@@ -190,9 +190,9 @@ namespace CorySignalGenerator.Extensions
         /// <param name="offset">offset in the <paramref name="output"/> buffer</param>
         /// <param name="count">how many samples to interleave</param>
         /// <param name="channels">total number of channels</param>
-        public static void InterleaveChannel<T>(this IList<T> input, IList<T> output, int channel, int offset, int count, int channels=2)
+        public static void InterleaveChannel<T>(this IList<T> input, T[] output, int channel, int offset, int count, int channels=2)
         {
-            if (count > input.Count || (count * channel + offset) > output.Count)
+            if (count > input.Count || (count * channel + offset) > output.Length)
                 throw new IndexOutOfRangeException("Trying to read more than possible!");
 
             offset += channel;

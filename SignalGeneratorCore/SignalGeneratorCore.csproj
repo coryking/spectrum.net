@@ -239,9 +239,11 @@
     <Compile Include="..\SignalGenerator\Utils\CircularBuffer.cs">
       <Link>Utils\CircularBuffer.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Utils\VectorMath.cs">
+      <Link>Utils\VectorMath.cs</Link>
+    </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\VectorMath.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
