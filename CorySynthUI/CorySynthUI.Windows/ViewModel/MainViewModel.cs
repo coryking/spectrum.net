@@ -46,7 +46,6 @@ namespace CorySynthUI.ViewModel
         private ISoundModel _noteModel;
         private ChannelSampleProvider _sampler;
         private EffectsFilter _effects;
-        private ReverbFilter _reverb;
         private WaveOutPlayer _player;
 
 
@@ -147,15 +146,8 @@ namespace CorySynthUI.ViewModel
                 //var renderSliceSize = m_latency * 44100/1000;
                 using (var stream = GetWaveStream())
                 {
-                    _reverb = new ReverbFilter(_effects, MaxFFTSize, true);
-                    _reverb.LoadImpuseResponseWaveStream(stream);
+                    _effects.InitConvolvingReverbFilter(stream);
                 }
-                HeadSampleProvider = _reverb;
-            }
-            else
-            {
-                HeadSampleProvider = _effects;
-                _reverb = null;
             }
             
         }
