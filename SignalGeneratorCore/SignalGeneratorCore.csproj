@@ -104,6 +104,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SignalGenerator\Dsp\DelayLine.cs">
+      <Link>Dsp\DelayLine.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Dsp\DynamicConvolver.cs">
       <Link>Dsp\DynamicConvolver.cs</Link>
     </Compile>

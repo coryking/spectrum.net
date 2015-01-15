@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Dsp\DelayLine.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />

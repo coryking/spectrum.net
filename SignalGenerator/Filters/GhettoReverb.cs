@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Extensions;
+using CorySignalGenerator.Dsp;
 namespace CorySignalGenerator.Filters
 {
     public class GhettoReverb : Effect
@@ -15,7 +16,7 @@ namespace CorySignalGenerator.Filters
         /// Get the maximum reverb delay
         /// </summary>
         private const int MaxDelaySamples = 44100;
-        private List<CircularBuffer> _delayLines;
+        private List<DelayLine> _delayLines;
 
         public GhettoReverb(ISampleProvider source) : base(source)
         {
@@ -23,10 +24,10 @@ namespace CorySignalGenerator.Filters
 
         protected override void Init()
         {
-            _delayLines = new List<CircularBuffer>();
+            _delayLines = new List<DelayLine>();
             for (int i = 0; i < Channels; i++)
             {
-                _delayLines.Add(new CircularBuffer(MaxDelaySamples));
+                _delayLines.Add(new DelayLine(MaxDelaySamples));
             }
         }
 
@@ -41,47 +42,15 @@ namespace CorySignalGenerator.Filters
             if (SampleDelay < 10 || Decay < 0.01f)
                 return samplesRead;
 
-            var totalSamplesRead = samplesRead;
-
-            var perChannelCount = count/Channels;
+            var readFromConvolver = 0;
             // Read from the delay line...
             for (int i = 0; i < Channels; i++)
             {
                 var delayLine = _delayLines[i];
-                var sourceOffset = offset + i; // offset of this channel in the original buffer
-                // if the amount of stuff in the buffer is more than our delay, start using it!
-                if(delayLine.Count > SampleDelay)
-                {
-                    var channelBuffer = new float[perChannelCount];
-                    delayLine.Read(channelBuffer, 0, perChannelCount);
-                    
-                    // Add the delay line back into the output...
-                    VectorMath.vadd(buffer, sourceOffset, Channels, channelBuffer, 0, 1, buffer, sourceOffset, Channels, perChannelCount);
-                }
-                
-                if (delayLine.Count <= SampleDelay)
-                {
-                    // We need to start writing into the buffer
-                    var channelBuffer = buffer.TakeChannel(i, perChannelCount, Channels);
-                    channelBuffer.Scale(Decay);
-                    delayLine.Write(channelBuffer, 0, perChannelCount);
-
-                }
-                // if we have come to the end of the original sample
-                // we need to keep playing out the decay buffer until the end
-                if (samplesRead < count)
-                {
-                    var endOfOriginalRead = count - samplesRead;
-                    var leftOver = endOfOriginalRead / Channels;
-                    var bufferCount = (int)Math.Min(leftOver, delayLine.Count);
-                    var channelBuffer = new float[perChannelCount];
-                    delayLine.Read(channelBuffer, endOfOriginalRead, bufferCount);
-                    channelBuffer.InterleaveChannel(buffer, i, endOfOriginalRead+offset, bufferCount, Channels);
-                    totalSamplesRead += bufferCount;
-                }
+                readFromConvolver = delayLine.ConvolveDelayLine(buffer, offset, count, samplesRead, Decay, SampleDelay, i, Channels);
             }
 
-            return totalSamplesRead;
+            return readFromConvolver;
         }
 
         private float _delay;
