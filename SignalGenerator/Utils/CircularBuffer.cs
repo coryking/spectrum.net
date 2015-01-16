@@ -72,13 +72,62 @@ namespace CorySignalGenerator.Utils
         }
 
         /// <summary>
+        /// Add buffer to circular buffer data, optionally advancing the write position
+        /// </summary>
+        /// <param name="srcBuffer">Data to write</param>
+        /// <param name="offset">Offset into data</param>
+        /// <param name="count">Number of bytes to write</param>
+        /// <param name="advance">If true, will advance the write position</param>
+        /// <returns></returns>
+        public int Accumulate(float[] srcBuffer, int offset, int count, bool advance)
+        {
+            lock (lockObject)
+            {
+                var bytesWritten = 0;
+                if (count > buffer.Length - byteCount)
+                {
+                    count = buffer.Length - byteCount;
+                }
+                // write to end
+                int writeToEnd = Math.Min(buffer.Length - writePosition, count);
+                //Buffer.BlockCopy(srcBuffer, offset * SINGLE_BYTES, buffer, writePosition * SINGLE_BYTES, writeToEnd * SINGLE_BYTES);
+                VectorMath.vadd(srcBuffer, offset, 1, buffer, writePosition, 1, buffer, writePosition, 1, writeToEnd);
+                var newWritePosition = writePosition + writeToEnd;
+                newWritePosition %= buffer.Length;
+                bytesWritten += writeToEnd;
+                if (bytesWritten < count)
+                {
+                    Debug.Assert(newWritePosition == 0);
+                    // must have wrapped round. Write to start
+                    //Buffer.BlockCopy(
+                    //    srcBuffer, SINGLE_BYTES * (offset + bytesWritten), buffer, SINGLE_BYTES * newWritePosition, (count - bytesWritten) * SINGLE_BYTES);
+                    VectorMath.vadd(srcBuffer, offset + bytesWritten, 1, buffer, newWritePosition, 1, buffer, newWritePosition, 1, count-bytesWritten);
+
+                    //Array.Copy(data, offset + bytesWritten, buffer, writePosition, count - bytesWritten);
+                    newWritePosition += (count - bytesWritten);
+
+                    bytesWritten = count;
+                }
+
+                if (advance)
+                {
+                    byteCount += bytesWritten;
+                    writePosition = newWritePosition;
+                }
+                
+                return bytesWritten;
+            }
+        }
+
+        /// <summary>
         /// Read from the buffer
         /// </summary>
         /// <param name="dstBuffer">Buffer to read into</param>
         /// <param name="offset">Offset into read buffer</param>
         /// <param name="count">Bytes to read</param>
+        /// <param name="clearbuffer">If true, will clear the previously read segment.</param>
         /// <returns>Number of bytes actually read</returns>
-        public int Read(float[] dstBuffer, int offset, int count)
+        public int Read(float[] dstBuffer, int offset, int count, bool clearbuffer=true)
         {
             lock (lockObject)
             {
@@ -88,8 +137,12 @@ namespace CorySignalGenerator.Utils
                 }
                 int bytesRead = 0;
                 int readToEnd = Math.Min(buffer.Length - readPosition, count);
-                if(readToEnd > 0)
+                if (readToEnd > 0)
+                {
                     Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, offset * SINGLE_BYTES, readToEnd * SINGLE_BYTES);
+                    if(clearbuffer)
+                        Array.Clear(buffer, readPosition, readToEnd);
+                }
                 //Array.Copy(buffer, readPosition, data, offset, readToEnd);
                 bytesRead += readToEnd;
                 readPosition += readToEnd;
@@ -100,7 +153,8 @@ namespace CorySignalGenerator.Utils
                     // must have wrapped round. Read from start
                     Debug.Assert(readPosition == 0);
                     Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, SINGLE_BYTES * (offset + bytesRead), (count-bytesRead) * SINGLE_BYTES);
-
+                    if (clearbuffer)
+                        Array.Clear(buffer, readPosition, (count - bytesRead));
                     //Array.Copy(buffer, readPosition, data, offset + bytesRead, count - bytesRead);
                     readPosition += (count - bytesRead);
                     bytesRead = count;

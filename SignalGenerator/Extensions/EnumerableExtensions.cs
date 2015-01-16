@@ -177,7 +177,7 @@ namespace CorySignalGenerator.Extensions
         public static T[] TakeChannel<T>(this IList<T> input, int channel ,int count, int channels=2)
         {
             var output = new T[count];
-            return input.Skip(channel).TakeEvery(channels).ToArray(); //input.Skip(channel).Where((elem, idx) => idx % channels == 0).Take(count).ToArray();
+            return input.Skip(channel).TakeEvery(channels).Take(count).ToArray(); //input.Skip(channel).Where((elem, idx) => idx % channels == 0).Take(count).ToArray();
             
         }
 

@@ -44,6 +44,25 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void TestDelayLineAccumulate()
+        {
+            var decayFactor = 1;
+            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 1, Channels = 2 };
+
+            var inputBuffer = new float[] { 1, 0,0,0 };
+            var accBuffer = new float[] { 1, 0, 1, 0 };
+            delayLine.Accumulate(accBuffer, 0, 4);
+            delayLine.Write(inputBuffer, 0, 4, true);
+
+            var outputBuffer = new float[8];
+            var expectedOutput = new float[] { 0, 0, 2, 0, 1, 0, 0, 0 };
+            var items = delayLine.Read(outputBuffer, 0, 8);
+            Assert.AreEqual(8, items);
+            CollectionAssert.AreEqual(expectedOutput, outputBuffer);
+            
+        }
+
+        [TestMethod]
         public void TestDelayLine_to_same_channel_diff_order()
         {
             // same as similar test but we change the order or read/write.

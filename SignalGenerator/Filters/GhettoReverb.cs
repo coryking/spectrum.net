@@ -71,10 +71,13 @@ namespace CorySignalGenerator.Filters
                 return samplesRead;
 
             var readFromConvolver = 0;
+            var isEnd = (samplesRead < count);
+            var reverbBuffer = new float[MaxDelaySamples];
+
             // Read from the delay line...
             if (Channels==1)
             {
-                readFromConvolver = _delayLines[0].Read(buffer, offset, count);
+                readFromConvolver = _delayLines[0].Read(reverbBuffer, 0, count);
             }
             else if(Channels==2)
             {
@@ -97,24 +100,22 @@ namespace CorySignalGenerator.Filters
                 samplesWritten = _delayLines[3].Read(tempBusR, 0, count);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
-                // add everything back together
-                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, buffer, offset, 1, buffer,offset,1, amountToCopy);
+                // combine the two streams into our reverb stream.
+                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, reverbBuffer,0,1, amountToCopy);
 
                 readFromConvolver = amountToCopy;
-
-
             }
 
-
-            var isEnd = (samplesRead < count);
-
-            // feed everything back into the delay lines
             foreach (var delayLine in _delayLines)
             {
-                delayLine.Write(buffer, offset, readFromConvolver,isEnd);
+                // feed it back into the delay line /w scaling
+                delayLine.Accumulate(reverbBuffer, 0, readFromConvolver);
+                // add the buffer in too...
+                delayLine.Write(buffer, offset, readFromConvolver);
             }
-                
 
+            // Add the reverb buffer into the output stream
+            VectorMath.vadd(reverbBuffer, 0, 1, buffer, offset, 1, buffer, offset, 1, readFromConvolver);
 
             return readFromConvolver;
         }

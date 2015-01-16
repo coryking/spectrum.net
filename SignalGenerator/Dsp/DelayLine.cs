@@ -92,7 +92,7 @@ namespace CorySignalGenerator.Dsp
         }
 
         /// <summary>
-        /// Read from a buffer into the delay line
+        /// Add a buffer into the delay line and optionally advance the write pointer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
@@ -101,13 +101,24 @@ namespace CorySignalGenerator.Dsp
         /// <returns>Total number of array elements read from input buffer</returns>
         public int Write(float[] buffer, int offset, int count, bool endOfSample=false)
         {
+            return Accumulate(buffer, offset, count, endOfSample, true);
+        }
+
+        /// <summary>
+        /// Add a buffer into the delay line without advancing the delay line
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns>Total number of array elements read from input buffer</returns>
+        public int Accumulate(float[] buffer, int offset, int count, bool endOfSample=false, bool advanceWritePointer=false)
+        {
             var perChannelCount = count / Channels;
             var channelBuffer = new float[MaxDelaySamples];
 
-            // We need to start writing into the buffer
             VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelCount);
-            delayLine.Write(channelBuffer, 0, perChannelCount);
-
+            delayLine.Accumulate(channelBuffer, 0, perChannelCount,advanceWritePointer);
+            
             if (endOfSample)
                 phase = DelayLinePhase.End;
 
