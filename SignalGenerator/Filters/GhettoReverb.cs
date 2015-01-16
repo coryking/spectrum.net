@@ -65,6 +65,7 @@ namespace CorySignalGenerator.Filters
 
             // Read into the buffer
             var samplesRead = Source.Read(buffer, offset, count);
+
             // if there is nothing to do... bail now.
             if (SampleDelay < 1 || Decay < 0.01f)
                 return samplesRead;
@@ -97,10 +98,23 @@ namespace CorySignalGenerator.Filters
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // add everything back together
-                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, buffer, 0, 1, buffer,0,1, amountToCopy * 2);
-                readFromConvolver = amountToCopy * 2;
+                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, buffer, offset, 1, buffer,offset,1, amountToCopy);
+
+                readFromConvolver = amountToCopy;
+
 
             }
+
+
+            var isEnd = (samplesRead < count);
+
+            // feed everything back into the delay lines
+            foreach (var delayLine in _delayLines)
+            {
+                delayLine.Write(buffer, offset, readFromConvolver,isEnd);
+            }
+                
+
 
             return readFromConvolver;
         }
