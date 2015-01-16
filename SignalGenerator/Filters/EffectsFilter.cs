@@ -142,12 +142,20 @@ namespace CorySignalGenerator.Filters
             }
         }
 
+        public GhettoReverb GhettoReverbFilter
+        {
+            get
+            {
+                return _reverbFilter;
+            }
+        }
+
         protected void SetFilterValues()
         {
             _lfoFilter.Frequency = LowPassCutoff;
             _lfoFilter.Q = Q;
-            _reverbFilter.Decay = ReverbDecay;
-            _reverbFilter.Delay = ReverbDelay;
+            // _reverbFilter.Decay = ReverbDecay;
+            //_reverbFilter.Delay = ReverbDelay;
         }
 
         public override int Read(float[] buffer, int offset, int count)

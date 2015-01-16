@@ -70,10 +70,16 @@
                     <ComboBoxItem>ConvolvingReverb</ComboBoxItem>
                 </ComboBox.Items>
             </ComboBox>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
-            <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding ReverbDelay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
-            <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding ReverbDecay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+            <StackPanel Orientation="Vertical" DataContext="{Binding GhettoReverbFilter, Mode=TwoWay}">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
+                <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
+                <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
+                <Slider Maximum="22050" Minimum="1" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
+                <Slider Maximum="22050" Minimum="1"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+            </StackPanel>
 
         </StackPanel>
        

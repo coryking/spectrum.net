@@ -17,6 +17,7 @@ namespace CorySignalGenerator.Filters
         /// </summary>
         private const int MaxDelaySamples = 44100;
         private List<DelayLine> _delayLines;
+        private EqFilter _eqFilter;
 
         public GhettoReverb(ISampleProvider source) : base(source)
         {
@@ -25,8 +26,11 @@ namespace CorySignalGenerator.Filters
         protected override void Init()
         {
             _delayLines = new List<DelayLine>();
+            _eqFilter = new EqFilter(SampleRate, Channels) { HighPassCutoff = HighPassCutoffFrequency, LowPassCutoff = LowPassCutoffFrequency };
             if (Channels == 1)
+            {
                 _delayLines.Add(new DelayLine(MaxDelaySamples));
+            }
             else if (Channels == 2)
             {
                 _delayLines.Add(new DelayLine(MaxDelaySamples) { FromChannel = 0, ToChannel = 0, Channels = Channels });
@@ -106,6 +110,10 @@ namespace CorySignalGenerator.Filters
                 readFromConvolver = amountToCopy;
             }
 
+            // Apply our eq....
+            if(_eqFilter != null)
+                _eqFilter.Transform(reverbBuffer, 0, readFromConvolver);
+
             foreach (var delayLine in _delayLines)
             {
                 // feed it back into the delay line /w scaling
@@ -120,7 +128,54 @@ namespace CorySignalGenerator.Filters
             return readFromConvolver;
         }
 
-     
+        #region Properties
+
+
+
+        #region Property HighPassCutoffFrequency
+        private float _highPassCutoffFrequency = 20000f;
+
+        /// <summary>
+        /// Sets and gets the HighPassCutoffFrequency property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float HighPassCutoffFrequency
+        {
+            get
+            {
+                return _highPassCutoffFrequency;
+            }
+            set
+            {
+                Set(ref _highPassCutoffFrequency, value);
+                SetEqFrequencies();
+            }
+        }
+        #endregion
+		
+        #region Property LowPassCutoffFrequency
+        private float _lowPassCutoffFrequency = 200f;
+
+        /// <summary>
+        /// Sets and gets the LowPassCutoffFrequency property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float LowPassCutoffFrequency
+        {
+            get
+            {
+                return _lowPassCutoffFrequency;
+            }
+            set
+            {
+                Set(ref _lowPassCutoffFrequency, value);
+                SetEqFrequencies();
+            }
+        }
+        #endregion
+		
+
+
         private float _secondaryDecay = 0.25f;
 
         /// <summary>
@@ -204,7 +259,8 @@ namespace CorySignalGenerator.Filters
             }
         }
         #endregion
-		
+
+        #endregion // properties
         /// <summary>
         /// Gets the number of samples to delay something
         /// </summary>
@@ -220,6 +276,14 @@ namespace CorySignalGenerator.Filters
         protected int GetSampleDelay(float ms)
         {
             return (int)(ms * SampleRate / 1000) / Channels; // ms * samples/s * s/ms = samples
+        }
+
+        public void SetEqFrequencies()
+        {
+            if (_eqFilter == null)
+                return;
+            _eqFilter.HighPassCutoff = HighPassCutoffFrequency;
+            _eqFilter.LowPassCutoff = LowPassCutoffFrequency;
         }
     }
 }

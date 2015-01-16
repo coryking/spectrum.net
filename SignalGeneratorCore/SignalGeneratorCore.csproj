@@ -110,6 +110,9 @@
     <Compile Include="..\SignalGenerator\Dsp\DynamicConvolver.cs">
       <Link>Dsp\DynamicConvolver.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Dsp\EqFilter.cs">
+      <Link>Dsp\EqFilter.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Dsp\LinearInterpolator.cs">
       <Link>Dsp\LinearInterpolator.cs</Link>
     </Compile>
