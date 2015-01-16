@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Extensions;
+using System.Diagnostics;
 namespace CorySignalGenerator.Dsp
 {
     internal enum DelayLinePhase
@@ -31,7 +32,34 @@ namespace CorySignalGenerator.Dsp
         public int ToChannel { get; set; }
         public int Channels { get; set; }
 
-        public int SampleDelay { get; set; }
+        private int _sampleDelay;
+        public int SampleDelay
+        {
+            get
+            {
+                return _sampleDelay;
+            }
+            set
+            {
+                if (_sampleDelay != value)
+                    ChangeSampleDelay(value, _sampleDelay);
+                _sampleDelay = value;
+            }
+        }
+
+        private void ChangeSampleDelay(int newDelay, int oldDelay)
+        {
+            Debug.Assert(delayLine != null);
+            if(newDelay > delayLine.Count)
+            {
+                var buffer = new float[MaxDelaySamples];
+                delayLine.Write(buffer, 0, newDelay - delayLine.Count);
+            }
+            else
+            {
+                delayLine.Advance(delayLine.Count - newDelay);
+            }
+        }
 
         public float Decay { get; set; }
 
@@ -75,10 +103,6 @@ namespace CorySignalGenerator.Dsp
         {
             var perChannelCount = count / Channels;
             var channelBuffer = new float[MaxDelaySamples];
-
-            // Add in our delay if we need it
-            if (delayLine.Count < SampleDelay)
-                delayLine.Write(channelBuffer, 0, SampleDelay - delayLine.Count);
 
             // We need to start writing into the buffer
             VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelCount);
