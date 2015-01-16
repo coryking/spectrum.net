@@ -38,7 +38,7 @@ namespace CorySynthUI.ViewModel
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
 
-        private readonly int m_latency = 15; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+        private readonly int m_latency = 50;// Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
 
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;

@@ -129,7 +129,7 @@ namespace CorySignalGenerator.Sounds
             {
                 Volume = velocity / 128.0f
             };
-            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider)
+            var adsrProvider = new SampleProviders.AdsrSampleProvider(music_sampler)
             {
                 AttackSeconds=AttackSeconds,
                 ReleaseSeconds = ReleaseSeconds
@@ -153,7 +153,7 @@ namespace CorySignalGenerator.Sounds
             }
             else
             {
-                outputProvider = adsrProvider;
+                outputProvider =  adsrProvider;
             }
             return outputProvider;
         }
@@ -175,7 +175,7 @@ namespace CorySignalGenerator.Sounds
             //var freqs = new float[] { 440f };
             Parallel.ForEach(notesToGen, (note) =>
             {
-                var harmonics = 4; // (int)Math.Max(4, Harmonics * 440 / (int)note.Frequency);
+                var harmonics = 10; // (int)Math.Max(4, Harmonics * 440 / (int)note.Frequency);
 
                 var sample =
                      PADsynth.GenerateWaveTable((float)note.Frequency, Bandwidth, BandwidthScale, harmonics, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
