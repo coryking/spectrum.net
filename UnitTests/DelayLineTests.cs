@@ -21,17 +21,20 @@ namespace UnitTests
             };
 
             var expectedResults = new float[][]{
-                new float[]{ 1, 0, 0, 0 },
-                new float[]{ 2.5f, 0, 0, 0 },
-                new float[]{ 1.25f, 0, 0, 0 },
-                new float[]{ 0.625f, 0, 0, 0 },
+                new float[]{ 0, 0, 0, 0 },
+                new float[]{ 1 * decayFactor, 0, 0, 0 },
+                new float[]{ 2 * decayFactor, 0, 0, 0 },
+                new float[]{ 0f, 0, 0, 0 },
             };
-            TestDelayLineStage(buffers, expectedResults, (lastItem, buffer) =>
+            TestDelayLineStage(buffers, expectedResults, (i, lastItem, input, output) =>
             {
-                if(lastItem)
-                    delayLine.ConvolveDelayLine(buffer, 0, buffer,0, 4, 0, decayFactor, 2, 0, 0, 2);
+                var amountRead = 0;
+                if (lastItem)
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 0, decayFactor, 2, 0, 0, 2);
                 else
-                    delayLine.ConvolveDelayLine(buffer, 0, buffer,0, 4, 4, decayFactor, 2, 0, 0, 2);
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4, decayFactor, 2, 0, 0, 2);
+
+                Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
 
         }
@@ -56,23 +59,27 @@ namespace UnitTests
                 new float[]{0, 0, 0, 0},
             };
 
-            TestDelayLineStage(buffers, expectedResults, (lastItem, floats) =>
+            TestDelayLineStage(buffers, expectedResults, (i, lastItem, input, output) =>
             {
-                delayLine.ConvolveDelayLine(floats, 0, floats,0, 4, 4, decayFactor, 2, 0, 1, 2);
+                var amountRead = delayLine.ConvolveDelayLine(input, 0, output,0, 4, 4, decayFactor, 2, 0, 1, 2);
+                Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
 
         }
 
-        public static void TestDelayLineStage(float[][] buffers, float[][] expectedResults, Action<bool,float[]> function)
+        public static void TestDelayLineStage(float[][] input, float[][] expectedResults, Action<int, bool,float[], float[]> function)
         {
-            for (int i = 0; i < buffers.Length; i++)
+            var output = new float[input.Length][];
+
+            for (int i = 0; i < input.Length; i++)
             {
-                bool lastItem = (i == buffers.Length - 1);
-                function.Invoke(lastItem, buffers[i]);
+                output[i] = new float[input[i].Length];
+                bool lastItem = (i == input.Length - 1);
+                function.Invoke(i, lastItem, input[i], output[i]);
             }
             for (int i = 0; i < expectedResults.Length; i++)
             {
-                CollectionAssert.AreEqual(expectedResults[i], buffers[i], String.Format("Line {0}", i));
+                CollectionAssert.AreEqual(expectedResults[i], output[i], String.Format("Line {0}", i));
             }
         }
     }

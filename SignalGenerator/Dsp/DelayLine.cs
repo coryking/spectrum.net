@@ -18,11 +18,11 @@ namespace CorySignalGenerator.Dsp
         }
         public int ConvolveDelayLine(float[] buffer, int offset, float[] output, int outOffset, int count, int samplesRead, float decay, int sampleDelay, int fromChannel, int toChannel, int totalChannels)
         {
-            var totalSamplesRead = samplesRead;
+            
             var perChannelRead = samplesRead / totalChannels;
             var perChannelCount = count / totalChannels;
             var perChannelDelay = sampleDelay / totalChannels;
-            VectorMath.vcopy(buffer, offset + fromChannel, totalChannels, output, outOffset + toChannel, totalChannels, perChannelRead);
+            var totalSamplesWritten = perChannelRead; // this is the total samples written
             // if the amount of stuff in the buffer is more than our delay, start using it!
             if (delayLine.Count > perChannelDelay)
             {
@@ -30,8 +30,9 @@ namespace CorySignalGenerator.Dsp
                 var channelBuffer = new float[perChannelCount];
                 delayLine.Read(channelBuffer, 0, maxRead);
 
-                // Add the delay line back into the output...
-                VectorMath.vadd(buffer, offset + toChannel, totalChannels, channelBuffer, 0, 1, output, outOffset + toChannel, totalChannels, maxRead);
+                // Copy the delay line into the output buffer, overwriting whatever is there.
+                VectorMath.vcopy(channelBuffer, outOffset, 1, output, outOffset + toChannel, totalChannels, maxRead);
+                totalSamplesWritten = Math.Max(maxRead, totalSamplesWritten);
             }
 
             if (delayLine.Count <= perChannelDelay)
@@ -51,10 +52,10 @@ namespace CorySignalGenerator.Dsp
                 var bufferCount = (int)Math.Min(leftOver, delayLine.Count);
                 var channelBuffer = new float[perChannelCount];
                 delayLine.Read(channelBuffer, endOfOriginalRead, bufferCount);
-                channelBuffer.InterleaveChannel(output, toChannel, endOfOriginalRead + outOffset, bufferCount, totalChannels);
-                totalSamplesRead += (bufferCount * totalChannels);
+                VectorMath.vcopy(channelBuffer, 0, 1, output, outOffset + endOfOriginalRead + toChannel, totalChannels, bufferCount);
+                totalSamplesWritten += bufferCount;
             }
-            return totalSamplesRead;
+            return totalSamplesWritten;
         }
 
 

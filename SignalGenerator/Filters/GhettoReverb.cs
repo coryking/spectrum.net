@@ -56,31 +56,29 @@ namespace CorySignalGenerator.Filters
             }
             else if(Channels==2)
             {
-                var tempBusLL = new float[MaxDelaySamples];
-                var tempBusLR = new float[MaxDelaySamples];
-                var tempBusRR = new float[MaxDelaySamples];
-                var tempBusRL = new float[MaxDelaySamples];
+                var tempBusL = new float[MaxDelaySamples];
+                var tempBusR = new float[MaxDelaySamples];
+                var amountToCopy = 0;
                 
                 // Left -> Left
-                readFromConvolver = _delayLines[0].ConvolveDelayLine(buffer, offset, tempBusLL, offset, count, samplesRead, Decay, SampleDelay, 0,0, Channels);
+                var samplesWritten = _delayLines[0].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead, Decay, SampleDelay, 0,0, Channels);
+                amountToCopy = Math.Max(samplesWritten, amountToCopy);
                 // Left -> Right
-                readFromConvolver = _delayLines[1].ConvolveDelayLine(buffer, offset, tempBusLR, offset, count, samplesRead, SecondaryDecay, SampleSecondaryDelayLeft + SampleDelay, 0,1, Channels);
-
-
+                samplesWritten = _delayLines[1].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead, SecondaryDecay, SampleSecondaryDelayLeft + SampleDelay, 0,1, Channels);
+                amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // Right -> Right
-                readFromConvolver = _delayLines[2].ConvolveDelayLine(buffer, offset, tempBusRR, 0, count, samplesRead, Decay, SampleDelay, 1,1, Channels);
+                samplesWritten = _delayLines[2].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead, Decay, SampleDelay, 1,1, Channels);
+                amountToCopy = Math.Max(samplesWritten, amountToCopy);
+
                 // Right -> Left
-                readFromConvolver = _delayLines[3].ConvolveDelayLine(buffer, offset, tempBusRL, 0, count, samplesRead, SecondaryDecay, SampleSecondaryDelayRight + SampleDelay, 1,0, Channels);
+                samplesWritten = _delayLines[3].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead, SecondaryDecay, SampleSecondaryDelayRight + SampleDelay, 1,0, Channels);
+                amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
-                // add back in the right channel
-                VectorMath.vadd(tempBusLL, 0, 1, tempBusLR, 0, 1, tempBusRR, 0, 1, tempBusRL, 0, 1, buffer, 0, 1, readFromConvolver);
+                // add everything back together
+                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, buffer, 0, 1, buffer,0,1, amountToCopy * 2);
+                readFromConvolver = amountToCopy * 2;
 
-            }
-            for (int i = 0; i < Channels; i++)
-            {
-                var delayLine = _delayLines[i];
-                
             }
 
             return readFromConvolver;

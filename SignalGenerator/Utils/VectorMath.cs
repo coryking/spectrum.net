@@ -52,6 +52,31 @@ namespace CorySignalGenerator.Utils
             float[] source1, int offset1, int sourceStride1,
             float[] source2, int offset2, int sourceStride2,
             float[] source3, int offset3, int sourceStride3,
+            float[] destination, int destinationOffset, int destinationStride,
+
+            int framesToProcess)
+        {
+            var n = framesToProcess;
+            var destP = destinationOffset;
+            var source1P = offset1;
+            var source2P = offset2;
+            var source3P = offset3;
+            while (n > 0)
+            {
+                destination[destP] = source1[source1P] + source2[source2P] + source3[source3P];
+                source1P += sourceStride1;
+                source2P += sourceStride2;
+                source3P += sourceStride3; ;
+                destP += destinationStride;
+                n--;
+            }
+        }
+
+
+        public static void vadd(
+            float[] source1, int offset1, int sourceStride1,
+            float[] source2, int offset2, int sourceStride2,
+            float[] source3, int offset3, int sourceStride3,
             float[] source4, int offset4, int sourceStride4,
             float[] destination, int destinationOffset, int destinationStride,
 

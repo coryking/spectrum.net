@@ -40,12 +40,12 @@ namespace UnitTests
             var expectedResults = new float[][]{
                 new float[]{ 1, 0, 0, 0 },
                 new float[]{ 2.5f, 0.25f, 0, 0 },
-                new float[]{ 1.25f, 0.75f, 0, 0 },
-                new float[]{ 0.625f, 0, 0, 0 },
+                new float[]{ 1f, 0.5f, 0, 0 },
+                new float[]{ 0, 0, 0, 0 },
                 new float[]{ 0, 1, 0, 0 },
                 new float[]{ 0.25f, 2.5f, 0, 0 },
-                new float[]{ 0.75f, 1.25f, 0, 0 },
-                new float[]{ 0, 0.625f, 0, 0 },
+                new float[]{ 0.5f, 1f, 0, 0 },
+                new float[]{ 0, 0, 0, 0 },
             };
             var n = 0;
 
@@ -66,7 +66,8 @@ namespace UnitTests
 
             for (int i = 0; i < buffers.Length; i++)
 			{
-                reverbFilter.Read(actualResults[i], 0, 4);
+                var amountRead = reverbFilter.Read(actualResults[i], 0, 4);
+                Assert.AreEqual(4, amountRead);
 			}
 
             for (int i = 0; i < expectedResults.Length; i++)
