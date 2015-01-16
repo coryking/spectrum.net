@@ -88,7 +88,8 @@ namespace CorySignalGenerator.Utils
                 }
                 int bytesRead = 0;
                 int readToEnd = Math.Min(buffer.Length - readPosition, count);
-                Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, offset * SINGLE_BYTES, readToEnd * SINGLE_BYTES);
+                if(readToEnd > 0)
+                    Buffer.BlockCopy(buffer, SINGLE_BYTES * readPosition, dstBuffer, offset * SINGLE_BYTES, readToEnd * SINGLE_BYTES);
                 //Array.Copy(buffer, readPosition, data, offset, readToEnd);
                 bytesRead += readToEnd;
                 readPosition += readToEnd;

@@ -128,6 +128,9 @@
     <Compile Include="ReverbConvolverTests.cs" />
     <Compile Include="BaseShimTests.cs" />
     <Compile Include="HalfComplexTests.cs" />
+    <Compile Include="DelayLineTests.cs" />
+    <Compile Include="GhettoReverbTests.cs" />
+    <Compile Include="VectorMathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SignalGenerator\SignalGenerator.csproj">

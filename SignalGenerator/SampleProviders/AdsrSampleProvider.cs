@@ -1,4 +1,5 @@
-﻿using NAudio.Dsp;
+﻿using CorySignalGenerator.Filters;
+using NAudio.Dsp;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -11,26 +12,29 @@ namespace CorySignalGenerator.SampleProviders
     /// <summary>
     /// ADSR sample provider allowing you to specify attack, decay, sustain and release values
     /// </summary>
-    public class AdsrSampleProvider : ISampleProvider, IStoppableSample
+    public class AdsrSampleProvider : Effect, IStoppableSample
     {
-        private readonly ISampleProvider source;
-        private readonly EnvelopeGenerator adsr;
+        private EnvelopeGenerator adsr;
         private float attackSeconds;
         private float releaseSeconds;
 
         /// <summary>
         /// Creates a new AdsrSampleProvider with default values
         /// </summary>
-        public AdsrSampleProvider(ISampleProvider source)
+        public AdsrSampleProvider(ISampleProvider source) : base(source)
         {
-            //if (source.WaveFormat.Channels > 1) throw new ArgumentException("Currently only supports mono inputs");
-            this.source = source;
+            
+        }
+        protected override void Init()
+        {
+            base.Init();
             adsr = new EnvelopeGenerator();
             AttackSeconds = 0.01f;
             adsr.SustainLevel = 1.0f;
-            adsr.DecayRate = 0.0f * WaveFormat.SampleRate;
+            adsr.DecayRate = 0.0f * SampleRate;
             ReleaseSeconds = 0.3f;
             adsr.Gate(true);
+
         }
 
         /// <summary>
@@ -45,7 +49,7 @@ namespace CorySignalGenerator.SampleProviders
             set
             {
                 attackSeconds = value;
-                adsr.AttackRate = attackSeconds * WaveFormat.SampleRate;
+                adsr.AttackRate = attackSeconds * SampleRate;
             }
         }
 
@@ -61,26 +65,30 @@ namespace CorySignalGenerator.SampleProviders
             set
             {
                 releaseSeconds = value;
-                adsr.ReleaseRate = releaseSeconds * WaveFormat.SampleRate;
+                adsr.ReleaseRate = releaseSeconds * SampleRate;
             }
         }
 
         /// <summary>
         /// Reads audio from this sample provider
         /// </summary>
-        public int Read(float[] buffer, int offset, int count)
+        public override int Read(float[] buffer, int offset, int count)
         {
             if (adsr.State == EnvelopeGenerator.EnvelopeState.Idle) return 0; // we've finished
-            var samples = source.Read(buffer, offset, count);
-            for (int n = 0; n < samples/WaveFormat.Channels; n++)
+            var samplesTaken = Source.Read(buffer, offset, count);
+
+            float multiplier = 0;
+            var samplesWritten = 0;
+            while (samplesWritten < samplesTaken && adsr.State != EnvelopeGenerator.EnvelopeState.Idle)
             {
-                for (int x = 0; x < WaveFormat.Channels;x++ )
-                {
-                    var multiplier = adsr.Process();
-                    buffer[offset++] *= multiplier;
-                }
+
+                if (samplesWritten % Channels == 0)
+                    multiplier = adsr.Process();
+
+                buffer[offset++] *= multiplier;
+                samplesWritten++;
             }
-            return samples;
+            return samplesWritten;
         }
 
         /// <summary>
@@ -91,9 +99,5 @@ namespace CorySignalGenerator.SampleProviders
             adsr.Gate(false);
         }
 
-        /// <summary>
-        /// The output WaveFormat
-        /// </summary>
-        public WaveFormat WaveFormat { get { return source.WaveFormat; } }
     }
 }

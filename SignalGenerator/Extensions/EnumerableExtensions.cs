@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using MoreLinq;
 namespace CorySignalGenerator.Extensions
 {
     public static class EnumerableExtensions
@@ -113,7 +113,8 @@ namespace CorySignalGenerator.Extensions
         /// <param name="scale">scale enumerable of complex numbers</param>
         public static IEnumerable<Complex> MultiplyComplexNumbers(this IEnumerable<Complex> input, IEnumerable<Complex> scale)
         {
-            return input.Zip(scale, (i,s)=>{
+            
+            return System.Linq.Enumerable.Zip(input, scale, (i,s)=>{
                 return i.Multiply(s);
             });
         }
@@ -176,7 +177,7 @@ namespace CorySignalGenerator.Extensions
         public static T[] TakeChannel<T>(this IList<T> input, int channel ,int count, int channels=2)
         {
             var output = new T[count];
-            return input.Skip(channel).Where((elem, idx) => idx % channels == 0).Take(count).ToArray();
+            return input.Skip(channel).TakeEvery(channels).ToArray(); //input.Skip(channel).Where((elem, idx) => idx % channels == 0).Take(count).ToArray();
             
         }
 
