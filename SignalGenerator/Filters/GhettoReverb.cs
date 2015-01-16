@@ -73,7 +73,7 @@ namespace CorySignalGenerator.Filters
             // Read from the delay line...
             if (Channels==1)
             {
-                readFromConvolver = _delayLines[0].ConvolveDelayLine(buffer, offset, samplesRead, buffer, offset, count);
+                readFromConvolver = _delayLines[0].Read(buffer, offset, count);
             }
             else if(Channels==2)
             {
@@ -82,18 +82,18 @@ namespace CorySignalGenerator.Filters
                 var amountToCopy = 0;
                 
                 // Left -> Left
-                var samplesWritten = _delayLines[0].ConvolveDelayLine(buffer, offset, samplesRead, tempBusL, offset, count);
+                var samplesWritten = _delayLines[0].Read(tempBusL, offset, count);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
                 // Left -> Right
-                samplesWritten = _delayLines[1].ConvolveDelayLine(buffer, offset, samplesRead, tempBusL, offset, count);
+                samplesWritten = _delayLines[1].Read(tempBusL, offset, count);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // Right -> Right
-                samplesWritten = _delayLines[2].ConvolveDelayLine(buffer, offset, samplesRead, tempBusR, 0, count);
+                samplesWritten = _delayLines[2].Read(tempBusR, 0, count);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // Right -> Left
-                samplesWritten = _delayLines[3].ConvolveDelayLine(buffer, offset, samplesRead, tempBusR, 0, count);
+                samplesWritten = _delayLines[3].Read(tempBusR, 0, count);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // add everything back together

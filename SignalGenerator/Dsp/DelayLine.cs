@@ -7,14 +7,24 @@ using System.Threading.Tasks;
 using CorySignalGenerator.Extensions;
 namespace CorySignalGenerator.Dsp
 {
+    internal enum DelayLinePhase
+    {
+        ReadWrite,
+        End
+    }
+
     public class DelayLine
     {
+        private const int MaxDelaySamples = 44100;
+
         private CircularBuffer delayLine;
-        private float[] zeroBuffer;
+
+        private DelayLinePhase phase;
 
         public DelayLine(int maxBuffer)
         {
             delayLine = new CircularBuffer(maxBuffer);
+            phase = DelayLinePhase.ReadWrite;
         }
 
         public int FromChannel { get; set; }
@@ -25,19 +35,23 @@ namespace CorySignalGenerator.Dsp
 
         public float Decay { get; set; }
 
-        public int ConvolveDelayLine(float[] buffer, int offset, int samplesRead, float[] output, int outOffset, int count)
+        /// <summary>
+        /// Write from delay line into a buffer
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="outOffset"></param>
+        /// <param name="count"></param>
+        /// <returns>Total number of array elements written into output buffer</returns>
+        public int Read(float[] output, int outOffset, int count)
         {
             
-            var perChannelRead = samplesRead / Channels;
             var perChannelCount = count / Channels;
-            var totalSamplesWritten = perChannelRead; // this is the total samples written
+            var totalSamplesWritten = perChannelCount; // this is the total samples written
 
-
-            
             // if the amount of stuff in the buffer is more than our delay, start using it!
-            if (delayLine.Count > SampleDelay)
+            if ((delayLine.Count >= (SampleDelay + perChannelCount)) || phase == DelayLinePhase.End)
             {
-                var channelBuffer = new float[perChannelCount];
+                var channelBuffer = new float[MaxDelaySamples];
                 var maxRead = (int)Math.Min(perChannelCount, delayLine.Count);
                 delayLine.Read(channelBuffer, 0, maxRead);
 
@@ -46,29 +60,34 @@ namespace CorySignalGenerator.Dsp
                 totalSamplesWritten = Math.Max(maxRead, totalSamplesWritten);
             }
 
-            if (delayLine.Count <= SampleDelay)
-            {
-                
+            return totalSamplesWritten * Channels;
+        }
 
-                // We need to start writing into the buffer
-                var channelBuffer = new float[perChannelCount];
-                VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelRead);
-                delayLine.Write(channelBuffer, 0, perChannelRead);
+        /// <summary>
+        /// Read from a buffer into the delay line
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <param name="endOfSample">If true, signals this is the end of the sample.</param>
+        /// <returns>Total number of array elements read from input buffer</returns>
+        public int Write(float[] buffer, int offset, int count, bool endOfSample=false)
+        {
+            var perChannelCount = count / Channels;
+            var channelBuffer = new float[MaxDelaySamples];
 
-            }
-            // if we have come to the end of the original sample
-            // we need to keep playing out the decay buffer until the end
-            if (samplesRead < count)
-            {
-                var channelBuffer = new float[perChannelCount];
-                var endOfOriginalRead = count - samplesRead;
-                var leftOver = endOfOriginalRead / Channels;
-                var bufferCount = (int)Math.Min(leftOver, delayLine.Count);
-                delayLine.Read(channelBuffer, 0, bufferCount);
-                VectorMath.vcopy(channelBuffer, 0, 1, output, outOffset + endOfOriginalRead + ToChannel, Channels, bufferCount);
-                totalSamplesWritten += bufferCount;
-            }
-            return totalSamplesWritten;
+            // Add in our delay if we need it
+            if (delayLine.Count < SampleDelay)
+                delayLine.Write(channelBuffer, 0, SampleDelay - delayLine.Count);
+
+            // We need to start writing into the buffer
+            VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelCount);
+            delayLine.Write(channelBuffer, 0, perChannelCount);
+
+            if (endOfSample)
+                phase = DelayLinePhase.End;
+
+            return count;
         }
 
 
