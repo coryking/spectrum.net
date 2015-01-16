@@ -32,11 +32,14 @@ namespace CorySignalGenerator.Dsp
             var perChannelCount = count / Channels;
             var perChannelDelay = SampleDelay / Channels;
             var totalSamplesWritten = perChannelRead; // this is the total samples written
+
+
+            
             // if the amount of stuff in the buffer is more than our delay, start using it!
             if (delayLine.Count > perChannelDelay)
             {
-                var maxRead = (int)Math.Min(perChannelCount, delayLine.Count);
                 var channelBuffer = new float[perChannelCount];
+                var maxRead = (int)Math.Min(perChannelCount, delayLine.Count);
                 delayLine.Read(channelBuffer, 0, maxRead);
 
                 // Copy the delay line into the output buffer, overwriting whatever is there.
@@ -46,6 +49,8 @@ namespace CorySignalGenerator.Dsp
 
             if (delayLine.Count <= perChannelDelay)
             {
+                
+
                 // We need to start writing into the buffer
                 var channelBuffer = new float[perChannelCount];
                 VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelRead);
@@ -56,11 +61,11 @@ namespace CorySignalGenerator.Dsp
             // we need to keep playing out the decay buffer until the end
             if (samplesRead < count)
             {
+                var channelBuffer = new float[perChannelCount];
                 var endOfOriginalRead = count - samplesRead;
                 var leftOver = endOfOriginalRead / Channels;
                 var bufferCount = (int)Math.Min(leftOver, delayLine.Count);
-                var channelBuffer = new float[perChannelCount];
-                delayLine.Read(channelBuffer, endOfOriginalRead, bufferCount);
+                delayLine.Read(channelBuffer, 0, bufferCount);
                 VectorMath.vcopy(channelBuffer, 0, 1, output, outOffset + endOfOriginalRead + ToChannel, Channels, bufferCount);
                 totalSamplesWritten += bufferCount;
             }
