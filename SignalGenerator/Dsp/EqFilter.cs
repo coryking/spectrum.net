@@ -73,15 +73,16 @@ namespace CorySignalGenerator.Dsp
 
         public int Transform(float[] buffer, int offset, int count)
         {
-            for (int i = 0; i < count / Channels; i++)
+            for (var channel = 0; channel < Channels; channel++)
             {
-                for (int n = 0; n < Channels; n++)
+                for (int i = offset + channel; i < count; i += Channels)
                 {
-                    var index = i + n + offset;
-                    buffer[index] = _highPassFilters[n].Transform(buffer[index]);
-                    buffer[index] = _lowPassFilters[n].Transform(buffer[index]);
+                    buffer[i] = _highPassFilters[channel].Transform(buffer[i]);
+                    buffer[i] = _lowPassFilters[channel].Transform(buffer[i]);
+
                 }
             }
+
             return count;
         }
         protected override void HandlePropertyChanged(string propertyName)

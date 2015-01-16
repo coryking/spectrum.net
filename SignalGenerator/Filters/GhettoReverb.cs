@@ -63,7 +63,6 @@ namespace CorySignalGenerator.Filters
 
         public override int Read(float[] buffer, int offset, int count)
         {
-            SetDelayLineParams();
             // Zero out the destination buffer just to be safe
             Array.Clear(buffer, 0, count);
 
@@ -111,7 +110,7 @@ namespace CorySignalGenerator.Filters
             }
 
             // Apply our eq....
-            if(_eqFilter != null)
+            if(_eqFilter != null && UseEQ)
                 _eqFilter.Transform(reverbBuffer, 0, readFromConvolver);
 
             foreach (var delayLine in _delayLines)
@@ -131,6 +130,26 @@ namespace CorySignalGenerator.Filters
         #region Properties
 
 
+        #region Property UseEQ
+        private bool _useEQ = true;
+
+        /// <summary>
+        /// Sets and gets the UseEQ property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool UseEQ
+        {
+            get
+            {
+                return _useEQ;
+            }
+            set
+            {
+                Set(ref _useEQ, value);
+            }
+        }
+        #endregion
+		
 
         #region Property HighPassCutoffFrequency
         private float _highPassCutoffFrequency = 20000f;
@@ -284,6 +303,12 @@ namespace CorySignalGenerator.Filters
                 return;
             _eqFilter.HighPassCutoff = HighPassCutoffFrequency;
             _eqFilter.LowPassCutoff = LowPassCutoffFrequency;
+        }
+
+        protected override void HandlePropertyChanged(string propertyName)
+        {
+            base.HandlePropertyChanged(propertyName);
+            SetDelayLineParams();
         }
     }
 }

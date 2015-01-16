@@ -75,6 +75,8 @@
                 <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
                 <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Use EQ</TextBlock>
+                <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
                 <Slider Maximum="22050" Minimum="1" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
