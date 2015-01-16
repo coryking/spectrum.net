@@ -29,16 +29,37 @@ namespace CorySignalGenerator.Filters
                 _delayLines.Add(new DelayLine(MaxDelaySamples));
             else if (Channels == 2)
             {
-                _delayLines.Add(new DelayLine(MaxDelaySamples));
-                _delayLines.Add(new DelayLine(MaxDelaySamples));
-                _delayLines.Add(new DelayLine(MaxDelaySamples));
-                _delayLines.Add(new DelayLine(MaxDelaySamples));
+                _delayLines.Add(new DelayLine(MaxDelaySamples) { FromChannel = 0, ToChannel = 0, Channels = Channels });
+                _delayLines.Add(new DelayLine(MaxDelaySamples) { FromChannel = 0, ToChannel = 1, Channels = Channels });
+                _delayLines.Add(new DelayLine(MaxDelaySamples) { FromChannel = 1, ToChannel = 1, Channels = Channels });
+                _delayLines.Add(new DelayLine(MaxDelaySamples) { FromChannel = 1, ToChannel = 0, Channels = Channels });
             }
             
         }
 
+        private void SetDelayLineParams()
+        {
+            if(Channels ==1 ){
+                _delayLines[0].Decay = Decay;
+                _delayLines[0].SampleDelay = SampleDelay;
+            }
+            else if (Channels == 2)
+            {
+                _delayLines[0].Decay = Decay;
+                _delayLines[2].Decay = Decay;
+                _delayLines[1].Decay = SecondaryDecay;
+                _delayLines[3].Decay = SecondaryDecay;
+
+                _delayLines[0].SampleDelay = SampleDelay;
+                _delayLines[2].SampleDelay = SampleDelay;
+                _delayLines[1].SampleDelay = SampleSecondaryDelayRight + SampleDelay; 
+                _delayLines[3].SampleDelay = SampleSecondaryDelayLeft + SampleDelay;
+            }
+        }
+
         public override int Read(float[] buffer, int offset, int count)
         {
+            SetDelayLineParams();
             // Zero out the destination buffer just to be safe
             Array.Clear(buffer, 0, count);
 
@@ -52,7 +73,7 @@ namespace CorySignalGenerator.Filters
             // Read from the delay line...
             if (Channels==1)
             {
-                readFromConvolver = _delayLines[0].ConvolveDelayLine(buffer, offset, buffer,offset, count, samplesRead, Decay, SampleDelay, 0,0, Channels);
+                readFromConvolver = _delayLines[0].ConvolveDelayLine(buffer, offset, buffer, offset, count, samplesRead);
             }
             else if(Channels==2)
             {
@@ -61,18 +82,18 @@ namespace CorySignalGenerator.Filters
                 var amountToCopy = 0;
                 
                 // Left -> Left
-                var samplesWritten = _delayLines[0].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead, Decay, SampleDelay, 0,0, Channels);
+                var samplesWritten = _delayLines[0].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
                 // Left -> Right
-                samplesWritten = _delayLines[1].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead, SecondaryDecay, SampleSecondaryDelayLeft + SampleDelay, 0,1, Channels);
+                samplesWritten = _delayLines[1].ConvolveDelayLine(buffer, offset, tempBusL, offset, count, samplesRead);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // Right -> Right
-                samplesWritten = _delayLines[2].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead, Decay, SampleDelay, 1,1, Channels);
+                samplesWritten = _delayLines[2].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // Right -> Left
-                samplesWritten = _delayLines[3].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead, SecondaryDecay, SampleSecondaryDelayRight + SampleDelay, 1,0, Channels);
+                samplesWritten = _delayLines[3].ConvolveDelayLine(buffer, offset, tempBusR, 0, count, samplesRead);
                 amountToCopy = Math.Max(samplesWritten, amountToCopy);
 
                 // add everything back together

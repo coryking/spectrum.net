@@ -16,12 +16,21 @@ namespace CorySignalGenerator.Dsp
         {
             delayLine = new CircularBuffer(maxBuffer);
         }
-        public int ConvolveDelayLine(float[] buffer, int offset, float[] output, int outOffset, int count, int samplesRead, float decay, int sampleDelay, int fromChannel, int toChannel, int totalChannels)
+
+        public int FromChannel { get; set; }
+        public int ToChannel { get; set; }
+        public int Channels { get; set; }
+
+        public int SampleDelay { get; set; }
+
+        public float Decay { get; set; }
+
+        public int ConvolveDelayLine(float[] buffer, int offset, float[] output, int outOffset, int count, int samplesRead)
         {
             
-            var perChannelRead = samplesRead / totalChannels;
-            var perChannelCount = count / totalChannels;
-            var perChannelDelay = sampleDelay / totalChannels;
+            var perChannelRead = samplesRead / Channels;
+            var perChannelCount = count / Channels;
+            var perChannelDelay = SampleDelay / Channels;
             var totalSamplesWritten = perChannelRead; // this is the total samples written
             // if the amount of stuff in the buffer is more than our delay, start using it!
             if (delayLine.Count > perChannelDelay)
@@ -31,7 +40,7 @@ namespace CorySignalGenerator.Dsp
                 delayLine.Read(channelBuffer, 0, maxRead);
 
                 // Copy the delay line into the output buffer, overwriting whatever is there.
-                VectorMath.vcopy(channelBuffer, outOffset, 1, output, outOffset + toChannel, totalChannels, maxRead);
+                VectorMath.vcopy(channelBuffer, outOffset, 1, output, outOffset + ToChannel, Channels, maxRead);
                 totalSamplesWritten = Math.Max(maxRead, totalSamplesWritten);
             }
 
@@ -39,7 +48,7 @@ namespace CorySignalGenerator.Dsp
             {
                 // We need to start writing into the buffer
                 var channelBuffer = new float[perChannelCount];
-                VectorMath.vscale(buffer, offset + fromChannel, totalChannels, channelBuffer, 0, 1, decay, perChannelRead);
+                VectorMath.vscale(buffer, offset + FromChannel, Channels, channelBuffer, 0, 1, Decay, perChannelRead);
                 delayLine.Write(channelBuffer, 0, perChannelRead);
 
             }
@@ -48,11 +57,11 @@ namespace CorySignalGenerator.Dsp
             if (samplesRead < count)
             {
                 var endOfOriginalRead = count - samplesRead;
-                var leftOver = endOfOriginalRead / totalChannels;
+                var leftOver = endOfOriginalRead / Channels;
                 var bufferCount = (int)Math.Min(leftOver, delayLine.Count);
                 var channelBuffer = new float[perChannelCount];
                 delayLine.Read(channelBuffer, endOfOriginalRead, bufferCount);
-                VectorMath.vcopy(channelBuffer, 0, 1, output, outOffset + endOfOriginalRead + toChannel, totalChannels, bufferCount);
+                VectorMath.vcopy(channelBuffer, 0, 1, output, outOffset + endOfOriginalRead + ToChannel, Channels, bufferCount);
                 totalSamplesWritten += bufferCount;
             }
             return totalSamplesWritten;

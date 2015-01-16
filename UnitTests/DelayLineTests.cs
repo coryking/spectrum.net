@@ -11,8 +11,9 @@ namespace UnitTests
         [TestMethod]
         public void TestDelayLine_to_same_channel()
         {
-            var delayLine = new DelayLine(44100);
             var decayFactor = 0.5f;
+            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 2, Channels=2 };
+
             var buffers = new float[][]{
                 new float[]{1,0, 0,0},
                 new float[]{2,0, 0,0},
@@ -30,9 +31,9 @@ namespace UnitTests
             {
                 var amountRead = 0;
                 if (lastItem)
-                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 0, decayFactor, 2, 0, 0, 2);
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 0);
                 else
-                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4, decayFactor, 2, 0, 0, 2);
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4);
 
                 Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
@@ -42,8 +43,8 @@ namespace UnitTests
         [TestMethod]
         public void TestDelayLine_to_diff_channel()
         {
-            var delayLine = new DelayLine(44100);
             var decayFactor = 0.5f;
+            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 2, Channels = 2, FromChannel=0, ToChannel=1 };
 
             var buffers = new float[][] {
                 new float[]{ 1, 0, 0, 0 },
@@ -61,7 +62,7 @@ namespace UnitTests
 
             TestDelayLineStage(buffers, expectedResults, (i, lastItem, input, output) =>
             {
-                var amountRead = delayLine.ConvolveDelayLine(input, 0, output,0, 4, 4, decayFactor, 2, 0, 1, 2);
+                var amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4);
                 Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
 
