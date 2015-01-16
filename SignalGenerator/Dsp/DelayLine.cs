@@ -25,7 +25,7 @@ namespace CorySignalGenerator.Dsp
 
         public float Decay { get; set; }
 
-        public int ConvolveDelayLine(float[] buffer, int offset, float[] output, int outOffset, int count, int samplesRead)
+        public int ConvolveDelayLine(float[] buffer, int offset, int samplesRead, float[] output, int outOffset, int count)
         {
             
             var perChannelRead = samplesRead / Channels;

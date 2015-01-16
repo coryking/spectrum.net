@@ -31,9 +31,9 @@ namespace UnitTests
             {
                 var amountRead = 0;
                 if (lastItem)
-                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 0);
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, 0, output, 0, 4);
                 else
-                    amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4);
+                    amountRead = delayLine.ConvolveDelayLine(input, 0, 4, output, 0, 4);
 
                 Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
@@ -62,7 +62,7 @@ namespace UnitTests
 
             TestDelayLineStage(buffers, expectedResults, (i, lastItem, input, output) =>
             {
-                var amountRead = delayLine.ConvolveDelayLine(input, 0, output, 0, 4, 4);
+                var amountRead = delayLine.ConvolveDelayLine(input, 0, 4, output, 0, 4);
                 Assert.AreEqual(2, amountRead, String.Format("Item: {0}", i));
             });
 
