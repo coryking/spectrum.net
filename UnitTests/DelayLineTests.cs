@@ -12,7 +12,7 @@ namespace UnitTests
         public void TestDelayLine_to_same_channel()
         {
             var decayFactor = 0.5f;
-            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 2, Channels=2 };
+            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 1, Channels=2 };
 
             var buffers = new float[][]{
                 new float[]{1,0, 0,0},
@@ -44,7 +44,7 @@ namespace UnitTests
         public void TestDelayLine_to_diff_channel()
         {
             var decayFactor = 0.5f;
-            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 2, Channels = 2, FromChannel=0, ToChannel=1 };
+            var delayLine = new DelayLine(44100) { Decay = decayFactor, SampleDelay = 1, Channels = 2, FromChannel=0, ToChannel=1 };
 
             var buffers = new float[][] {
                 new float[]{ 1, 0, 0, 0 },

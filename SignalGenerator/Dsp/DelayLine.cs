@@ -30,13 +30,12 @@ namespace CorySignalGenerator.Dsp
             
             var perChannelRead = samplesRead / Channels;
             var perChannelCount = count / Channels;
-            var perChannelDelay = SampleDelay / Channels;
             var totalSamplesWritten = perChannelRead; // this is the total samples written
 
 
             
             // if the amount of stuff in the buffer is more than our delay, start using it!
-            if (delayLine.Count > perChannelDelay)
+            if (delayLine.Count > SampleDelay)
             {
                 var channelBuffer = new float[perChannelCount];
                 var maxRead = (int)Math.Min(perChannelCount, delayLine.Count);
@@ -47,7 +46,7 @@ namespace CorySignalGenerator.Dsp
                 totalSamplesWritten = Math.Max(maxRead, totalSamplesWritten);
             }
 
-            if (delayLine.Count <= perChannelDelay)
+            if (delayLine.Count <= SampleDelay)
             {
                 
 

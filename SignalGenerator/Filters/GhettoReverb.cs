@@ -204,7 +204,7 @@ namespace CorySignalGenerator.Filters
 
         protected int GetSampleDelay(float ms)
         {
-            return (int)(ms * SampleRate / 1000); // ms * samples/s * s/ms = samples
+            return (int)(ms * SampleRate / 1000) / Channels; // ms * samples/s * s/ms = samples
         }
     }
 }

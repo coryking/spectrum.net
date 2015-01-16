@@ -61,7 +61,7 @@ namespace UnitTests
             reverbFilter.SecondaryDecay = secondDecayFactor;
             reverbFilter.SampleSecondaryDelayLeft = 0;
             reverbFilter.SampleSecondaryDelayRight = 0;
-            reverbFilter.SampleDelay = 2;
+            reverbFilter.SampleDelay = 1;
             
 
             for (int i = 0; i < buffers.Length; i++)
