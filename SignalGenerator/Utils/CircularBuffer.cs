@@ -190,6 +190,7 @@ namespace CorySignalGenerator.Utils
             byteCount = 0;
             readPosition = 0;
             writePosition = 0;
+            Array.Clear(buffer, 0, buffer.Length);
         }
 
         /// <summary>

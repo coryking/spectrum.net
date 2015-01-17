@@ -126,5 +126,11 @@ namespace CorySignalGenerator.Dsp
         }
 
 
+
+        public void Reset()
+        {
+            phase = DelayLinePhase.ReadWrite;
+            delayLine.Reset();
+        }
     }
 }

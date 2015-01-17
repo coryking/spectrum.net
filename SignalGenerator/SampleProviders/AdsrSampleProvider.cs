@@ -73,7 +73,7 @@ namespace CorySignalGenerator.SampleProviders
         /// <summary>
         /// Reads audio from this sample provider
         /// </summary>
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             if (adsr.State == EnvelopeGenerator.EnvelopeState.Idle) return 0; // we've finished
             var samplesTaken = Source.Read(buffer, offset, count);

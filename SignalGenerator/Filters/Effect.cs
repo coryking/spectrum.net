@@ -36,6 +36,16 @@ namespace CorySignalGenerator.Filters
         /// </summary>
         protected virtual void Init() { }
 
+        public int Read(float[] buffer, int offset, int count)
+        {
+            if (IsEnabled)
+                return OnRead(buffer, offset, count);
+
+            if (Source != null)
+                return Source.Read(buffer, offset, count);
+
+            return 0;
+        }
 
         /// <summary>
         /// The meat of this filter.
@@ -44,8 +54,35 @@ namespace CorySignalGenerator.Filters
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public abstract int Read(float[] buffer, int offset, int count);
-        
+        protected abstract int OnRead(float[] buffer, int offset, int count);
+
+        // Reset the filter
+        protected virtual void Reset()
+        {
+            // Do nothing
+        }
+        #region Property IsEnabled
+        private bool _isEnabled = true;
+
+        /// <summary>
+        /// Sets and gets the IsEnabled property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool IsEnabled
+        {
+            get
+            {
+                return _isEnabled;
+            }
+            set
+            {
+                Set(ref _isEnabled, value);
+                Reset();
+            }
+        }
+        #endregion
+		
+
         public ISampleProvider Source
         {
             get;
@@ -67,5 +104,6 @@ namespace CorySignalGenerator.Filters
         {
             get { return WaveFormat.SampleRate; }
         }
+
     }
 }

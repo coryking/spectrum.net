@@ -122,6 +122,9 @@
     <Compile Include="..\SignalGenerator\Extensions\EnumerableExtensions.cs">
       <Link>Extensions\EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Filters\ChorusEffect.cs">
+      <Link>Filters\ChorusEffect.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Filters\DynamicConvolvingFilter.cs">
       <Link>Filters\DynamicConvolvingFilter.cs</Link>
     </Compile>
@@ -151,6 +154,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
       <Link>Filters\SuperPitch.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\JSNet\Chorus.cs">
+      <Link>JSNet\Chorus.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\JSNet\Effect.cs">
       <Link>JSNet\Effect.cs</Link>

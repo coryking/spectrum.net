@@ -61,8 +61,16 @@ namespace CorySignalGenerator.Filters
                 _delayLines[3].SampleDelay = SampleSecondaryDelayLeft + SampleDelay;
             }
         }
+        protected override void Reset()
+        {
+            base.Reset();
+            foreach (var delayLine in _delayLines)
+            {
+                delayLine.Reset();
+            }
+        }
 
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             // Zero out the destination buffer just to be safe
             Array.Clear(buffer, 0, count);

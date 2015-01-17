@@ -70,7 +70,7 @@ namespace CorySignalGenerator.Filters
             dirtyParams = true;
         }
         
-        public override int Read(float[] buffer, int offset, int sampleCount)
+        protected override int OnRead(float[] buffer, int offset, int sampleCount)
         {
             //var sourceBuffer = new float[sampleCount];
             int samplesRead = Source.Read(buffer, 0, sampleCount);

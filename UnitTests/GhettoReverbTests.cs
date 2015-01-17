@@ -67,7 +67,7 @@ namespace UnitTests
 
             for (int i = 0; i < buffers.Length; i++)
 			{
-                var amountRead = reverbFilter.Read(actualResults[i], 0, 4);
+                var amountRead = reverbFilter.OnRead(actualResults[i], 0, 4);
                 Assert.AreEqual(4, amountRead);
 			}
 

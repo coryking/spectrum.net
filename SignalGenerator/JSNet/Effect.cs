@@ -100,5 +100,10 @@ namespace JSNet
         {
             return Name;
         }
+
+        public virtual void Reset()
+        {
+
+        }
     }
 }

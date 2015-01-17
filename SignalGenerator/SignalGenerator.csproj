@@ -113,6 +113,8 @@
     <Compile Include="Dsp\DelayLine.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Dsp\EqFilter.cs" />
+    <Compile Include="Filters\ChorusEffect.cs" />
+    <Compile Include="JSNet\Chorus.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />

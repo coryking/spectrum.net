@@ -132,7 +132,7 @@ namespace CorySignalGenerator.Filters
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             return m_rateChanger.Read(buffer, offset, count);
         }

@@ -16,7 +16,7 @@ namespace CorySignalGenerator.Filters
         public NormalizingFilter(ISampleProvider source) : base(source)
         {
         }
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             var samplesRead = Source.Read(buffer, offset, count);
             for (int n = 0; n < samplesRead; n++)

@@ -61,28 +61,38 @@
             <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Low Pass Filter</TextBlock>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Cutoff (hZ)</TextBlock>
             <Slider Maximum="22050" Minimum="1" Name="EffectsCutoff" Value="{Binding LowPassCutoff, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Q</TextBlock>
-            <Slider Maximum="0.99" Minimum="0.01" Name="EffectsQ" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Filter</TextBlock>
-            <ComboBox SelectedValue="{Binding ReverbFilterTypeString, Mode=TwoWay}">
-                <ComboBox.Items>
-                    <ComboBoxItem>GhettoReverb</ComboBoxItem>
-                    <ComboBoxItem>ConvolvingReverb</ComboBoxItem>
-                </ComboBox.Items>
-            </ComboBox>
+             <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Reverb Filter</TextBlock>
             <StackPanel Orientation="Vertical" DataContext="{Binding GhettoReverbFilter, Mode=TwoWay}">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                </StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
                 <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
                 <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Use EQ</TextBlock>
-                <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Use EQ</TextBlock>
+                </StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
                 <Slider Maximum="22050" Minimum="1" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
                 <Slider Maximum="22050" Minimum="1"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
             </StackPanel>
-
+            <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Chorus</TextBlock>
+            <StackPanel Orientation="Vertical" DataContext="{Binding ChorusEffectFilter, Mode=TwoWay}">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                </StackPanel>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Chorus Length (ms)</TextBlock>
+                <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
+                <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Rate (hz)</TextBlock>
+                <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
+            </StackPanel>
         </StackPanel>
        
     </Grid>

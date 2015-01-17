@@ -32,7 +32,7 @@ namespace CorySignalGenerator.Filters
             }
         }
 
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             var samplesRead = _head.Read(buffer, offset, count);
             for (var i = 0; i < samplesRead; i++)

@@ -32,6 +32,17 @@ namespace CorySignalGenerator.Models
         {
             return Set(ref field, (float)Math.Min(maxValue, newValue), minValue, propertyName);
         }
+        protected bool Set(ref int field, int newValue, int minValue, [CallerMemberName] string propertyName = null)
+        {
+            return Set(ref field, (int)Math.Max(minValue, newValue), propertyName);
+        }
+
+        protected bool Set(ref int field, int newValue, int minValue, int maxValue, [CallerMemberName] string propertyName = null)
+        {
+            return Set(ref field, (int)Math.Min(maxValue, newValue), minValue, propertyName);
+        }
+
+
 
         protected virtual void HandlePropertyChanged(string propertyName){
             // do nothings

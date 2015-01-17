@@ -58,7 +58,7 @@ namespace CorySignalGenerator.Filters
             
         }
 
-        public override int Read(float[] buffer, int offset, int count)
+        protected override int OnRead(float[] buffer, int offset, int count)
         {
             var samplesRead = Source.Read(buffer, offset, count);
 
@@ -75,6 +75,13 @@ namespace CorySignalGenerator.Filters
             }
             return samplesRead;
         }
+
+        protected override void Reset()
+        {
+            base.Reset();
+            Effect.Reset();
+        }
+
 
         public void Stop()
         {
