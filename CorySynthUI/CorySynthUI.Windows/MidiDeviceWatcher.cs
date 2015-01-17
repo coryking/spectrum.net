@@ -70,7 +70,6 @@ namespace CorySynthUI
             Task.Run(async () =>
             {
                 _deviceInfoCollection = await DeviceInformation.FindAllAsync(WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector());
-
             }).Wait();
             OnMidiDevicesChanged();
         }

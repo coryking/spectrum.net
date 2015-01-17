@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Extensions;
 using CorySignalGenerator.Dsp;
+using System.Threading;
 namespace CorySignalGenerator.Filters
 {
     public class GhettoReverb : Effect
@@ -75,7 +76,7 @@ namespace CorySignalGenerator.Filters
 
             var readFromConvolver = 0;
             var isEnd = (samplesRead < count);
-            var reverbBuffer = new float[MaxDelaySamples];
+            var reverbBuffer = new float[count];
 
             // Read from the delay line...
             if (Channels==1)
@@ -84,42 +85,34 @@ namespace CorySignalGenerator.Filters
             }
             else if(Channels==2)
             {
-                var tempBusL = new float[MaxDelaySamples];
-                var tempBusR = new float[MaxDelaySamples];
-                var amountToCopy = 0;
-                
-                // Left -> Left
-                var samplesWritten = _delayLines[0].Read(tempBusL, offset, count);
-                amountToCopy = Math.Max(samplesWritten, amountToCopy);
-                // Left -> Right
-                samplesWritten = _delayLines[1].Read(tempBusL, offset, count);
-                amountToCopy = Math.Max(samplesWritten, amountToCopy);
+                var tempBus = new float[4][];
+                var reads = new int[4];
 
-                // Right -> Right
-                samplesWritten = _delayLines[2].Read(tempBusR, 0, count);
-                amountToCopy = Math.Max(samplesWritten, amountToCopy);
+                Parallel.ForEach(_delayLines, (line, state, index) =>
+                {
+                    tempBus[index] = new float[count];
+                    reads[index] = line.Read(tempBus[index], 0, count);
+                });
+                foreach (var item in reads)
+                {
+                    readFromConvolver = Math.Max(item, readFromConvolver);
+                }
+                // Combine all the streams
+                VectorMath.vadd(tempBus[0], 0, 1, tempBus[1], 0, 1, tempBus[2], 0, 1, tempBus[3], 0, 1, reverbBuffer, 0, 1, readFromConvolver);
 
-                // Right -> Left
-                samplesWritten = _delayLines[3].Read(tempBusR, 0, count);
-                amountToCopy = Math.Max(samplesWritten, amountToCopy);
-
-                // combine the two streams into our reverb stream.
-                VectorMath.vadd(tempBusL, 0, 1, tempBusR, 0, 1, reverbBuffer,0,1, amountToCopy);
-
-                readFromConvolver = amountToCopy;
             }
 
             // Apply our eq....
             if(_eqFilter != null && UseEQ)
                 _eqFilter.Transform(reverbBuffer, 0, readFromConvolver);
 
-            foreach (var delayLine in _delayLines)
+            Parallel.ForEach(_delayLines, (delayLine) =>
             {
                 // feed it back into the delay line /w scaling
                 delayLine.Accumulate(reverbBuffer, 0, readFromConvolver);
                 // add the buffer in too...
                 delayLine.Write(buffer, offset, readFromConvolver);
-            }
+            });
 
             // Add the reverb buffer into the output stream
             VectorMath.vadd(reverbBuffer, 0, 1, buffer, offset, 1, buffer, offset, 1, readFromConvolver);
