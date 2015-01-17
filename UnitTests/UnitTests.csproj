@@ -130,6 +130,7 @@
     <Compile Include="HalfComplexTests.cs" />
     <Compile Include="DelayLineTests.cs" />
     <Compile Include="GhettoReverbTests.cs" />
+    <Compile Include="MusicSampleProviderTests.cs" />
     <Compile Include="VectorMathTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,7 @@ namespace CorySignalGenerator.SampleProviders
     /// </summary>
     public class MusicSampleProvider : ISampleProvider
     {
-        private int SampleOffset;
+       
         private readonly SampleSource sampleSource;
         const int SINGLE_BYTES = 4; // four bytes per float
         private bool isFinished = false; // will be true only when non-loopable
@@ -24,7 +24,7 @@ namespace CorySignalGenerator.SampleProviders
             {
                 var rnd = new Random(Convert.ToInt32(sampleSource.SampleData[0]));
                 var nextOffset = rnd.Next(0, (sampleSource.Length / sampleSource.SampleWaveFormat.Channels) - 1);
-                SampleOffset = nextOffset * sampleSource.SampleWaveFormat.Channels;
+                _sampleOffset = nextOffset * sampleSource.SampleWaveFormat.Channels;
             }
         }
 
@@ -38,8 +38,16 @@ namespace CorySignalGenerator.SampleProviders
             get { return sampleSource.SampleData; }
         }
 
-        public bool IsLoopable { get { return sampleSource.IsLoopable; } }
+        private int _sampleOffset;
 
+        public int SampleOffset
+        {
+            get { return _sampleOffset; }
+            set { _sampleOffset = value; }
+        }
+
+        public bool IsLoopable { get { return sampleSource.IsLoopable; } }
+        public bool IsRandomStart { get { return sampleSource.IsRandomStart; } }
         public int Read(float[] buffer, int offset, int count)
         {
             if (isFinished)
