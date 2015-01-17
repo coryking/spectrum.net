@@ -55,12 +55,6 @@ namespace CorySignalGenerator.Sounds
             private set;
         }
 
-        protected bool IsWaveTableLoaded
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
         /// Number of harmonics (eg: 10)
         /// </summary>
@@ -118,7 +112,7 @@ namespace CorySignalGenerator.Sounds
 
         public NAudio.Wave.ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
-            if (!IsWaveTableLoaded)
+            if (!IsSampleTableLoaded)
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
             //var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
             //var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
@@ -162,6 +156,7 @@ namespace CorySignalGenerator.Sounds
        
         public void InitSamples()
         {
+            IsSampleTableLoaded = false;
             var allNotes = MidiNotes.GenerateNotes();
             var notesToGen = new List<MidiNote>();
             //var notesToSample = new int[] { 60 };
@@ -183,7 +178,14 @@ namespace CorySignalGenerator.Sounds
 
             });
             
-            IsWaveTableLoaded = true;
+            IsSampleTableLoaded = true;
+        }
+
+
+        public bool IsSampleTableLoaded
+        {
+            get;
+            private set;
         }
     }
 }

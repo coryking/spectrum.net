@@ -121,6 +121,19 @@ namespace CorySignalGenerator.Filters
             }
         }
 
+        /// <summary>
+        /// Is the reverb effect ready?
+        /// 
+        /// TODO: Make this return false when using the Convolving reverb filters
+        /// </summary>
+        public bool IsReverbReady
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public GhettoReverb GhettoReverbFilter
         {
             get

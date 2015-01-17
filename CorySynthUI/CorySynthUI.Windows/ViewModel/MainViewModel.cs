@@ -52,7 +52,7 @@ namespace CorySynthUI.ViewModel
         public void GenerateWaveTable()
         {
             StopPlaying();
-            _noteModel.InitSamples();
+            BuildWavetable();
         }
 
         #region Properties
@@ -76,6 +76,14 @@ namespace CorySynthUI.ViewModel
             get { return _canPlay; }
             set { Set(ref _canPlay, value); }
         }
+
+        private void SetCanPlay()
+        {
+
+            CanPlay = (_effects.IsReverbReady && _noteModel.IsSampleTableLoaded && !_player.IsActive && !IsPlaying);
+        }
+
+
 
         private bool _isPlaying;
         public bool IsPlaying
@@ -105,8 +113,8 @@ namespace CorySynthUI.ViewModel
 
         void _player_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            CanPlay = true;
             IsPlaying = false;
+            SetCanPlay();
         }
 
         private void BuildSignalChain()
@@ -128,13 +136,27 @@ namespace CorySynthUI.ViewModel
                 AttackSeconds = 0.5f,
                 ReleaseSeconds = 0.5f
             };
-            _noteModel.InitSamples();
+            BuildWavetable();
             _sampler = new ChannelSampleProvider(_noteModel);
             _effects = new EffectsFilter(_sampler, 2);
             _effects.GhettoReverbFilter.Decay = 0.5f;
             _effects.GhettoReverbFilter.Delay = 20f;
             HeadSampleProvider = _effects;
             
+        }
+
+        private void BuildWavetable()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                _noteModel.InitSamples();
+            }).ContinueWith((t) =>
+            {
+                _dispatcher.RunIdleAsync((e) =>
+                {
+                    SetCanPlay();
+                });
+            });
         }
 
         private void SetReverbFilter()
@@ -187,7 +209,7 @@ namespace CorySynthUI.ViewModel
             var stream = await file.OpenAsync(FileAccessMode.Read);
             if (stream == null) return;
             this.selectedStream = stream;
-            CanPlay = true;
+            SetCanPlay();
             this.SetReverbFilter();
         }
 
@@ -301,7 +323,7 @@ namespace CorySynthUI.ViewModel
             _watcher.MidiDevicesChanged += _watcher_MidiDevicesChanged;
             _watcher.Start();
 
-            CanPlay = true;
+            SetCanPlay();
             IsPlaying = false;
         }
     }

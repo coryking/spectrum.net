@@ -28,6 +28,16 @@ namespace CorySignalGenerator.Wave
             }
         }
 
+        public PlaybackState State
+        {
+            get {
+                if (waveOut == null)
+                    return PlaybackState.Stopped;
+                return waveOut.PlaybackState;
+            }
+
+        }
+
 
         public void StartPlayback(ISampleProvider provider)
         {

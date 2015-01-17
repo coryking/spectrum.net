@@ -16,6 +16,11 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         void InitSamples();
 
+        /// <summary>
+        /// Is the sample table fully loaded?
+        /// </summary>
+        bool IsSampleTableLoaded { get; }
+
         ISampleProvider GetProvider(float frequency, int velocity, int noteNumber);
     }
 }

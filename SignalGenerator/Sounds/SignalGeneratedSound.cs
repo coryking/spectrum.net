@@ -46,5 +46,12 @@ namespace CorySignalGenerator.Sounds
             return;
         }
 
+
+
+        public bool IsSampleTableLoaded
+        {
+            get;
+            private set;
+        }
     }
 }
