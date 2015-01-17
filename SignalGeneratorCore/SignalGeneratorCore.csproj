@@ -245,6 +245,9 @@
     <Compile Include="..\SignalGenerator\Utils\CircularBuffer.cs">
       <Link>Utils\CircularBuffer.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Utils\FastMath.cs">
+      <Link>Utils\FastMath.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Utils\VectorMath.cs">
       <Link>Utils\VectorMath.cs</Link>
     </Compile>

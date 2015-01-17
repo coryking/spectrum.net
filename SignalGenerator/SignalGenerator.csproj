@@ -159,6 +159,7 @@
     <Compile Include="Sequencer\NoteTracker.cs" />
     <Compile Include="Utils\BasicCircularBuffer.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
+    <Compile Include="Utils\FastMath.cs" />
     <Compile Include="Utils\VectorMath.cs" />
   </ItemGroup>
   <ItemGroup>

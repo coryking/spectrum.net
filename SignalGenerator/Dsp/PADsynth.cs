@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.SampleProviders;
+using CorySignalGenerator.Utils;
 using NAudio.Dsp;
 using NAudio.Wave;
 using System;
@@ -193,7 +194,7 @@ namespace CorySignalGenerator.Dsp
             //Debug.WriteLine("> x: {0}", x);
             if (x > 14.71280603) 
                 return 0.0d;//this avoids computing the e^(-x^2) where it's results are very close to zero
-            return Math.Exp(-x) / bwi;
+            return Math.Exp(-x) / bwi;// FastMath.FastExp(-x) / bwi; //Math.Exp(-x) / bwi;
         }
         /// <summary>
         /// a random number generator that returns values between 0 and 1

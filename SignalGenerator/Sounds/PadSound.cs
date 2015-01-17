@@ -170,7 +170,7 @@ namespace CorySignalGenerator.Sounds
             //var freqs = new float[] { 440f };
             Parallel.ForEach(notesToGen, (note) =>
             {
-                var harmonics = 10; // (int)Math.Max(4, Harmonics * 440 / (int)note.Frequency);
+                var harmonics = (int)Math.Max(10, Harmonics * 440 / (int)note.Frequency);
 
                 var sample =
                      PADsynth.GenerateWaveTable((float)note.Frequency, Bandwidth, BandwidthScale, harmonics, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
