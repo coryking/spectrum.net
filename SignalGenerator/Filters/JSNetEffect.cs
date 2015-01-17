@@ -10,6 +10,7 @@ namespace CorySignalGenerator.Filters
     public abstract class JSNetEffect: Effect, CorySignalGenerator.SampleProviders.IStoppableSample
     {
         protected Boolean isDirty;
+        private object locker = new object();
 
         public JSNetEffect(ISampleProvider source) : base(source)
         {
@@ -49,12 +50,16 @@ namespace CorySignalGenerator.Filters
 
         private void UpdateParams()
         {
+
             if (!isDirty)
                 return;
 
-            SetEffectParams();
-            this.Effect.Slider();
-            
+            lock (locker)
+            {
+                SetEffectParams();
+                this.Effect.Slider();
+                isDirty = false;
+            }
             
         }
 
