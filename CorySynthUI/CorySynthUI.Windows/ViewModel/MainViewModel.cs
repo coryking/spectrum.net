@@ -130,11 +130,9 @@ namespace CorySynthUI.ViewModel
             };
             _noteModel.InitSamples();
             _sampler = new ChannelSampleProvider(_noteModel);
-            _effects = new EffectsFilter(_sampler, 2)
-            {
-                ReverbDecay = 0.5f,
-                ReverbDelay = 0.25f
-            };
+            _effects = new EffectsFilter(_sampler, 2);
+            _effects.GhettoReverbFilter.Decay = 0.5f;
+            _effects.GhettoReverbFilter.Delay = 20f;
             HeadSampleProvider = _effects;
             
         }

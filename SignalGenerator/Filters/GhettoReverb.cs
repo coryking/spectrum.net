@@ -145,7 +145,7 @@ namespace CorySignalGenerator.Filters
 		
 
         #region Property HighPassCutoffFrequency
-        private float _highPassCutoffFrequency = 20000f;
+        private float _highPassCutoffFrequency = 200f;
 
         /// <summary>
         /// Sets and gets the HighPassCutoffFrequency property.
@@ -166,7 +166,7 @@ namespace CorySignalGenerator.Filters
         #endregion
 		
         #region Property LowPassCutoffFrequency
-        private float _lowPassCutoffFrequency = 200f;
+        private float _lowPassCutoffFrequency = 18000f;
 
         /// <summary>
         /// Sets and gets the LowPassCutoffFrequency property.

@@ -19,11 +19,12 @@ namespace CorySignalGenerator.Dsp
 
             _highPassFilters = new NAudio.Dsp.BiQuadFilter[Channels];
             _lowPassFilters = new NAudio.Dsp.BiQuadFilter[Channels];
+            this.CreateFilters();
         }
 
         #region Properties
         #region Property HighPassCutoff
-        private float _highPassCutoff = 22000;
+        private float _highPassCutoff = 200f;
 
         /// <summary>
         /// Sets and gets the HighPassCutoff property.
@@ -44,7 +45,7 @@ namespace CorySignalGenerator.Dsp
 
 
         #region Property LowPassCutoff
-        private float _lowPassCutoff = 200f;
+        private float _lowPassCutoff = 18000f;
 
         /// <summary>
         /// Sets and gets the LowPassCutoff property.

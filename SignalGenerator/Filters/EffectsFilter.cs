@@ -36,8 +36,6 @@ namespace CorySignalGenerator.Filters
             RebuildSignalChain();
             LowPassCutoff = 22000.0f;
             Q = 0.5f;
-            ReverbDelay = 100;
-            ReverbDecay = 0.2f;
         }
 
         private FourPolesLowPassFilter lfoFilter;
@@ -101,25 +99,6 @@ namespace CorySignalGenerator.Filters
             }
         }
 
-
-        private float _reverbDelay;
-        public float ReverbDelay
-        {
-            get { return _reverbDelay; }
-            set
-            {
-                Set(ref _reverbDelay, value, 0.0f, 2000.0f);
-            }
-        }
-
-        private float _reverbDecay;
-        public float ReverbDecay
-        {
-            get { return _reverbDecay; }
-            set {
-                Set(ref _reverbDecay, value, 0.0f, 0.49f);
-            }
-        }
 
         private float _lfoFrequency;
         public float LowPassCutoff
