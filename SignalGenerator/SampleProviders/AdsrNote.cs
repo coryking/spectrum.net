@@ -42,6 +42,13 @@ namespace CorySignalGenerator.SampleProviders
                 ReleaseSeconds = ReleaseSeconds,
                 AttackSeconds = AttackSeconds
             };
+            _provider.SampleHasStopped += _provider_SampleHasStopped;
+        }
+
+        void _provider_SampleHasStopped(object sender, EventArgs e)
+        {
+            if (SampleHasStopped != null)
+                SampleHasStopped(this, e);
         }
 
         public int Read(float[] buffer, int offset, int count)
@@ -82,5 +89,8 @@ namespace CorySignalGenerator.SampleProviders
                 _provider.Stop();
 
         }
+
+
+        public event EventHandler SampleHasStopped;
     }
 }

@@ -331,5 +331,10 @@ namespace CorySynthUI.ViewModel
             SetCanPlay();
             IsPlaying = false;
         }
+
+        internal void ResetSounds()
+        {
+            _sampler.Reset();
+        }
     }
 }

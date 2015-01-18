@@ -71,5 +71,11 @@ namespace CorySynthUI
             ViewModel.LoadReverb();
 
         }
+
+        private void ResetSounds_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ResetSounds();
+
+        }
     }
 }

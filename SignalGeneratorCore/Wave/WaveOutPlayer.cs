@@ -43,6 +43,7 @@ namespace CorySignalGenerator.Wave
         {
             if (waveOut == null)
             {
+                
                 waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
                 waveOut.Init(provider);

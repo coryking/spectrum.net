@@ -100,6 +100,7 @@ namespace CorySignalGenerator.SampleProviders
         /// </summary>
         public void Stop()
         {
+            Debug.WriteLine("Stop Note Triggered");
             NoteStopped = true;
             HandleStopping();
         }
@@ -107,12 +108,14 @@ namespace CorySignalGenerator.SampleProviders
 
         public void SustainOn()
         {
+            Debug.WriteLine("Sustain Note Triggered");
             if(!NoteStopped)
                 SustainActive = true;
         }
 
         public void SustainOff()
         {
+            Debug.WriteLine("End Sustain Triggered");
             SustainActive = false;
             HandleStopping();
         }
@@ -122,8 +125,16 @@ namespace CorySignalGenerator.SampleProviders
             // Only stop the note if the pedal isn't down...
             // Otherwise, stop the note when the pedal is lifted.
             if (!SustainActive && NoteStopped)
+            {
+                Debug.WriteLine("Going to stop note");
                 adsr.Gate(false);
+                if (SampleHasStopped != null)
+                    SampleHasStopped(this, null);
+            }
 
         }
+
+
+        public event EventHandler SampleHasStopped;
     }
 }

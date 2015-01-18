@@ -38,6 +38,7 @@
             <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>
             <Button  Content="Stop" Name="StopButton" Click="StopButton_Click"/>
             <Button Content="Load Reverb" Name="LoadReverb" Click="LoadReverb_Click"/>
+            <Button Content="Reset Sounds" Name="ResetSounds" Click="ResetSounds_Click"/>
             <ComboBox Name="MidiDevList" ItemsSource="{Binding MidiDevices}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>

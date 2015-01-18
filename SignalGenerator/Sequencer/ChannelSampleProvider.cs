@@ -44,11 +44,7 @@ namespace CorySignalGenerator.Sequencer
 
         public void StopNote(int noteNumber)
         {
-            var provider = Tracker.StopNote(noteNumber);
-            if (provider is IStoppableSample)
-            {
-                ((IStoppableSample)provider).Stop();
-            }
+            Tracker.StopNote(noteNumber);
         }
 
         public void PlayNote(int noteNumber, int velocity)
@@ -82,6 +78,12 @@ namespace CorySignalGenerator.Sequencer
                 default:
                     break;
             }
+        }
+
+        public void Reset()
+        {
+            _mixer.RemoveAllMixerInputs();
+            Tracker.Reset();
         }
     }
 }
