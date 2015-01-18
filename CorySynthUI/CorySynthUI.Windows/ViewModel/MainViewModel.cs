@@ -51,7 +51,7 @@ namespace CorySynthUI.ViewModel
 
         public void GenerateWaveTable()
         {
-            StopPlaying();
+            //StopPlaying();
             BuildWavetable();
         }
 
@@ -134,7 +134,7 @@ namespace CorySynthUI.ViewModel
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
                 AttackSeconds = 0.5f,
-                ReleaseSeconds = 0.5f
+                ReleaseSeconds = 0.5f,
             };
             BuildWavetable();
             _sampler = new ChannelSampleProvider(_noteModel);
@@ -242,6 +242,9 @@ namespace CorySynthUI.ViewModel
                     return await WindowsPreview.Devices.Midi.MidiInPort.FromIdAsync(device.Id);
                 }).ContinueWith((task) =>
                 {
+                    if (task.IsFaulted)
+                        throw task.Exception;
+
                     _midiIn = task.Result;
                     if (_midiIn == null)
                         throw new InvalidOperationException("Could not get midi device");

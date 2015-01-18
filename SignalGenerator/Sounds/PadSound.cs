@@ -13,10 +13,65 @@ using CorySignalGenerator.Models;
 using System.Diagnostics;
 using CorySignalGenerator.Filters;
 using NAudio.Wave.SampleProviders;
+using System.Collections.ObjectModel;
 
 namespace CorySignalGenerator.Sounds
 {
-    public class PadSound : ISoundModel
+    public class AmplitudeValue : PropertyChangeModel
+    {
+        public AmplitudeValue(int index)
+        {
+            Value = 0.5f;
+            Index = index;
+        }
+
+
+        #region Property Value
+        private float _value = 0.5f;
+
+        /// <summary>
+        /// Sets and gets the Value property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                Set(ref _value, value);
+            }
+        }
+        #endregion
+		
+
+        #region Property Index
+        private int _index = 1;
+
+        /// <summary>
+        /// Sets and gets the Index property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                Set(ref _index, value);
+            }
+        }
+        #endregion
+		
+
+
+    }
+
+    public class PadSound : PropertyChangeModel, ISoundModel
     {
 
         //private readonly int[] notesToSample = new int[]{
@@ -58,7 +113,28 @@ namespace CorySignalGenerator.Sounds
         /// <summary>
         /// Number of harmonics (eg: 10)
         /// </summary>
-        public int Harmonics { get; set; }
+
+        #region Property Harmonics
+        private int _harmonics = 1;
+
+        /// <summary>
+        /// Sets and gets the Harmonics property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int Harmonics
+        {
+            get
+            {
+                return _harmonics;
+            }
+            set
+            {
+                Set(ref _harmonics, value);
+                SetupAmplitudes();
+            }
+        }
+        #endregion
+		
 
         /// <summary>
         /// bandwidth in cents of the fundamental frequency (eg. 25 cents)
@@ -93,14 +169,40 @@ namespace CorySignalGenerator.Sounds
 
         public HarmonicType HarmonicType { get { return (HarmonicType)Enum.Parse(typeof(HarmonicType), HarmonicTypeString); } }
 
+        protected void SetupAmplitudes()
+        {
+            if (Amplitudes == null)
+                return;
+
+            while (Amplitudes.Count > Harmonics)
+            {
+                Amplitudes.RemoveAt(Amplitudes.Count - 1);
+            }
+            while (Amplitudes.Count < Harmonics)
+            {
+                var i = Amplitudes.Count;
+                var value = 1f;
+                if (i > 0)
+                    value = Amplitudes[i-1].Value * 0.5f;
+
+                var index = i + 1;
+                Amplitudes.Add(new AmplitudeValue(index) { Value = value });
+            }
+
+        }
+
+        public ObservableCollection<AmplitudeValue> Amplitudes { get; set; }
+
         public PadSound(WaveFormat waveFormat)
         {
             Bandwidth = 25f;
             BandwidthScale = 1.0f;
-            Harmonics = 6;
+            Amplitudes = new ObservableCollection<AmplitudeValue>();
+
+            Harmonics = 4;
             WaveFormat = waveFormat;
             SampleSize = waveFormat.SampleRate;
-            HarmonicTypeString = HarmonicType.Non_Harmonic.ToString();
+            HarmonicTypeString = HarmonicType.Linear.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
         }
 
@@ -123,7 +225,7 @@ namespace CorySignalGenerator.Sounds
             {
                 Volume = velocity / 128.0f
             };
-            var adsrProvider = new SampleProviders.AdsrSampleProvider(music_sampler)
+            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider)
             {
                 AttackSeconds=AttackSeconds,
                 ReleaseSeconds = ReleaseSeconds
@@ -156,7 +258,9 @@ namespace CorySignalGenerator.Sounds
        
         public void InitSamples()
         {
-            IsSampleTableLoaded = false;
+            if (WaveTable == null || WaveTable.Count == 0)
+                IsSampleTableLoaded = false;
+
             var allNotes = MidiNotes.GenerateNotes();
             var notesToGen = new List<MidiNote>();
             //var notesToSample = new int[] { 60 };
@@ -168,16 +272,16 @@ namespace CorySignalGenerator.Sounds
 
             Debug.WriteLine("Min Freq: {0}, Max Freq: {1}", notesToGen.Min(x=>x.Frequency), notesToGen.Max(x=>x.Frequency));
             //var freqs = new float[] { 440f };
+            var amplitude_values = Amplitudes.Select((x) => { return x.Value; }).ToArray();
+            var newWaveTable = new ConcurrentDictionary<int, SampleSource>();
             Parallel.ForEach(notesToGen, (note) =>
             {
-                var harmonics = (int)Math.Max(10, Harmonics * 440 / (int)note.Frequency);
-
                 var sample =
-                     PADsynth.GenerateWaveTable((float)note.Frequency, Bandwidth, BandwidthScale, harmonics, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
-                WaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
+                     PADsynth.GenerateWaveTable(amplitude_values, (float)note.Frequency, Bandwidth, BandwidthScale, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                newWaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
 
             });
-            
+            WaveTable = newWaveTable;
             IsSampleTableLoaded = true;
         }
 

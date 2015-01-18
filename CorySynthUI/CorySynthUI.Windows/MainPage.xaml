@@ -7,6 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="AmplitudeValueSelector">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding Index}"/>
+                <Slider Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1"/>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="10">
         <Grid.Resources>
@@ -22,7 +30,7 @@
 
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource HeaderTextBlockStyle}">Cory Synth</TextBlock>
@@ -43,19 +51,39 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" DataContext="{Binding PadSound, Mode=TwoWay}">
             <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Pad Synth</TextBlock>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonics</TextBlock>
-            <Slider Maximum="128" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="2"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
-            <Slider Maximum="50" Minimum="1" Name="PadBandwidth" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="2"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Bandwidth Scale</TextBlock>
+            <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
 
-            <Slider Minimum="0.5" Maximum="1.5" Name="PadBandwidthScale" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (seconds)</TextBlock>
-            <Slider Minimum="0" Maximum="2" Name="PadAttack" Value="{Binding AttackSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Release (seconds)</TextBlock>
-            <Slider Minimum="0" Maximum="2" Name="PadRelease" Value="{Binding ReleaseSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Attack (seconds)</TextBlock>
+            <Slider Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="2" Name="PadAttack" Value="{Binding AttackSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+                <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Release (seconds)</TextBlock>
+                <Slider  Grid.Column="1" Grid.Row="3" Minimum="0" Maximum="2" Name="PadRelease" Value="{Binding ReleaseSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+                <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
+                <Slider Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Name="PadBandwidth" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth Scale</TextBlock>
+                <Slider Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Name="PadBandwidthScale" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+
+            </Grid>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
             <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
-            <Button Name="RegeneratePadSound" Click="RegeneratePadSound_Click">Rebuild Pad Sound</Button>
+            <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        <Button Name="RegeneratePadSound" Click="RegeneratePadSound_Click">Rebuild Pad Sound</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" DataContext="{Binding EffectsFilter,Mode=TwoWay}">
             <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Low Pass Filter</TextBlock>
@@ -67,32 +95,56 @@
                     <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
                     <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
                 </StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
-                <Slider Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
-                <Slider Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
-                <StackPanel Orientation="Horizontal">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
+                    <Slider Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Name="EffectsReverbDelay" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
+                    <Slider Grid.Column="1" Grid.Row="1" Maximum="0.45" Minimum="0" Name="EffectsReverbDecay" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                </Grid>
+                    <StackPanel Orientation="Horizontal">
                     <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
                     <TextBlock Style="{StaticResource TitleTextBlockStyle}">Use EQ</TextBlock>
                 </StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
-                <Slider Maximum="22050" Minimum="1" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
-                <Slider Maximum="22050" Minimum="1"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-            </StackPanel>
-            <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Chorus</TextBlock>
-            <StackPanel Orientation="Vertical" DataContext="{Binding ChorusEffectFilter, Mode=TwoWay}">
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
+                    <Slider Grid.Column="0" Grid.Row="1" Maximum="22050" Minimum="1" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
+                    <Slider Grid.Column="1" Grid.Row="1" Maximum="22050" Minimum="1"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+
+                </Grid>
                 </StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Chorus Length (ms)</TextBlock>
-                <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
-                <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Rate (hz)</TextBlock>
-                <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
-            </StackPanel>
+            <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Chorus</TextBlock>
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
+                <StackPanel Orientation="Vertical" DataContext="{Binding ChorusEffectFilter, Mode=TwoWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                        <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Chorus Length (ms)</TextBlock>
+                    <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
+                    <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Rate (hz)</TextBlock>
+                    <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
+                </StackPanel>
+            </ScrollViewer>
         </StackPanel>
        
     </Grid>
