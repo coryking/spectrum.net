@@ -9,12 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Sounds;
-
+using MoreLinq;
 namespace CorySignalGenerator.Sequencer
 {
     public class ChannelSampleProvider : ISampleProvider
     {
         private ISoundModel _noteProvider;
+        protected bool _sustainOn;
 
         public ChannelSampleProvider(ISoundModel noteProvider)
         {
@@ -24,10 +25,10 @@ namespace CorySignalGenerator.Sequencer
             RebuildMixer();
         }
 
-        private MixingSampleProvider _mixer;
+        private ExposedMixingSampleProvider _mixer;
         private void RebuildMixer()
         {
-            _mixer = new MixingSampleProvider(WaveFormat);
+            _mixer = new ExposedMixingSampleProvider(WaveFormat);
             _mixer.ReadFully = true;
         }
 
@@ -53,6 +54,11 @@ namespace CorySignalGenerator.Sequencer
             {
                 return _noteProvider.GetProvider(freq, velocity, noteNumber);
             });
+
+            // If the sustain pedal is on, make sure all the new providers know about it
+            if (_sustainOn && provider is ISustainable)
+                ((ISustainable)provider).SustainOn();
+            
             if(provider != null)
                 _mixer.AddMixerInput(provider);
         }
@@ -62,9 +68,15 @@ namespace CorySignalGenerator.Sequencer
         private void HandlePedal(byte channel, byte controlValue)
         {
             if (controlValue == 0)
-                Tracker.PedalUp();
+            {
+                _sustainOn = false;
+                _mixer.Sources.OfType<ISustainable>().ForEach(x => x.SustainOff());
+            }
             else
-                Tracker.PedalDown();
+            {
+                _sustainOn = true; ;
+                _mixer.Sources.OfType<ISustainable>().ForEach(x => x.SustainOn());
+            }
 
         }
 

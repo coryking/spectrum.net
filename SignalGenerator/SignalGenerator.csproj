@@ -148,6 +148,7 @@
     <Compile Include="SampleProviders\IStoppableSample.cs" />
     <Compile Include="SampleProviders\ISustainable.cs" />
     <Compile Include="SampleProviders\ReadRateChangeProvider.cs" />
+    <Compile Include="SampleProviders\ExposedMixingSampleProvider.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
     <Compile Include="Sounds\ISoundModel.cs" />

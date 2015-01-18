@@ -12,7 +12,6 @@ namespace CorySignalGenerator
 {
     public class NoteTracker
     {
-        private bool SustainOn;
         private Dictionary<int, ISampleProvider> _activeNotes = new Dictionary<int, ISampleProvider>();
         private Queue<IStoppableSample> SamplesToStop;
         private MidiNotes _notes;
@@ -32,8 +31,6 @@ namespace CorySignalGenerator
 
                 Debug.WriteLine("Playing {0}", _notes[noteNumber]);
                 var sampleProvider = generator.Invoke((float)_notes[noteNumber].Frequency);
-                if (SustainOn && sampleProvider is ISustainable)
-                    ((ISustainable)sampleProvider).SustainOn();
                 _activeNotes.Add(noteNumber, sampleProvider);
                 return sampleProvider;
             }
@@ -68,25 +65,6 @@ namespace CorySignalGenerator
                
                 return provider;
             
-        }
-
-        public void PedalDown()
-        {
-            Debug.WriteLine("Somebody Pressed The Pedal");
-            lock (_lock)
-            {
-                _activeNotes.Values.OfType<ISustainable>().ForEach(x => x.SustainOn());
-                SustainOn = true;
-            }
-        }
-        public void PedalUp()
-        {
-            Debug.WriteLine("Somebody Released The Pedal");
-            lock (_lock)
-            {
-                _activeNotes.Values.OfType<ISustainable>().ForEach(x => x.SustainOff());
-                SustainOn = false;
-            }
         }
 
         public bool IsNotePlaying(int noteNumber)
