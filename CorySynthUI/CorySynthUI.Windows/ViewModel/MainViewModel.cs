@@ -133,8 +133,8 @@ namespace CorySynthUI.ViewModel
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
-                AttackSeconds = 0.5f,
-                ReleaseSeconds = 0.5f,
+                AttackMs = 0.5f,
+                ReleaseMs = 0.5f,
             };
             BuildWavetable();
             _sampler = new ChannelSampleProvider(_noteModel);

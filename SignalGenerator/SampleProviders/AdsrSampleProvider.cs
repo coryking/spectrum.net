@@ -19,58 +19,54 @@ namespace CorySignalGenerator.SampleProviders
         protected bool SustainActive;
 
         private EnvelopeGenerator adsr;
-        private float attackSeconds;
-        private float releaseSeconds;
+
 
         /// <summary>
         /// Creates a new AdsrSampleProvider with default values
         /// </summary>
-        public AdsrSampleProvider(ISampleProvider source) : base(source)
+        public AdsrSampleProvider(ISampleProvider source, float attackMs, float decayMs, float sustainLevel, float releaseMs) : base(source)
         {
-            
-        }
-        protected override void Init()
-        {
-            base.Init();
+            AttackMs = attackMs;
+            ReleaseMs = releaseMs;
+            DecayMs = decayMs;
+            SustainLevel = sustainLevel;
             adsr = new EnvelopeGenerator();
-            AttackSeconds = 0.01f;
-            adsr.SustainLevel = 1.0f;
-            adsr.DecayRate = 0.0f * SampleRate;
-            ReleaseSeconds = 0.3f;
+            SetAdsrValues();
             adsr.Gate(true);
+        }
+      
+        /// <summary>
+        /// Attack time in ms
+        /// </summary>
+        public float AttackMs { get; private set; }
+        /// <summary>
+        /// Release time in ms
+        /// </summary>
+        public float ReleaseMs { get; private set; }
 
+        /// <summary>
+        /// Decay time in ms
+        /// </summary>
+        public float DecayMs { get; private set; }
+
+        public float SustainLevel { get; private set; }
+
+        protected void SetAdsrValues()
+        {
+            adsr.ReleaseRate = FromMsToSampleRate(ReleaseMs);
+            adsr.AttackRate = FromMsToSampleRate(AttackMs);
+            adsr.DecayRate = FromMsToSampleRate(DecayMs);
+            adsr.SustainLevel = SustainLevel;
         }
 
         /// <summary>
-        /// Attack time in seconds
+        /// Convert milliseconds to samples
         /// </summary>
-        public float AttackSeconds
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected float FromMsToSampleRate(float value)
         {
-            get
-            {
-                return attackSeconds;
-            }
-            set
-            {
-                attackSeconds = value;
-                adsr.AttackRate = attackSeconds * SampleRate;
-            }
-        }
-
-        /// <summary>
-        /// Release time in seconds
-        /// </summary>
-        public float ReleaseSeconds
-        {
-            get
-            {
-                return releaseSeconds;
-            }
-            set
-            {
-                releaseSeconds = value;
-                adsr.ReleaseRate = releaseSeconds * SampleRate;
-            }
+            return value * SampleRate / 1000;
         }
 
         /// <summary>

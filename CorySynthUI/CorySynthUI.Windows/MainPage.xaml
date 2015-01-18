@@ -64,15 +64,26 @@
                     <RowDefinition/>
                     <RowDefinition/>
 
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Attack (seconds)</TextBlock>
-            <Slider Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="2" Name="PadAttack" Value="{Binding AttackSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
-                <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Release (seconds)</TextBlock>
-                <Slider  Grid.Column="1" Grid.Row="3" Minimum="0" Maximum="2" Name="PadRelease" Value="{Binding ReleaseSeconds, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
                 <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
                 <Slider Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Name="PadBandwidth" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                
                 <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth Scale</TextBlock>
                 <Slider Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Name="PadBandwidthScale" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
+                <Slider Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                
+                <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Release (ms)</TextBlock>
+                <Slider  Grid.Column="1" Grid.Row="3" Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="4" Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
+                <Slider Grid.Column="0" Grid.Row="5" Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                
+                <TextBlock  Grid.Column="1" Grid.Row="4" Style="{StaticResource TitleTextBlockStyle}">Sustain Level</TextBlock>
+                <Slider  Grid.Column="1" Grid.Row="5" Minimum="0.01" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
 
             </Grid>
             <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>

@@ -151,8 +151,10 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         public int SampleSize { get; set; }
 
-        public float AttackSeconds { get; set; }
-        public float ReleaseSeconds { get; set; }
+        public float AttackMs { get; set; }
+        public float ReleaseMs { get; set; }
+        public float DecayMs { get; set; }
+        public float SustainLevel { get; set; }
 
         private List<string> _harmonicTypeList = new List<string>()
         {
@@ -225,11 +227,7 @@ namespace CorySignalGenerator.Sounds
             {
                 Volume = velocity / 128.0f
             };
-            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider)
-            {
-                AttackSeconds=AttackSeconds,
-                ReleaseSeconds = ReleaseSeconds
-            };
+            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider, AttackMs,DecayMs,SustainLevel,ReleaseMs);
             ISampleProvider outputProvider;
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)

@@ -37,11 +37,8 @@ namespace CorySignalGenerator.SampleProviders
             {
                 Volume = Velocity / 128.0f
             };
-            _provider = new AdsrSampleProvider(volume)
-            {
-                ReleaseSeconds = ReleaseSeconds,
-                AttackSeconds = AttackSeconds
-            };
+            _provider = new AdsrSampleProvider(volume, AttackSeconds / 1000f, 0f, 1f, ReleaseSeconds / 1000f);
+            
         }
 
       

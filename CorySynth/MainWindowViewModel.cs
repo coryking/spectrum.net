@@ -126,16 +126,14 @@ namespace CorySignalGenerator
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
-                AttackSeconds = 0.5f,
-                ReleaseSeconds = 0.5f
+                AttackMs = 0.5f,
+                ReleaseMs = 0.5f
             };
             _noteModel.InitSamples();
             _sampler = new ChannelSampleProvider(_noteModel);
-            _effects = new EffectsFilter(_sampler, 2)
-            {
-                ReverbDecay = 0.5f,
-                ReverbDelay = 0.25f
-            };
+            _effects = new EffectsFilter(_sampler, 2);
+            _effects.GhettoReverbFilter.Delay = 0.25f;
+            _effects.GhettoReverbFilter.Decay = 0.5f;
             HeadSampleProvider = _effects;
 
         }
