@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Models;
+using CorySignalGenerator.SampleProviders;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using MoreLinq;
 namespace CorySignalGenerator
 {
     public class NoteTracker
@@ -44,6 +45,21 @@ namespace CorySignalGenerator
                 var provider = _activeNotes[noteNumber];
                 _activeNotes.Remove(noteNumber);
                 return provider;
+            }
+        }
+
+        public void PedalDown()
+        {
+            lock (_lock)
+            {
+                _activeNotes.Values.OfType<ISustainable>().ForEach(x => x.SustainOn());
+            }
+        }
+        public void PedalUp()
+        {
+            lock (_lock)
+            {
+                _activeNotes.Values.OfType<ISustainable>().ForEach(x => x.SustainOff());
             }
         }
 

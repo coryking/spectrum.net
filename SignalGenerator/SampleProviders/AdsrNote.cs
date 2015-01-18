@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.SampleProviders
 {
-    public abstract class AdsrNote : ISampleProvider, IStoppableSample
+    public abstract class AdsrNote : ISampleProvider, IStoppableSample, ISustainable
     {
+        protected bool NoteStopped;
+        protected bool SustainActive;
+
         public int Velocity { get; set; }
 
 
@@ -48,16 +51,36 @@ namespace CorySignalGenerator.SampleProviders
             return _provider.Read(buffer, offset, count);
         }
 
-        public void Stop()
-        {
-            if(_provider != null)
-                _provider.Stop();
-        }
-
+        
         public WaveFormat WaveFormat
         {
             get;
             private set;
+        }
+        public void Stop()
+        {
+            NoteStopped = true;
+            HandleStopping();
+        }
+
+        public void SustainOn()
+        {
+            SustainActive = true;
+        }
+
+        public void SustainOff()
+        {
+            SustainActive = false;
+            HandleStopping();
+        }
+
+        private void HandleStopping()
+        {
+            // Only stop the note if the pedal isn't down...
+            // Otherwise, stop the note when the pedal is lifted.
+            if (!SustainActive && NoteStopped && _provider != null)
+                _provider.Stop();
+
         }
     }
 }

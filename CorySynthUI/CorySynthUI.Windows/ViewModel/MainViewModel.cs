@@ -268,6 +268,8 @@ namespace CorySynthUI.ViewModel
                 case MidiMessageType.Continue:
                     break;
                 case MidiMessageType.ControlChange:
+                    var msg = (WindowsPreview.Devices.Midi.MidiControlChangeMessage)args.Message;
+                    _sampler.ControlChange(msg.Channel,msg.Controller,msg.ControlValue);
                     break;
                 case MidiMessageType.MidiTimeCode:
                     break;

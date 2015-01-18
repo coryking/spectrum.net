@@ -218,6 +218,9 @@
     <Compile Include="..\SignalGenerator\SampleProviders\IStoppableSample.cs">
       <Link>SampleProviders\IStoppableSample.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\ISustainable.cs">
+      <Link>SampleProviders\ISustainable.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\MusicSampleProvider.cs">
       <Link>SampleProviders\MusicSampleProvider.cs</Link>
     </Compile>

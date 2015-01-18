@@ -146,6 +146,7 @@
     <Compile Include="Reverb\ReverbInputBuffer.cs" />
     <Compile Include="SampleProviders\FuncSampleProvider.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />
+    <Compile Include="SampleProviders\ISustainable.cs" />
     <Compile Include="SampleProviders\ReadRateChangeProvider.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />

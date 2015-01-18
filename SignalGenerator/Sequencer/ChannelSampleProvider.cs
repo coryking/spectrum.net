@@ -63,5 +63,25 @@ namespace CorySignalGenerator.Sequencer
 
         public NoteTracker Tracker { get; set; }
 
+        private void HandlePedal(byte channel, byte controlValue)
+        {
+            if (controlValue == 0)
+                Tracker.PedalUp();
+            else
+                Tracker.PedalDown();
+
+        }
+
+        public void ControlChange(byte channel, byte controller, byte controlValue)
+        {
+            switch (controller)
+            {
+                case 64:
+                    HandlePedal(channel, controlValue);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

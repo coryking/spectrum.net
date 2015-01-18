@@ -13,8 +13,11 @@ namespace CorySignalGenerator.SampleProviders
     /// <summary>
     /// ADSR sample provider allowing you to specify attack, decay, sustain and release values
     /// </summary>
-    public class AdsrSampleProvider : Effect, IStoppableSample
+    public class AdsrSampleProvider : Effect, IStoppableSample, ISustainable
     {
+        protected bool NoteStopped;
+        protected bool SustainActive;
+
         private EnvelopeGenerator adsr;
         private float attackSeconds;
         private float releaseSeconds;
@@ -97,8 +100,30 @@ namespace CorySignalGenerator.SampleProviders
         /// </summary>
         public void Stop()
         {
-            adsr.Gate(false);
+            NoteStopped = true;
+            HandleStopping();
         }
 
+
+        public void SustainOn()
+        {
+            if(!NoteStopped)
+                SustainActive = true;
+        }
+
+        public void SustainOff()
+        {
+            SustainActive = false;
+            HandleStopping();
+        }
+
+        private void HandleStopping()
+        {
+            // Only stop the note if the pedal isn't down...
+            // Otherwise, stop the note when the pedal is lifted.
+            if (!SustainActive && NoteStopped)
+                adsr.Gate(false);
+
+        }
     }
 }
