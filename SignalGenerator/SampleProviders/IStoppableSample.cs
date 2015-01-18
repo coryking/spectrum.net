@@ -12,7 +12,5 @@ namespace CorySignalGenerator.SampleProviders
         /// Stop Playing the sound (or begin stopping)
         /// </summary>
         void Stop();
-
-        event EventHandler SampleHasStopped; 
     }
 }

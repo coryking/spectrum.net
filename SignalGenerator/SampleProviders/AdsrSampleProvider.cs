@@ -109,8 +109,10 @@ namespace CorySignalGenerator.SampleProviders
         public void SustainOn()
         {
             Debug.WriteLine("Sustain Note Triggered");
-            if(!NoteStopped)
+            if (!NoteStopped)
+            {
                 SustainActive = true;
+            }
         }
 
         public void SustainOff()
@@ -128,13 +130,10 @@ namespace CorySignalGenerator.SampleProviders
             {
                 Debug.WriteLine("Going to stop note");
                 adsr.Gate(false);
-                if (SampleHasStopped != null)
-                    SampleHasStopped(this, null);
+
             }
 
         }
 
-
-        public event EventHandler SampleHasStopped;
     }
 }

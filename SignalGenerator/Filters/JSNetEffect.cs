@@ -23,14 +23,7 @@ namespace CorySignalGenerator.Filters
             Effect = CreateEffectInstance.Invoke();
             Effect.Init();
             isDirty = true;
-            if(Source is IStoppableSample)
-                ((IStoppableSample)Source).SampleHasStopped += JSNetEffect_SampleHasStopped;
-        }
-
-        void JSNetEffect_SampleHasStopped(object sender, EventArgs e)
-        {
-            if (SampleHasStopped != null)
-                SampleHasStopped(this, e);
+            
         }
 
         /// <summary>
@@ -103,7 +96,5 @@ namespace CorySignalGenerator.Filters
                 ((SampleProviders.IStoppableSample)this.Source).Stop();
         }
 
-
-        public event EventHandler SampleHasStopped;
     }
 }
