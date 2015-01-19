@@ -5,6 +5,7 @@
     xmlns:local="using:CorySynthUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="using:CorySignalGenerator.Utils"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -18,6 +19,10 @@
                 <Slider Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" FontFamily="Global User Interface"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="SoundModelSelector">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
+        
         <DataTemplate x:Key="AdsrTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -45,6 +50,12 @@
 
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Key="SignalGeneratedSoundTemplate">
+            <StackPanel>
+                
+            </StackPanel>
+        </DataTemplate>
+        
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
@@ -184,6 +195,14 @@
                         VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" FontFamily="Global User Interface" />
                 </Grid>
             </Hub.Header>
+            <HubSection Header="Overall">
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Signal Generator</TextBlock>
+                    <ComboBox ItemsSource="{Binding ModelTypes}" SelectedItem="{Binding SelectedModel}" ItemTemplate="{StaticResource SoundModelSelector}" />
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
             <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
             <HubSection DataContext="{Binding EffectsFilter, Mode=TwoWay}" ContentTemplate="{StaticResource EffectsFilterTemplate}" Header="Effects"/>
             <HubSection DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>

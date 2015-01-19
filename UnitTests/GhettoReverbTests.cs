@@ -65,11 +65,11 @@ namespace UnitTests
             reverbFilter.SampleDelay = 2;
             
 
-            for (int i = 0; i < buffers.Length; i++)
-			{
-                var amountRead = reverbFilter.OnRead(actualResults[i], 0, 4);
-                Assert.AreEqual(4, amountRead);
-			}
+            //for (int i = 0; i < buffers.Length; i++)
+			//{
+            //    var amountRead = reverbFilter.OnRead(actualResults[i], 0, 4);
+            //    Assert.AreEqual(4, amountRead);
+			//}
 
             for (int i = 0; i < expectedResults.Length; i++)
             {

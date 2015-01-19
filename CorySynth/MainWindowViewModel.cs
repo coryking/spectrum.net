@@ -41,6 +41,7 @@ namespace CorySignalGenerator
         private WaveOutPlayer _player;
         private Dispatcher _dispatcher;
         private NAudio.Midi.MidiIn _midiIn;
+        
 
         private String reverbFile;
 
@@ -51,6 +52,28 @@ namespace CorySignalGenerator
         }
 
         #region Properties
+
+        
+        #region Property Adsr
+        private Adsr _adsr = new Adsr();
+
+        /// <summary>
+        /// Sets and gets the Adsr property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Adsr Adsr
+        {
+            get
+            {
+                return _adsr;
+            }
+            set
+            {
+                Set(ref _adsr, value);
+            }
+        }
+        #endregion
+		
 
 
         public ISampleProvider HeadSampleProvider
@@ -126,11 +149,9 @@ namespace CorySignalGenerator
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
-                AttackMs = 0.5f,
-                ReleaseMs = 0.5f
             };
             _noteModel.InitSamples();
-            _sampler = new ChannelSampleProvider(_noteModel);
+            _sampler = new ChannelSampleProvider(_noteModel, Adsr);
             _effects = new EffectsFilter(_sampler, 2);
             _effects.GhettoReverbFilter.Delay = 0.25f;
             _effects.GhettoReverbFilter.Decay = 0.5f;

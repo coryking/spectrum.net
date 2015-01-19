@@ -100,6 +100,8 @@ namespace CorySignalGenerator.Sounds
             108, 116, // octave 8
             120, 127 // octave 9
         };
+        #region Properties
+        public string Name { get { return "Pad Sound"; } }
 
         /// <summary>
         /// Wave lookup table.  Each key is a midi note number
@@ -166,6 +168,24 @@ namespace CorySignalGenerator.Sounds
 
         public HarmonicType HarmonicType { get { return (HarmonicType)Enum.Parse(typeof(HarmonicType), HarmonicTypeString); } }
 
+        public ObservableCollection<AmplitudeValue> Amplitudes { get; set; }
+
+
+        public NAudio.Wave.WaveFormat WaveFormat
+        {
+            get;
+            private set;
+        }
+
+
+        public bool IsSampleTableLoaded
+        {
+            get;
+            private set;
+        }
+
+#endregion
+
         protected void SetupAmplitudes()
         {
             if (Amplitudes == null)
@@ -188,8 +208,7 @@ namespace CorySignalGenerator.Sounds
 
         }
 
-        public ObservableCollection<AmplitudeValue> Amplitudes { get; set; }
-
+ 
         public PadSound(WaveFormat waveFormat)
         {
             Bandwidth = 25f;
@@ -201,12 +220,6 @@ namespace CorySignalGenerator.Sounds
             SampleSize = waveFormat.SampleRate;
             HarmonicTypeString = HarmonicType.Linear.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
-        }
-
-        public NAudio.Wave.WaveFormat WaveFormat
-        {
-            get;
-            private set;
         }
 
         public NAudio.Wave.ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
@@ -273,10 +286,5 @@ namespace CorySignalGenerator.Sounds
         }
 
 
-        public bool IsSampleTableLoaded
-        {
-            get;
-            private set;
-        }
     }
 }

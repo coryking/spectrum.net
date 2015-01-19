@@ -34,7 +34,6 @@ namespace CorySynthUI.ViewModel
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
 
-        private ISoundModel _noteModel;
         private ChannelSampleProvider _sampler;
         private EffectsFilter _effects;
         private WaveOutPlayer _player;
@@ -78,7 +77,7 @@ namespace CorySynthUI.ViewModel
         private void SetCanPlay()
         {
 
-            CanPlay = (_effects.IsReverbReady && _noteModel.IsSampleTableLoaded && !_player.IsActive && !IsPlaying);
+            CanPlay = (_effects.IsReverbReady && SelectedModel.IsSampleTableLoaded && !_player.IsActive && !IsPlaying);
         }
 
 
@@ -92,7 +91,55 @@ namespace CorySynthUI.ViewModel
 
         public Adsr Adsr { get; private set; }
 
-        public PadSound PadSound { get { return _noteModel as PadSound; } }
+        public PadSound PadSound { get; set; }
+
+        public SignalGeneretedSound GeneratedSound { get; set; }
+
+
+        
+        #region Property SelectedModel
+        private ISoundModel _selectedModel = null;
+
+        /// <summary>
+        /// Sets and gets the SelectedModel property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ISoundModel SelectedModel
+        {
+            get
+            {
+                return _selectedModel;
+            }
+            set
+            {
+                Set(ref _selectedModel, value);
+                if (_sampler != null)
+                    _sampler.NoteProvider = value;
+            }
+        }
+        #endregion
+		
+        
+        #region Property ModelTypes
+        private ObservableCollection<ISoundModel> _modelTypes = new ObservableCollection<ISoundModel>();
+
+        /// <summary>
+        /// Sets and gets the ModelTypes property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ObservableCollection<ISoundModel> ModelTypes
+        {
+            get
+            {
+                return _modelTypes;
+            }
+            set
+            {
+                Set(ref _modelTypes, value);
+            }
+        }
+        #endregion
+		
 
         public EffectsFilter EffectsFilter { get { return _effects; } }
 
@@ -119,15 +166,20 @@ namespace CorySynthUI.ViewModel
             //    ReleaseSeconds=0.5f,
             //    Type=NAudio.Wave.SampleProviders.SignalGeneratorType.Square,
             //};
-            _noteModel = new PadSound(baseWaveFormat)
+            PadSound = new PadSound(baseWaveFormat)
             {
                 Harmonics = 12,
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
             };
+            GeneratedSound = new SignalGeneretedSound(baseWaveFormat);
+            ModelTypes.Clear();
+            ModelTypes.Add(PadSound);
+            ModelTypes.Add(GeneratedSound);
+            SelectedModel = GeneratedSound;
             BuildWavetable();
-            _sampler = new ChannelSampleProvider(PadSound, Adsr);
+            _sampler = new ChannelSampleProvider(SelectedModel, Adsr);
             _effects = new EffectsFilter(_sampler, 2);
             _effects.GhettoReverbFilter.Decay = 0.5f;
             _effects.GhettoReverbFilter.Delay = 20f;
@@ -139,7 +191,7 @@ namespace CorySynthUI.ViewModel
         {
             Task.Factory.StartNew(() =>
             {
-                _noteModel.InitSamples();
+                PadSound.InitSamples();
             }).ContinueWith((t) =>
             {
                 _dispatcher.RunIdleAsync((e) =>

@@ -14,7 +14,7 @@ namespace CorySignalGenerator.Sequencer
 {
     public class ChannelSampleProvider : ISampleProvider
     {
-        private ISoundModel _noteProvider;
+       
         protected bool _sustainOn;
 
         IWrapSampleProvider _adsrProvider;
@@ -28,6 +28,14 @@ namespace CorySignalGenerator.Sequencer
             _adsrProvider = adsrProvider;
             RebuildMixer();
         }
+        private ISoundModel _noteProvider;
+
+        public ISoundModel NoteProvider
+        {
+            get { return _noteProvider; }
+            set { _noteProvider = value; }
+        }
+
 
         private ExposedMixingSampleProvider _mixer;
         private void RebuildMixer()
@@ -56,7 +64,7 @@ namespace CorySignalGenerator.Sequencer
         {
             var provider = Tracker.PlayNote(noteNumber, (freq) =>
             {
-                ISampleProvider sampleProvider =  _noteProvider.GetProvider(freq, velocity, noteNumber);
+                ISampleProvider sampleProvider =  NoteProvider.GetProvider(freq, velocity, noteNumber);
                 sampleProvider = new VolumeSampleProvider(sampleProvider) { Volume = (float)velocity / 128.0f };
                 if (_adsrProvider != null)
                     sampleProvider = _adsrProvider.WrapProvider(sampleProvider);

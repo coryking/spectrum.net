@@ -21,6 +21,11 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         bool IsSampleTableLoaded { get; }
 
+        /// <summary>
+        /// What is the name of this sound model
+        /// </summary>
+        string Name { get; }
+
         ISampleProvider GetProvider(float frequency, int velocity, int noteNumber);
     }
 }
