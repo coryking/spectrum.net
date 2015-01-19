@@ -25,15 +25,6 @@ namespace CorySynthUI.ViewModel
 {
     public class MainViewModel : PropertyChangeModel
     {
-        // Note about empirical tuning:
-        // The maximum FFT size affects reverb performance and accuracy.
-        // If the reverb is single-threaded and processes entirely in the real-time audio thread,
-        // it's important not to make this too high.  In this case 8192 is a good value.
-        // But, the Reverb object is multi-threaded, so we want this as high as possible without losing too much accuracy.
-        // Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
-        static readonly int MaxFFTSize = 32768;
-
-
         private MidiDeviceWatcher _watcher;
         private CoreDispatcher _dispatcher;
         private WindowsPreview.Devices.Midi.MidiInPort _midiIn;
@@ -69,6 +60,13 @@ namespace CorySynthUI.ViewModel
             get { return TicksPerBeat * BeatsPerMinute; }
         }
 
+        /// <summary>
+        /// Gets the number of ticks per millisecond
+        /// </summary>
+        public double TicksPerMs
+        {
+            get { return TicksPerMinute / (60.0 * 1000.0); }
+        }
 
         private bool _canPlay;
         public bool CanPlay
@@ -92,14 +90,8 @@ namespace CorySynthUI.ViewModel
             set { Set(ref _isPlaying, value); }
         }
 
+        public Adsr Adsr { get; private set; }
 
-        /// <summary>
-        /// Gets the number of ticks per millisecond
-        /// </summary>
-        public double TicksPerMs
-        {
-            get { return TicksPerMinute / (60.0 * 1000.0); }
-        }
         public PadSound PadSound { get { return _noteModel as PadSound; } }
 
         public EffectsFilter EffectsFilter { get { return _effects; } }
@@ -133,11 +125,9 @@ namespace CorySynthUI.ViewModel
                 Bandwidth = 20,
                 BandwidthScale = 1.0f,
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
-                AttackMs = 0.5f,
-                ReleaseMs = 0.5f,
             };
             BuildWavetable();
-            _sampler = new ChannelSampleProvider(_noteModel);
+            _sampler = new ChannelSampleProvider(PadSound, Adsr);
             _effects = new EffectsFilter(_sampler, 2);
             _effects.GhettoReverbFilter.Decay = 0.5f;
             _effects.GhettoReverbFilter.Delay = 20f;
@@ -318,6 +308,7 @@ namespace CorySynthUI.ViewModel
 
         public void Init()
         {
+            Adsr = new Adsr();
             BuildSignalChain();
             Debug.WriteLine("Latency: {0}", m_latency);
             _player = new WaveOutPlayer(m_latency);

@@ -151,11 +151,6 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         public int SampleSize { get; set; }
 
-        public float AttackMs { get; set; }
-        public float ReleaseMs { get; set; }
-        public float DecayMs { get; set; }
-        public float SustainLevel { get; set; }
-
         private List<string> _harmonicTypeList = new List<string>()
         {
             CorySignalGenerator.Dsp.HarmonicType.Linear.ToString(),
@@ -222,12 +217,6 @@ namespace CorySignalGenerator.Sounds
             //var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
             var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
             var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
-            //return music_sampler;
-            var volumeProvider = new VolumeSampleProvider(music_sampler)
-            {
-                Volume = velocity / 128.0f
-            };
-            var adsrProvider = new SampleProviders.AdsrSampleProvider(volumeProvider, AttackMs,DecayMs,SustainLevel,ReleaseMs);
             ISampleProvider outputProvider;
             var noteDelta = noteNumber - nearestNote.Note;
             if(noteDelta != 0)
@@ -237,7 +226,7 @@ namespace CorySignalGenerator.Sounds
                 var overlapSize = windowSize * 2 / 5f;
                 Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
 
-                outputProvider = new SuperPitch(adsrProvider)
+                outputProvider = new SuperPitch(music_sampler)
                 {
                     PitchOctaves=0f,
                     PitchSemitones=noteDelta,
@@ -247,7 +236,7 @@ namespace CorySignalGenerator.Sounds
             }
             else
             {
-                outputProvider =  adsrProvider;
+                outputProvider =  music_sampler;
             }
             return outputProvider;
         }

@@ -173,6 +173,9 @@
     <Compile Include="..\SignalGenerator\Models\Adsr.cs">
       <Link>Models\Adsr.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Models\IWrapSampleProvider.cs">
+      <Link>Models\IWrapSampleProvider.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Models\MidiNotes.cs">
       <Link>Models\MidiNotes.cs</Link>
     </Compile>
@@ -206,9 +209,6 @@
     <Compile Include="..\SignalGenerator\Reverb\ReverbInputBuffer.cs">
       <Link>Reverb\ReverbInputBuffer.cs</Link>
     </Compile>
-    <Compile Include="..\SignalGenerator\SampleProviders\AdsrNote.cs">
-      <Link>SampleProviders\AdsrNote.cs</Link>
-    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrSampleProvider.cs">
       <Link>SampleProviders\AdsrSampleProvider.cs</Link>
     </Compile>
@@ -232,9 +232,6 @@
     </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\SampleSource.cs">
       <Link>SampleProviders\SampleSource.cs</Link>
-    </Compile>
-    <Compile Include="..\SignalGenerator\SampleProviders\SignalGeneratorNote.cs">
-      <Link>SampleProviders\SignalGeneratorNote.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\ChannelSampleProvider.cs">
       <Link>Sequencer\ChannelSampleProvider.cs</Link>

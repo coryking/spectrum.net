@@ -18,6 +18,33 @@
                 <Slider Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" FontFamily="Global User Interface"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="AdsrTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="1" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+
+                <TextBlock  Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+
+                <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Sustain Level</TextBlock>
+                <Slider  Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="3" Minimum="0.01" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
+
+            </Grid>
+        </DataTemplate>
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
@@ -30,29 +57,12 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-
-                        <RowDefinition/>
-                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
                     <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" FontFamily="Global User Interface"/>
 
-                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Bandwidth Scale</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" >Bandwidth Scale</TextBlock>
                     <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-
-                    <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Release (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="3" Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="4" Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="5" Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-
-                    <TextBlock  Grid.Column="1" Grid.Row="4" Style="{StaticResource TitleTextBlockStyle}">Sustain Level</TextBlock>
-                    <Slider  Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="5" Minimum="0.01" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
 
                 </Grid>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
@@ -176,6 +186,7 @@
             </Hub.Header>
             <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
             <HubSection DataContext="{Binding EffectsFilter, Mode=TwoWay}" ContentTemplate="{StaticResource EffectsFilterTemplate}" Header="Effects"/>
+            <HubSection DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
         </Hub>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>

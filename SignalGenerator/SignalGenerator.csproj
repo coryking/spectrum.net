@@ -115,6 +115,7 @@
     <Compile Include="Dsp\EqFilter.cs" />
     <Compile Include="Filters\ChorusEffect.cs" />
     <Compile Include="JSNet\Chorus.cs" />
+    <Compile Include="Models\IWrapSampleProvider.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
@@ -155,10 +156,8 @@
     <Compile Include="Models\MidiNotes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleProviders\AdsrSampleProvider.cs" />
-    <Compile Include="SampleProviders\AdsrNote.cs" />
     <Compile Include="SampleProviders\MusicSampleProvider.cs" />
     <Compile Include="SampleProviders\SampleSource.cs" />
-    <Compile Include="SampleProviders\SignalGeneratorNote.cs" />
     <Compile Include="Sequencer\ChannelSampleProvider.cs" />
     <Compile Include="Sequencer\NoteTracker.cs" />
     <Compile Include="Utils\BasicCircularBuffer.cs" />

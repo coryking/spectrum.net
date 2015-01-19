@@ -17,11 +17,15 @@ namespace CorySignalGenerator.Sequencer
         private ISoundModel _noteProvider;
         protected bool _sustainOn;
 
-        public ChannelSampleProvider(ISoundModel noteProvider)
+        IWrapSampleProvider _adsrProvider;
+
+
+        public ChannelSampleProvider(ISoundModel noteProvider, IWrapSampleProvider adsrProvider)
         {
             WaveFormat = noteProvider.WaveFormat;
             Tracker = new NoteTracker();
             _noteProvider = noteProvider;
+            _adsrProvider = adsrProvider;
             RebuildMixer();
         }
 
@@ -52,9 +56,14 @@ namespace CorySignalGenerator.Sequencer
         {
             var provider = Tracker.PlayNote(noteNumber, (freq) =>
             {
-                return _noteProvider.GetProvider(freq, velocity, noteNumber);
-            });
+                ISampleProvider sampleProvider =  _noteProvider.GetProvider(freq, velocity, noteNumber);
+                sampleProvider = new VolumeSampleProvider(sampleProvider) { Volume = (float)velocity / 128.0f };
+                if (_adsrProvider != null)
+                    sampleProvider = _adsrProvider.WrapProvider(sampleProvider);
+                return sampleProvider;
 
+
+            });
             // If the sustain pedal is on, make sure all the new providers know about it
             if (_sustainOn && provider is ISustainable)
                 ((ISustainable)provider).SustainOn();

@@ -18,8 +18,6 @@ namespace CorySignalGenerator.Sounds
 
         public SignalGeneratorType Type { get; set; }
 
-        public float ReleaseSeconds { get; set; }
-        public float AttackSeconds { get; set; }
 
         public WaveFormat WaveFormat
         {
@@ -29,14 +27,12 @@ namespace CorySignalGenerator.Sounds
 
         public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
-            return new SignalGeneratorNote(WaveFormat)
+            return new SignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels)
             {
                 Frequency = frequency,
-                Velocity = velocity,
-                Type = Type,
-                ReleaseSeconds = ReleaseSeconds,
-                AttackSeconds = AttackSeconds
+                Type = Type
             };
+
         }
 
 
