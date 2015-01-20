@@ -78,5 +78,6 @@ namespace CorySynthUI
             ViewModel.ResetSounds();
 
         }
+
     }
 }

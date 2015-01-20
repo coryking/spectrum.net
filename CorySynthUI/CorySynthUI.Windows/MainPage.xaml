@@ -147,6 +147,9 @@
                 <Slider Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="AudioDeviceTemplate">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
@@ -188,6 +191,8 @@
                     <StackPanel Orientation="Vertical">
                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Signal Generator</TextBlock>
                     <ComboBox ItemsSource="{Binding ModelTypes}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" ItemTemplate="{StaticResource SoundModelSelector}" />
+                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Audio Device</TextBlock>
+                    <ComboBox ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" ItemTemplate="{StaticResource AudioDeviceTemplate}"/>
                     </StackPanel>
                 </DataTemplate>
             </HubSection>

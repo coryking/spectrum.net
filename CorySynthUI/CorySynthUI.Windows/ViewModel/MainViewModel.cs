@@ -21,7 +21,8 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using NAudioWin8Demo;
 using NAudio.Wave.SampleProviders;
-
+using NAudio.CoreAudioApi;
+using MoreLinq;
 namespace CorySynthUI.ViewModel
 {
     public class MainViewModel : PropertyChangeModel
@@ -313,7 +314,7 @@ namespace CorySynthUI.ViewModel
         {
             if (HeadSampleProvider != null)
             {
-                _player.StartPlayback(HeadSampleProvider);
+                _player.StartPlayback(HeadSampleProvider, SelectedAudioDevice);
                 IsPlaying = true;
             }
         }
@@ -425,9 +426,105 @@ namespace CorySynthUI.ViewModel
             _watcher.MidiDevicesChanged += _watcher_MidiDevicesChanged;
             _watcher.Start();
 
+            if (AudioDevices == null)
+                AudioDevices = new ObservableCollection<Windows.Devices.Enumeration.DeviceInformation>();
+            
+            audio_watcher = DeviceInformation.CreateWatcher(DeviceClass.AudioRender);
+            audio_watcher.Added += audio_watcher_Added;
+            audio_watcher.Removed += audio_watcher_Removed;
+            audio_watcher.Updated += audio_watcher_Updated;
+            audio_watcher.EnumerationCompleted += audio_watcher_EnumerationCompleted;
+            audio_watcher.Start();
             SetCanPlay();
             IsPlaying = false;
         }
+
+        async void audio_watcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        {
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (SelectedAudioDevice == null)
+                {
+                    SelectedAudioDevice = AudioDevices.FirstOrDefault();
+                }
+            });
+        }
+
+        async void audio_watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    var device = AudioDevices.Where(x => x.Id == args.Id).FirstOrDefault();
+                    if (device != null)
+                        device.Update(args);
+                });
+        }
+
+        async void audio_watcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    var device = AudioDevices.Where(x => x.Id == args.Id).FirstOrDefault();
+
+                    if(device != null)
+                        AudioDevices.Remove(device);
+                });
+        }
+
+        async void audio_watcher_Added(DeviceWatcher sender, DeviceInformation args)
+        {
+            if (args.IsEnabled)
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    AudioDevices.Add(args);
+                });
+        }
+
+        
+        #region Property AudioDevices
+        private ObservableCollection<DeviceInformation> _audioDevices;
+
+
+        /// <summary>
+        /// Sets and gets the AudioDevices property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ObservableCollection<DeviceInformation> AudioDevices
+        {
+            get
+            {
+                return _audioDevices;
+            }
+            set
+            {
+                Set(ref _audioDevices, value);
+            }
+        }
+        #endregion
+
+        
+        #region Property SelectedAudioDevice
+        private DeviceInformation _selectedAudioDevice = null;
+
+        /// <summary>
+        /// Sets and gets the SelectedAudioDevice property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public DeviceInformation SelectedAudioDevice
+        {
+            get
+            {
+                return _selectedAudioDevice;
+            }
+            set
+            {
+                Set(ref _selectedAudioDevice, value);
+            }
+        }
+        #endregion
+
+        private DeviceWatcher audio_watcher = null;
+
 
         internal void ResetSounds()
         {

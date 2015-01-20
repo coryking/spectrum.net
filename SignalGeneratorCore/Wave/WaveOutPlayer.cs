@@ -1,9 +1,11 @@
-﻿using NAudio.Wave;
+﻿using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
 
 namespace CorySignalGenerator.Wave
 {
@@ -39,12 +41,14 @@ namespace CorySignalGenerator.Wave
         }
 
 
-        public void StartPlayback(ISampleProvider provider)
+        public void StartPlayback(ISampleProvider provider, DeviceInformation device)
         {
             if (waveOut == null)
             {
-                
-                waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
+                if (device == null)
+                    waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
+                else
+                    waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(device.Id, NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
                 waveOut.PlaybackStopped += waveOut_PlaybackStopped;
                 waveOut.Init(provider);
                 waveOut.Play();
