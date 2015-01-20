@@ -20,6 +20,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using NAudioWin8Demo;
+using NAudio.Wave.SampleProviders;
 
 namespace CorySynthUI.ViewModel
 {
@@ -35,7 +36,6 @@ namespace CorySynthUI.ViewModel
         public const double BeatsPerMinute = 60;
 
         private ChannelSampleProvider _sampler;
-        private EffectsFilter _effects;
         private WaveOutPlayer _player;
 
 
@@ -77,7 +77,7 @@ namespace CorySynthUI.ViewModel
         private void SetCanPlay()
         {
 
-            CanPlay = (_effects.IsReverbReady && SelectedModel.IsSampleTableLoaded && !_player.IsActive && !IsPlaying);
+            CanPlay = (SelectedModel.IsSampleTableLoaded && !_player.IsActive && !IsPlaying);
         }
 
 
@@ -94,7 +94,73 @@ namespace CorySynthUI.ViewModel
         public PadSound PadSound { get; set; }
 
         public SignalGeneretedSound GeneratedSound { get; set; }
-                
+
+        
+        #region Property Reverb
+        private GhettoReverb _reverb = null;
+
+        /// <summary>
+        /// Sets and gets the Reverb property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public GhettoReverb Reverb
+        {
+            get
+            {
+                return _reverb;
+            }
+            set
+            {
+                Set(ref _reverb, value);
+            }
+        }
+        #endregion
+
+        
+        #region Property BandpassFilter
+        private FourPolesLowPassFilter _bandpassFilter = null;
+
+        /// <summary>
+        /// Sets and gets the BandpassFilter property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public FourPolesLowPassFilter BandpassFilter
+        {
+            get
+            {
+                return _bandpassFilter;
+            }
+            set
+            {
+                Set(ref _bandpassFilter, value);
+            }
+        }
+        #endregion
+		
+
+        #region Property Chorus
+        private ChorusEffect _chorus = null;
+
+        /// <summary>
+        /// Sets and gets the Chorus property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ChorusEffect Chorus
+        {
+            get
+            {
+                return _chorus;
+            }
+            set
+            {
+                Set(ref _chorus, value);
+            }
+        }
+        #endregion
+		
+
+        public ISampleProvider MonoToStereo { get; private set; }
+
         #region Property SelectedModel
         private ISoundModel _selectedModel = null;
 
@@ -138,9 +204,6 @@ namespace CorySynthUI.ViewModel
         }
         #endregion
 		
-
-        public EffectsFilter EffectsFilter { get { return _effects; } }
-
         #endregion
 
         public MainViewModel(CoreDispatcher dispatcher)
@@ -178,10 +241,15 @@ namespace CorySynthUI.ViewModel
             SelectedModel = GeneratedSound;
             BuildWavetable();
             _sampler = new ChannelSampleProvider(SelectedModel, Adsr);
-            _effects = new EffectsFilter(_sampler, 2);
-            _effects.GhettoReverbFilter.Decay = 0.5f;
-            _effects.GhettoReverbFilter.Delay = 20f;
-            HeadSampleProvider = _effects;
+            ISampleProvider pre_bandpass = _sampler;
+            if (_sampler.WaveFormat.Channels != 2 )
+            {
+                pre_bandpass = new MonoToStereoSampleProvider(_sampler);
+            }
+            BandpassFilter = new FourPolesLowPassFilter(pre_bandpass);
+            Chorus = new ChorusEffect(BandpassFilter);
+            Reverb = new GhettoReverb(Chorus);
+            HeadSampleProvider = Reverb;
             
         }
 
@@ -199,18 +267,6 @@ namespace CorySynthUI.ViewModel
             });
         }
 
-        private void SetReverbFilter()
-        {
-            if (selectedStream != null)
-            {
-                //var renderSliceSize = m_latency * 44100/1000;
-                using (var stream = GetWaveStream())
-                {
-                    _effects.InitConvolvingReverbFilter(stream);
-                }
-            }
-            
-        }
 
         void _watcher_MidiDevicesChanged(MidiDeviceWatcher sender)
         {
@@ -250,7 +306,7 @@ namespace CorySynthUI.ViewModel
             if (stream == null) return;
             this.selectedStream = stream;
             SetCanPlay();
-            this.SetReverbFilter();
+            //this.SetReverbFilter();
         }
 
         public void StartPlaying()
@@ -376,6 +432,7 @@ namespace CorySynthUI.ViewModel
         internal void ResetSounds()
         {
             _sampler.Reset();
+            
         }
     }
 }

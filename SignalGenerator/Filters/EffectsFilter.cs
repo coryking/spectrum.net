@@ -125,7 +125,7 @@ namespace CorySignalGenerator.Filters
 
         protected void SetFilterValues()
         {
-            _lfoFilter.Frequency = LowPassCutoff;
+            _lfoFilter.LPFrequency = LowPassCutoff;
             _lfoFilter.Q = Q;
             // GhettoReverbFilter.Decay = ReverbDecay;
             //GhettoReverbFilter.Delay = ReverbDelay;

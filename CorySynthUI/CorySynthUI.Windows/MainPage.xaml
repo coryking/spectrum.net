@@ -24,31 +24,20 @@
         </DataTemplate>
         
         <DataTemplate x:Key="AdsrTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+            <StackPanel>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
 
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="1" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
 
-                <TextBlock  Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <TextBlock  Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
+                <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
 
-                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="3" Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+                <TextBlock  Style="{StaticResource TitleTextBlockStyle}" >Sustain Level</TextBlock>
+                <Slider  Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
 
-                <TextBlock  Grid.Column="1" Grid.Row="2" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Sustain Level</TextBlock>
-                <Slider  Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="3" Minimum="0.01" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
-
-            </Grid>
+            </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel>
@@ -148,17 +137,14 @@
                 <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="EffectsFilterTemplate">
+        <DataTemplate x:Key="BandpassFilter">
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Low Pass Filter</TextBlock>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Cutoff (hZ)</TextBlock>
-                <Slider Maximum="22050" Minimum="1" Name="EffectsCutoff" Value="{Binding LowPassCutoff, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Reverb Filter</TextBlock>
-                <ContentControl ContentTemplate="{StaticResource GhettoReverbTemplate}"  DataContext="{Binding GhettoReverbFilter, Mode=TwoWay}"/>
-                <TextBlock Style="{StaticResource SubheaderTextBlockStyle}">Chorus</TextBlock>
-                <ScrollViewer VerticalScrollBarVisibility="Visible">
-                    <ContentControl ContentTemplate="{StaticResource ChorusEffectTemplate}" DataContext="{Binding ChorusEffectFilter, Mode=TwoWay}"/>
-                </ScrollViewer>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Low Frequency Cutoff (hZ)</TextBlock>
+                <Slider Maximum="22050" Minimum="200" Value="{Binding LPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">High Frequency Cutoff (hZ)</TextBlock>
+                <Slider Maximum="4000" Minimum="0" Value="{Binding HPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Q</TextBlock>
+                <Slider Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
@@ -207,8 +193,10 @@
             </HubSection>
             <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
             <HubSection DataContext="{Binding GeneratedSound, Mode=TwoWay}" ContentTemplate="{StaticResource SignalGeneratedSoundTemplate}" Header="Generated Sound"/>
-            <HubSection DataContext="{Binding EffectsFilter, Mode=TwoWay}" ContentTemplate="{StaticResource EffectsFilterTemplate}" Header="Effects"/>
-            <HubSection DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
+            <HubSection Width="300" DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
+            <HubSection DataContext="{Binding BandpassFilter,Mode=TwoWay}" ContentTemplate="{StaticResource BandpassFilter}" Header="Bandpass Pass Filter" />
+            <HubSection DataContext="{Binding Reverb, Mode=TwoWay}" ContentTemplate="{StaticResource GhettoReverbTemplate}" Header="Reverb"/>
+            <HubSection DataContext="{Binding Chorus, Mode=TwoWay}" ContentTemplate="{StaticResource ChorusEffectTemplate}" Header="Chorus"/>
         </Hub>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>

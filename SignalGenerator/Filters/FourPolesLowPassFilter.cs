@@ -18,28 +18,54 @@ namespace CorySignalGenerator.Filters
         // if true, the parameters have changed...
         private bool dirtyParams;
 
-        private List<NAudio.Dsp.BiQuadFilter> _filters;
-
-        protected List<NAudio.Dsp.BiQuadFilter> Filters
+        protected List<NAudio.Dsp.BiQuadFilter> LPFilters
         {
-            get { return _filters; }
-            private set { _filters = value; }
+            get;
+            private set;
         }
-        
-        float _frequency; // peak freq
 
-
-        public float Frequency
+        protected List<NAudio.Dsp.BiQuadFilter> HPFilters
         {
-            get { return _frequency; }
+            get;
+            private set;
+        }
+
+
+        #region Property HPFrequency
+        private float _hpfrequency = 1f;
+
+        /// <summary>
+        /// Sets and gets the HPFrequency property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float HPFrequency
+        {
+            get
+            {
+                return _hpfrequency;
+            }
             set
             {
-                Set(ref _frequency, value, 0.1f);
+                Set(ref _hpfrequency, value);
+            }
+        }
+        #endregion
+		
+
+        float _lpfrequency=22000f; // peak freq
+
+
+        public float LPFrequency
+        {
+            get { return _lpfrequency; }
+            set
+            {
+                Set(ref _lpfrequency, value, 0.1f);
             }
         }
 
 
-        private float _q;
+        private float _q=0.5f;
 
         public float Q
         {
@@ -55,12 +81,16 @@ namespace CorySignalGenerator.Filters
         }
         protected override void Init()
         {
-            _filters = new List<NAudio.Dsp.BiQuadFilter>();
-            Frequency = 600.0f;
-            Q = 0.5f;
+            LPFilters = new List<NAudio.Dsp.BiQuadFilter>();
             for (var i = 0; i < WaveFormat.Channels; i++)
             {
-                Filters.Add(NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, Frequency, Q));
+                LPFilters.Add(NAudio.Dsp.BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, LPFrequency, Q));
+                dirtyParams = false;
+            }
+            HPFilters = new List<NAudio.Dsp.BiQuadFilter>();
+            for (var i = 0; i < WaveFormat.Channels; i++)
+            {
+                HPFilters.Add(NAudio.Dsp.BiQuadFilter.HighPassFilter(WaveFormat.SampleRate, HPFrequency, Q));
                 dirtyParams = false;
             }
         }
@@ -74,24 +104,35 @@ namespace CorySignalGenerator.Filters
         {
             //var sourceBuffer = new float[sampleCount];
             int samplesRead = Source.Read(buffer, 0, sampleCount);
-            if (Frequency < 1.0f || Q < 0.01f)
+            if (LPFrequency < 1.0f || Q < 0.01f)
                 return samplesRead;
 
             if (dirtyParams)
             {
-                foreach (var filter in Filters)
+                
+                foreach (var filter in LPFilters)
                 {
-                    filter.SetLowPassFilter(SampleRate, Frequency, Q);
+                    filter.SetLowPassFilter(SampleRate, LPFrequency, Q);
                 }
+                foreach (var filter in HPFilters)
+                {
+                    filter.SetHighPassFilter(SampleRate, HPFrequency, Q);
+                }
+
                 dirtyParams = false;
             }
             for (var channel = 0; channel < WaveFormat.Channels; channel++)
             {
-                for (int i = offset + channel; i < samplesRead; i+=WaveFormat.Channels)
-                {
-                    buffer[i] = Filters[channel].Transform(buffer[i]);
+                if (LPFrequency > 0)
+                    for (int i = offset + channel; i < samplesRead; i += WaveFormat.Channels)
+                        buffer[i] = LPFilters[channel].Transform(buffer[i]);
 
-                }
+                if (HPFrequency > 0)
+                    for (int i = offset + channel; i < samplesRead; i+=WaveFormat.Channels )
+                        buffer[i] = HPFilters[channel].Transform(buffer[i]);
+
+
+                
             }
            
             return samplesRead;

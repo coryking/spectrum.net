@@ -50,8 +50,11 @@ namespace CorySignalGenerator.Utils
                 }
                 // write to end
                 int writeToEnd = Math.Min(buffer.Length - writePosition, count);
-                if (writeToEnd < 0) // if this thing gets so hosed that this is negative... we need to just start over...
+                if (writeToEnd < 0)
+                {// if this thing gets so hosed that this is negative... we need to just start over...
                     Reset();
+                    return 0;
+                }
                 //Array.Copy(data, offset, buffer, writePosition, writeToEnd);
                 Buffer.BlockCopy(srcBuffer, offset * SINGLE_BYTES, buffer, writePosition * SINGLE_BYTES, writeToEnd * SINGLE_BYTES);
                 writePosition += writeToEnd;
@@ -93,7 +96,10 @@ namespace CorySignalGenerator.Utils
                 // write to end
                 int writeToEnd = Math.Min(buffer.Length - writePosition, count);
                 if (writeToEnd < 0)
+                {
                     Reset();
+                    return 0;
+                }
                 //Buffer.BlockCopy(srcBuffer, offset * SINGLE_BYTES, buffer, writePosition * SINGLE_BYTES, writeToEnd * SINGLE_BYTES);
                 VectorMath.vadd(srcBuffer, offset, 1, buffer, writePosition, 1, buffer, writePosition, 1, writeToEnd);
                 var newWritePosition = writePosition + writeToEnd;
