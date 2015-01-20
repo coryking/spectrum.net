@@ -30,6 +30,7 @@ namespace CorySynthUI
 
             this.InitializeComponent();
             this.ViewModel.Init();
+            
         }
 
         private MainViewModel _viewModel;

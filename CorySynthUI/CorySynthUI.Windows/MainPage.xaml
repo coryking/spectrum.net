@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:util="using:CorySignalGenerator.Utils"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
-    mc:Ignorable="d">
+    mc:Ignorable="d" FontFamily="Global User Interface">
     <Page.Resources>
         <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
             <Setter Property="Margin" Value="5,0"/>
@@ -15,12 +15,12 @@
         </Style>
         <DataTemplate x:Key="AmplitudeValueSelector">
             <StackPanel Orientation="Vertical">
-                <TextBlock Text="{Binding Index}"/>
+                <TextBlock Text="{Binding Index}" FontFamily="Global User Interface"/>
                 <Slider Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" FontFamily="Global User Interface"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SoundModelSelector">
-            <TextBlock Text="{Binding Name}"/>
+            <TextBlock Text="{Binding Name}" FontFamily="Global User Interface"/>
         </DataTemplate>
         
         <DataTemplate x:Key="AdsrTemplate">
@@ -52,7 +52,9 @@
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel>
-                
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
+                <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
+
             </StackPanel>
         </DataTemplate>
         
@@ -199,11 +201,12 @@
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Signal Generator</TextBlock>
-                    <ComboBox ItemsSource="{Binding ModelTypes}" SelectedItem="{Binding SelectedModel}" ItemTemplate="{StaticResource SoundModelSelector}" />
+                    <ComboBox ItemsSource="{Binding ModelTypes}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" ItemTemplate="{StaticResource SoundModelSelector}" />
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
             <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
+            <HubSection DataContext="{Binding GeneratedSound, Mode=TwoWay}" ContentTemplate="{StaticResource SignalGeneratedSoundTemplate}" Header="Generated Sound"/>
             <HubSection DataContext="{Binding EffectsFilter, Mode=TwoWay}" ContentTemplate="{StaticResource EffectsFilterTemplate}" Header="Effects"/>
             <HubSection DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
         </Hub>

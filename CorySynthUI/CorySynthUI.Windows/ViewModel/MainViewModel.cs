@@ -94,9 +94,7 @@ namespace CorySynthUI.ViewModel
         public PadSound PadSound { get; set; }
 
         public SignalGeneretedSound GeneratedSound { get; set; }
-
-
-        
+                
         #region Property SelectedModel
         private ISoundModel _selectedModel = null;
 
