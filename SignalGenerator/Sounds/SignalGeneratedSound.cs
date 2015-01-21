@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Models;
+using CorySignalGenerator.Utils;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -37,6 +38,27 @@ namespace CorySignalGenerator.Sounds
             }
         }
         #endregion
+
+
+        
+        #region Property Pitch
+        private float _pitch = 0f;
+
+        /// <summary>
+        /// Gets / Sets the pitch of this note on a scale of -12 to 12 (-12 is one octave below, 12 is an octave above)
+        /// </summary>
+        public float Pitch
+        {
+            get
+            {
+                return _pitch;
+            }
+            set
+            {
+                Set(ref _pitch, value, -12, 12);
+            }
+        }
+        #endregion
 		
 
         public string Name { get { return "Signal Generated"; } }
@@ -52,7 +74,7 @@ namespace CorySignalGenerator.Sounds
         {
             return new SignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels)
             {
-                Frequency = frequency,
+                Frequency = FrequencyUtils.ScaleFrequency(frequency, Pitch, 12),
                 Type = Type,
            };
 

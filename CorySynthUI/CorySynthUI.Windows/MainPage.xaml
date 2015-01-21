@@ -43,7 +43,8 @@
             <StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
                 <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
-
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
+                <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
             </StackPanel>
         </DataTemplate>
         

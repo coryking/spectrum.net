@@ -131,6 +131,7 @@
     <Compile Include="DelayLineTests.cs" />
     <Compile Include="GhettoReverbTests.cs" />
     <Compile Include="MusicSampleProviderTests.cs" />
+    <Compile Include="FrequencyUtilsTests.cs" />
     <Compile Include="VectorMathTests.cs" />
   </ItemGroup>
   <ItemGroup>
