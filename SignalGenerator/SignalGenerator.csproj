@@ -145,6 +145,7 @@
     <Compile Include="Reverb\ReverbConvolver.cs" />
     <Compile Include="Reverb\ReverbConvolverStage.cs" />
     <Compile Include="Reverb\ReverbInputBuffer.cs" />
+    <Compile Include="SampleProviders\ChangableSignalGenerator.cs" />
     <Compile Include="SampleProviders\FuncSampleProvider.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />
     <Compile Include="SampleProviders\ISustainable.cs" />

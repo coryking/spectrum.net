@@ -96,9 +96,9 @@ namespace CorySignalGenerator.Sounds
             if (!IsEnabled)
                 return null;
 
-            return new SignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels)
+            return new ChangableSignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels, this)
             {
-                Frequency = FrequencyUtils.ScaleFrequency(frequency, Pitch, 12),
+                Frequency = frequency,
                 Type = Type,
            };
 
