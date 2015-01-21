@@ -22,6 +22,11 @@ namespace CorySignalGenerator.Sounds
         bool IsSampleTableLoaded { get; }
 
         /// <summary>
+        /// Gets or sets if this sound model is enabled
+        /// </summary>
+        bool IsEnabled { get; set; }
+
+        /// <summary>
         /// What is the name of this sound model
         /// </summary>
         string Name { get; }

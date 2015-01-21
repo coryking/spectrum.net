@@ -20,23 +20,15 @@ namespace CorySignalGenerator.Sequencer
         IWrapSampleProvider _adsrProvider;
 
 
-        public ChannelSampleProvider(ISoundModel noteProvider, IWrapSampleProvider adsrProvider)
+        public ChannelSampleProvider(IWrapSampleProvider adsrProvider, WaveFormat waveFormat)
         {
-            WaveFormat = noteProvider.WaveFormat;
+            WaveFormat = waveFormat;
+            NoteProviders = new List<ISoundModel>();
             Tracker = new NoteTracker();
-            _noteProvider = noteProvider;
             _adsrProvider = adsrProvider;
             RebuildMixer();
         }
-        private ISoundModel _noteProvider;
-
-        public ISoundModel NoteProvider
-        {
-            get { return _noteProvider; }
-            set { _noteProvider = value; }
-        }
-
-
+        
         private ExposedMixingSampleProvider _mixer;
         private void RebuildMixer()
         {
@@ -60,11 +52,14 @@ namespace CorySignalGenerator.Sequencer
             Tracker.StopNote(noteNumber);
         }
 
+        public List<ISoundModel> NoteProviders { get; private set; }
+
         public void PlayNote(int noteNumber, int velocity)
         {
             var provider = Tracker.PlayNote(noteNumber, (freq) =>
             {
-                ISampleProvider sampleProvider =  NoteProvider.GetProvider(freq, velocity, noteNumber);
+                var providers = NoteProviders.Where(x => x.IsEnabled).Select(x => x.GetProvider(freq, velocity, noteNumber));
+                ISampleProvider sampleProvider = new MixingSampleProvider(providers);
                 sampleProvider = new VolumeSampleProvider(sampleProvider) { Volume = (float)velocity / 128.0f };
                 if (_adsrProvider != null)
                     sampleProvider = _adsrProvider.WrapProvider(sampleProvider);

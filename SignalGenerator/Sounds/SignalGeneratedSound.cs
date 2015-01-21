@@ -19,6 +19,27 @@ namespace CorySignalGenerator.Sounds
         }
 
 
+        #region Property IsEnabled
+        private bool _isEnabled = false;
+
+        /// <summary>
+        /// Gets or sets if this sound model is enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get
+            {
+                return _isEnabled;
+            }
+            set
+            {
+                Set(ref _isEnabled, value);
+            }
+        }
+        #endregion
+		
+
+
         #region Property Type
         private SignalGeneratorType _type = SignalGeneratorType.Sin;
 
@@ -72,6 +93,9 @@ namespace CorySignalGenerator.Sounds
 
         public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
+            if (!IsEnabled)
+                return null;
+
             return new SignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels)
             {
                 Frequency = FrequencyUtils.ScaleFrequency(frequency, Pitch, 12),

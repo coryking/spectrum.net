@@ -112,6 +112,26 @@ namespace CorySignalGenerator.Sounds
             private set;
         }
 
+
+        #region Property IsEnabled
+        private bool _isEnabled = false;
+
+        /// <summary>
+        /// Gets / Sets if this is enabled
+        /// </summary>
+        public bool IsEnabled
+        {
+            get
+            {
+                return _isEnabled;
+            }
+            set
+            {
+                Set(ref _isEnabled, value);
+            }
+        }
+        #endregion
+		
         /// <summary>
         /// Number of harmonics (eg: 10)
         /// </summary>
@@ -224,6 +244,9 @@ namespace CorySignalGenerator.Sounds
 
         public NAudio.Wave.ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
+            if (!IsEnabled)
+                return null;
+
             if (!IsSampleTableLoaded)
                 throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
             //var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));

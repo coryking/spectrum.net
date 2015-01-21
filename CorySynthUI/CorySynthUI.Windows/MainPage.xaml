@@ -41,6 +41,10 @@
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                </StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
                 <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
@@ -50,6 +54,10 @@
         
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
+                </StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
                 <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 <Grid>
@@ -190,15 +198,23 @@
             <HubSection Header="Overall">
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Signal Generator</TextBlock>
-                    <ComboBox ItemsSource="{Binding ModelTypes}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" ItemTemplate="{StaticResource SoundModelSelector}" />
                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Audio Device</TextBlock>
                     <ComboBox ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" ItemTemplate="{StaticResource AudioDeviceTemplate}"/>
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
             <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
-            <HubSection DataContext="{Binding GeneratedSound, Mode=TwoWay}" ContentTemplate="{StaticResource SignalGeneratedSoundTemplate}" Header="Generated Sound"/>
+            <HubSection Header="Generated Sounds">
+                <DataTemplate>
+                    <ItemsControl ItemTemplate="{StaticResource SignalGeneratedSoundTemplate}" ItemsSource="{Binding GeneratedSounds, Mode=TwoWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </DataTemplate>
+            </HubSection>
             <HubSection Width="300" DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
             <HubSection DataContext="{Binding BandpassFilter,Mode=TwoWay}" ContentTemplate="{StaticResource BandpassFilter}" Header="Bandpass Pass Filter" />
             <HubSection DataContext="{Binding Reverb, Mode=TwoWay}" ContentTemplate="{StaticResource GhettoReverbTemplate}" Header="Reverb"/>
