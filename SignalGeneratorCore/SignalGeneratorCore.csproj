@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.props" Condition="Exists('..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -16,6 +17,7 @@
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NuGetPackageImportStamp>7f2b677e</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -209,6 +211,9 @@
     <Compile Include="..\SignalGenerator\Reverb\ReverbInputBuffer.cs">
       <Link>Reverb\ReverbInputBuffer.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\SampleProviders\AdsrEnvelopeEffect.cs">
+      <Link>SampleProviders\AdsrEnvelopeEffect.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\SampleProviders\AdsrSampleProvider.cs">
       <Link>SampleProviders\AdsrSampleProvider.cs</Link>
     </Compile>
@@ -239,8 +244,53 @@
     <Compile Include="..\SignalGenerator\Sequencer\ChannelSampleProvider.cs">
       <Link>Sequencer\ChannelSampleProvider.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IChannel.cs">
+      <Link>Sequencer\Interfaces\IChannel.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IEffect.cs">
+      <Link>Sequencer\Interfaces\IEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IEffectFactory.cs">
+      <Link>Sequencer\Interfaces\IEffectFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\INote.cs">
+      <Link>Sequencer\Interfaces\INote.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\ISampler.cs">
+      <Link>Sequencer\Interfaces\ISampler.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IVoice.cs">
+      <Link>Sequencer\Interfaces\IVoice.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\IMidiMessage.cs">
+      <Link>Sequencer\Midi\IMidiMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiControlChangeMessage.cs">
+      <Link>Sequencer\Midi\MidiControlChangeMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiMessageType.cs">
+      <Link>Sequencer\Midi\MidiMessageType.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiNoteOffMessage.cs">
+      <Link>Sequencer\Midi\MidiNoteOffMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiNoteOnMessage.cs">
+      <Link>Sequencer\Midi\MidiNoteOnMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\NoteSampler.cs">
+      <Link>Sequencer\NoteSampler.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\NoteTracker.cs">
       <Link>Sequencer\NoteTracker.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\SamplerVoice.cs">
+      <Link>Sequencer\SamplerVoice.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\SustainableNote.cs">
+      <Link>Sequencer\SustainableNote.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\VoiceController.cs">
+      <Link>Sequencer\VoiceController.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Sounds\ISoundModel.cs">
       <Link>Sounds\ISoundModel.cs</Link>
@@ -283,12 +333,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <AppxManifest Include="package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.targets" Condition="Exists('..\packages\Microsoft.WindowsPreview.MidiRT.1.0.0\build\netcore45\Microsoft.WindowsPreview.MidiRT.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

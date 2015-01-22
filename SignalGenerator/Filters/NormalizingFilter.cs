@@ -30,6 +30,8 @@ namespace CorySignalGenerator.Filters
             }
             return samplesRead;
         }
-       
+
+
+        public override string Name { get { return "Normalizing Filter"; } }
     }
 }

@@ -42,6 +42,8 @@ namespace CorySignalGenerator.Filters
             SetEffectSlider(5, this.DryMix);
 
         }
+        public override string Name { get { return "Chorus"; } }
+
         #region Properties
 
         #region Property WetMix

@@ -130,6 +130,7 @@ namespace CorySignalGenerator.Filters
 
         #region Properties
 
+        public override string Name { get { return "Ghetto Reverb"; } }
 
         #region Property UseEQ
         private bool _useEQ = true;

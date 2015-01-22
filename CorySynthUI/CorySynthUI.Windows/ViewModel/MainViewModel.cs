@@ -316,7 +316,7 @@ namespace CorySynthUI.ViewModel
         {
             if (_sampler == null || !_player.IsActive)
                 return;
-
+            
             switch (args.Message.Type)
             {
                 case MidiMessageType.ActiveSensing:

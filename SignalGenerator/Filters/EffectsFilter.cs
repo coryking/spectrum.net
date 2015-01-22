@@ -71,6 +71,8 @@ namespace CorySignalGenerator.Filters
                 _convolvingReverbFilter.LoadImpuseResponseWaveStream(stream);
         }
 
+        public override string Name { get { return "Legacy Effect Filter"; } }
+
 
         private float _lfoFrequency;
         public float LowPassCutoff

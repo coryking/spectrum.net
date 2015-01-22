@@ -13,13 +13,11 @@ namespace CorySignalGenerator
     public class NoteTracker
     {
         private Dictionary<int, ISampleProvider> _activeNotes = new Dictionary<int, ISampleProvider>();
-        private Queue<IStoppableSample> SamplesToStop;
         private MidiNotes _notes;
         private object _lock = new object();
         public NoteTracker()
         {
             _notes = MidiNotes.GenerateNotes();
-            SamplesToStop = new Queue<IStoppableSample>();
         }
 
         public ISampleProvider PlayNote(int noteNumber, Func<float,ISampleProvider> generator)

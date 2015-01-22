@@ -30,6 +30,8 @@ namespace CorySignalGenerator.Filters
             private set;
         }
 
+        public override string Name { get { return "Bandpass Filter"; } }
+
 
         #region Property HPFrequency
         private float _hpfrequency = 1f;

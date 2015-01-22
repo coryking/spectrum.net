@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Filters;
+using CorySignalGenerator.Sequencer.Interfaces;
 using NAudio.Dsp;
 using NAudio.Wave;
 using System;
@@ -13,7 +14,7 @@ namespace CorySignalGenerator.SampleProviders
     /// <summary>
     /// ADSR sample provider allowing you to specify attack, decay, sustain and release values
     /// </summary>
-    public class AdsrSampleProvider : Effect, IStoppableSample, ISustainable
+    public class AdsrSampleProvider : Effect, IEnvelopeEffect, IStoppableSample, ISustainable
     {
         protected bool NoteStopped;
         protected bool SustainActive;
@@ -34,7 +35,9 @@ namespace CorySignalGenerator.SampleProviders
             SetAdsrValues();
             adsr.Gate(true);
         }
-      
+
+        public override string Name { get { return "Adsr Sample Provider"; } }
+
         /// <summary>
         /// Attack time in ms
         /// </summary>

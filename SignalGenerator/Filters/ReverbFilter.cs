@@ -179,5 +179,7 @@ namespace CorySignalGenerator.Filters
             return (float)scale;
 
         }
+
+        public override string Name { get { return "Reverb Filter"; } }
     }
 }

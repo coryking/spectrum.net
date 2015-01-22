@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Models;
+using CorySignalGenerator.Sequencer.Interfaces;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Filters
 {
-    public abstract class Effect : PropertyChangeModel, ISampleProvider
+    public abstract class Effect : PropertyChangeModel, ISampleProvider, IEffect
     {
         protected float min(float a, float b) { return Math.Min(a, b); }
         protected float max(float a, float b) { return Math.Max(a, b); }
@@ -86,7 +87,7 @@ namespace CorySignalGenerator.Filters
         public ISampleProvider Source
         {
             get;
-            protected set;
+            set;
         }
 
         public WaveFormat WaveFormat
@@ -105,5 +106,10 @@ namespace CorySignalGenerator.Filters
             get { return WaveFormat.SampleRate; }
         }
 
+
+        public abstract string Name
+        {
+            get;
+        }
     }
 }

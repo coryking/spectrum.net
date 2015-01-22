@@ -42,6 +42,8 @@ namespace CorySignalGenerator.Filters
 
         #region properties
 
+        public override string Name { get { return "Super Pitch"; } }
+
         #region Property PitchCents
         private float _pitchCents = 0.0f;
 

@@ -43,7 +43,7 @@ namespace CorySignalGenerator.Filters
             return samplesRead;
         }
 
-       
+        public override string Name { get { return "Dynamic Convolving Filter"; } }
 
     }
 }

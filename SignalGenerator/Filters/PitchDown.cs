@@ -178,5 +178,9 @@ namespace CorySignalGenerator.Filters
             SetEffectSlider(5, WetMix);
             SetEffectSlider(6, DryMix);
         }
+
+        
+            public override string Name { get { return "PitchDown"; } }
+        
     }
 }
