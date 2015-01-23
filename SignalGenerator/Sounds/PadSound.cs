@@ -14,6 +14,8 @@ using System.Diagnostics;
 using CorySignalGenerator.Filters;
 using NAudio.Wave.SampleProviders;
 using System.Collections.ObjectModel;
+using CorySignalGenerator.Sequencer.Interfaces;
+using CorySignalGenerator.Sequencer;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -71,7 +73,7 @@ namespace CorySignalGenerator.Sounds
 
     }
 
-    public class PadSound : PropertyChangeModel, ISoundModel
+    public class PadSound : NoteSampler, ISoundModel
     {
 
         //private readonly int[] notesToSample = new int[]{
@@ -101,7 +103,9 @@ namespace CorySignalGenerator.Sounds
             120, 127 // octave 9
         };
         #region Properties
-        public string Name { get { return "Pad Sound"; } }
+        public override string Name { get { return "Pad Sound"; } }
+
+        public RelayCommand BuildWaveTableCommand { get; set; }
 
         /// <summary>
         /// Wave lookup table.  Each key is a midi note number
@@ -191,10 +195,10 @@ namespace CorySignalGenerator.Sounds
         public ObservableCollection<AmplitudeValue> Amplitudes { get; set; }
 
 
-        public NAudio.Wave.WaveFormat WaveFormat
+        public override NAudio.Wave.WaveFormat WaveFormat
         {
             get;
-            private set;
+            protected set;
         }
 
 
@@ -240,8 +244,10 @@ namespace CorySignalGenerator.Sounds
             SampleSize = waveFormat.SampleRate;
             HarmonicTypeString = HarmonicType.Linear.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
+            BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
         }
 
+        // TODO, remove this and anything else required by ISoundModel
         public NAudio.Wave.ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
             if (!IsEnabled)
@@ -277,8 +283,15 @@ namespace CorySignalGenerator.Sounds
             return outputProvider;
         }
 
-
-       
+        /// <summary>
+        /// Method that gets run when somebody executes the <see cref="BuildWaveTableCommand"/>
+        /// </summary>
+        /// <param name="parameter"></param>
+        protected void BuildWaveTableCommandExecute(object parameter)
+        {
+            InitSamples();
+        }
+        
         public void InitSamples()
         {
             if (WaveTable == null || WaveTable.Count == 0)
@@ -309,5 +322,14 @@ namespace CorySignalGenerator.Sounds
         }
 
 
+        protected override ISampleProvider GenerateNote(MidiNote note)
+        {
+            return GetProvider((float)note.Frequency, 0, note.Number);
+        }
+
+        protected override bool SupportsVelocity
+        {
+            get { return true; }
+        }
     }
 }

@@ -116,6 +116,7 @@
     <Compile Include="Filters\ChorusEffect.cs" />
     <Compile Include="JSNet\Chorus.cs" />
     <Compile Include="Models\IWrapSampleProvider.cs" />
+    <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
     <Compile Include="Dsp\PADsynth.cs" />
@@ -145,13 +146,16 @@
     <Compile Include="Reverb\ReverbConvolver.cs" />
     <Compile Include="Reverb\ReverbConvolverStage.cs" />
     <Compile Include="Reverb\ReverbInputBuffer.cs" />
-    <Compile Include="SampleProviders\AdsrEnvelopeEffect.cs" />
+    <Compile Include="SampleProviders\AdsrEnvelopeEffectFactory.cs" />
     <Compile Include="SampleProviders\ChangableSignalGenerator.cs" />
     <Compile Include="SampleProviders\FuncSampleProvider.cs" />
     <Compile Include="SampleProviders\IStoppableSample.cs" />
     <Compile Include="SampleProviders\ISustainable.cs" />
     <Compile Include="SampleProviders\ReadRateChangeProvider.cs" />
     <Compile Include="SampleProviders\ExposedMixingSampleProvider.cs" />
+    <Compile Include="Sequencer\Channel.cs" />
+    <Compile Include="Sequencer\ChannelController.cs" />
+    <Compile Include="Sequencer\SignalChain.cs" />
     <Compile Include="Sequencer\Interfaces\IChannel.cs" />
     <Compile Include="Sequencer\Interfaces\IEffect.cs" />
     <Compile Include="Sequencer\Interfaces\IEffectFactory.cs" />

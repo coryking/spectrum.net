@@ -14,27 +14,15 @@ namespace CorySignalGenerator.Sequencer
     /// </summary>
     public class SamplerVoice : IVoice
     {
-        VoiceController _controller;
-        private bool effectsDirty;
-        private object _lock = new object();
 
         public SamplerVoice(ISampler sampler)
         {
             Sampler = sampler;
             WaveFormat = sampler.WaveFormat;
-            _controller = new VoiceController(sampler);
-            Effects = new ObservableCollection<IEffect>();
-            Effects.CollectionChanged += Effects_CollectionChanged;
-            effectsDirty = true;
+            Controller = new VoiceController(sampler);
+            Effects = new SignalChain<IEffect>(Controller);
         }
 
-        void Effects_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            lock (_lock)
-            {
-                effectsDirty = true;
-            }
-        }
         protected VoiceController Controller { get; set; }
 
         /// <summary>
@@ -45,7 +33,7 @@ namespace CorySignalGenerator.Sequencer
         /// <summary>
         /// List of effects to apply to this voice (note that these are not factories, so they have to handle having their values changed while running)
         /// </summary>
-        public ObservableCollection<IEffect> Effects { get; private set; }
+        public SignalChain<IEffect> Effects { get; private set; }
 
         public string Name
         {
@@ -55,51 +43,27 @@ namespace CorySignalGenerator.Sequencer
 
         public void NoteOn(Models.MidiNote note, float velocity)
         {
-            _controller.NoteOn(note, velocity);
+            Controller.NoteOn(note, velocity);
         }
 
         public void NoteOff(Models.MidiNote note)
         {
-            _controller.NoteOff(note);
+            Controller.NoteOff(note);
         }
 
         public void SustainOn()
         {
-            _controller.SustainOn();
+            Controller.SustainOn();
         }
 
         public void SustainOff()
         {
-            _controller.SustainOff();
-        }
-
-        protected ISampleProvider EffectsChain { get; set; }
-        protected void RebuildEffectsChain()
-        {
-            lock (_lock)
-            {
-                ISampleProvider lastSource = Controller;
-                foreach (var effect in Effects)
-                {
-                    // Sanity check... everything must have the same wave format.
-                    if (effect.WaveFormat != lastSource.WaveFormat)
-                        throw new InvalidOperationException(String.Format("Sample providers do not share same WaveFormat {0}, {1}", lastSource, effect));
-
-                    effect.Source = lastSource;
-                    lastSource = effect;
-                }
-                EffectsChain = lastSource;
-                effectsDirty = false;
-            }
+            Controller.SustainOff();
         }
 
         public int Read(float[] buffer, int offset, int count)
         {
-            if (effectsDirty)
-                RebuildEffectsChain();
-
-            return EffectsChain.Read(buffer, offset, count);
-
+            return Effects.Read(buffer, offset, count);
         }
 
         public NAudio.Wave.WaveFormat WaveFormat

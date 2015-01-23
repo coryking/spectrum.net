@@ -10,17 +10,13 @@ namespace CorySignalGenerator.Sequencer.Interfaces
     /// <summary>
     /// Defines a "live" effect
     /// </summary>
-    public interface IEffect : ISampleProvider
+    public interface IEffect : ISourcedSampleProvider
     {
         /// <summary>
         /// Name of this effect
         /// </summary>
         String Name { get; }
 
-        /// <summary>
-        /// Gets or sets the source of this effect
-        /// </summary>
-        ISampleProvider Source { get; set; }
     }
 
     /// <summary>

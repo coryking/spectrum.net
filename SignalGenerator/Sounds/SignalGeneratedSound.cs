@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using CorySignalGenerator.Models;
 using CorySignalGenerator.Utils;
+using CorySignalGenerator.Sequencer;
 
 namespace CorySignalGenerator.Sounds
 {
-    public class SignalGeneretedSound: PropertyChangeModel, ISoundModel
+    public class SignalGeneretedSound: NoteSampler, ISoundModel
     {
-        public SignalGeneretedSound(WaveFormat waveFormat)
+        public SignalGeneretedSound(WaveFormat waveFormat) :base()
         {
             WaveFormat = waveFormat;
         }
@@ -82,13 +83,13 @@ namespace CorySignalGenerator.Sounds
         #endregion
 		
 
-        public string Name { get { return "Signal Generated"; } }
+        public override string Name { get { return "Signal Generated"; } }
 
 
-        public WaveFormat WaveFormat
+        public override WaveFormat WaveFormat
         {
             get;
-            private set;
+            protected set;
         }
 
         public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
@@ -114,6 +115,16 @@ namespace CorySignalGenerator.Sounds
 
 
         public bool IsSampleTableLoaded
+        {
+            get { return true; }
+        }
+
+        protected override ISampleProvider GenerateNote(MidiNote note)
+        {
+            return GetProvider((float)note.Frequency, 0, note.Number);
+        }
+
+        protected override bool SupportsVelocity
         {
             get { return true; }
         }

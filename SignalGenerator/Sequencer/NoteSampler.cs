@@ -1,4 +1,6 @@
-﻿using CorySignalGenerator.Sequencer.Interfaces;
+﻿using CorySignalGenerator.Models;
+using CorySignalGenerator.SampleProviders;
+using CorySignalGenerator.Sequencer.Interfaces;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -11,16 +13,19 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Sequencer
 {
-    public abstract class NoteSampler :ISampler
+    public abstract class NoteSampler : PropertyChangeModel, ISampler
     {
         public NoteSampler()
         {
             Effects = new ObservableCollection<IEffectFactory>();
+            // for now, set a reasonable default...
+            Envelope = new AdsrEnvelopeEffectFactory();
         }
 
         public abstract NAudio.Wave.WaveFormat WaveFormat
         {
             get;
+            protected set;
         }
 
         public INote GetNote(Models.MidiNote note, float velocity)
