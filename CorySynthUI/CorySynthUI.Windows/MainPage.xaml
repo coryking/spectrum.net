@@ -11,6 +11,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <models:AvailableVoices x:Key="availableVoices"/>
+        
         <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
             <Setter Property="Margin" Value="5,0"/>
             <Setter Property="Orientation" Value="Horizontal"/>
@@ -161,6 +162,10 @@
         <DataTemplate x:Key="DeviceInformationTemplate">
             <TextBlock Text="{Binding Name}"/>
         </DataTemplate>
+        <models:SamplerDataTemplateSelector
+            x:Key="samplerDataTemplateSelector" 
+            PadSoundDataTemplate="{StaticResource PadSoundTemplate}"
+            SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
@@ -203,17 +208,25 @@
                 Name="AvailableVoices" 
                 ItemsSource="{Binding GetChoices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
                 
-            <Button Command="{Binding MidiChannel.AddVoiceCommand}" CommandParameter="{Binding ElementName=AvailableVoices,Path=SelectedValue}">
+            <Button Command="{Binding MidiChannel.AddVoiceCommand}" 
+                    CommandParameter="{Binding ElementName=AvailableVoices,Path=SelectedValue}">
                 Add Voice
             </Button>
         </StackPanel>
         </Grid>
-        <Hub Grid.Column="1"
-             DataContext="{Binding SelectedItem, ElementName=VoiceList}">
+        <Hub Grid.Column="1"  DataContext="{Binding SelectedItem, ElementName=VoiceList}">
             <Hub.Sections>
-
+                <HubSection >
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Name}"/>
+                            <ContentControl Content="{Binding Sampler}" ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </HubSection>
             </Hub.Sections>
         </Hub>
+        
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
