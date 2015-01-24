@@ -20,6 +20,12 @@ namespace CorySignalGenerator.Filters
         private List<DelayLine> _delayLines;
         private EqFilter _eqFilter;
 
+        public GhettoReverb(WaveFormat format)
+            : base(format)
+        {
+
+        }
+
         public GhettoReverb(ISampleProvider source) : base(source)
         {
         }

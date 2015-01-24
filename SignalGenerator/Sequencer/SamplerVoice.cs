@@ -20,7 +20,7 @@ namespace CorySignalGenerator.Sequencer
             Sampler = sampler;
             WaveFormat = sampler.WaveFormat;
             Controller = new VoiceController(sampler);
-            Effects = new SignalChain<IEffect>(Controller);
+            Effects = new EffectChain(Controller);
         }
 
         protected VoiceController Controller { get; set; }
@@ -33,7 +33,7 @@ namespace CorySignalGenerator.Sequencer
         /// <summary>
         /// List of effects to apply to this voice (note that these are not factories, so they have to handle having their values changed while running)
         /// </summary>
-        public SignalChain<IEffect> Effects { get; private set; }
+        public EffectChain Effects { get; private set; }
 
         public string Name
         {

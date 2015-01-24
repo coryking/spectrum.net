@@ -36,6 +36,11 @@ namespace CorySignalGenerator.Sequencer
                 return null;
 
             ISampleProvider lastSampler = GenerateNote(note);
+            
+            Debug.Assert(lastSampler != null);
+            if (lastSampler == null)
+                return null;
+            
             // wrap the sampler in its effects...
             foreach (var effect in Effects)
             {

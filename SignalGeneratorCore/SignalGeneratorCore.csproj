@@ -253,6 +253,9 @@
     <Compile Include="..\SignalGenerator\Sequencer\ChannelSampleProvider.cs">
       <Link>Sequencer\ChannelSampleProvider.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\EffectChain.cs">
+      <Link>Sequencer\EffectChain.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IChannel.cs">
       <Link>Sequencer\Interfaces\IChannel.cs</Link>
     </Compile>

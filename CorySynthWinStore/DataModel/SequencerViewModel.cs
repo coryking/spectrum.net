@@ -11,10 +11,8 @@ using WindowsPreview.Devices.Midi;
 using Windows.UI.Core;
 using System.Collections.ObjectModel;
 using Windows.Devices.Enumeration;
-using CorySignalGenerator.Sounds;
-using CorySignalGenerator.Sequencer.Interfaces;
 
-namespace CorySynthUI.ViewModel
+namespace CorySynthWinStore.Data
 {
     public class SequencerViewModel : PropertyChangeModel, IDisposable
     {
@@ -26,20 +24,10 @@ namespace CorySynthUI.ViewModel
 
             WaveOut = new WaveOutPlayer(Latency);
             WaveOut.PlaybackStopped +=WaveOut_PlaybackStopped;
-            WaveOut.PropertyChanged += WaveOut_PropertyChanged;
 
             MidiDevice = new MidiDevice();
             MidiDevice.MessageReceived += MidiDevice_MessageReceived;
 
-            InitalizeRelayCommands();
-        }
-
-        void WaveOut_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (StartRecordingCommand != null)
-                StartRecordingCommand.RaiseCanExecuteChanged();
-            if (StopRecordingCommand != null)
-                StopRecordingCommand.RaiseCanExecuteChanged();
         }
 
         
@@ -47,11 +35,11 @@ namespace CorySynthUI.ViewModel
 
         private void InitalizeRelayCommands()
         {
-            StartRecordingCommand = new RelayCommand(OnStartRecording, CanStartRecording);
-            StopRecordingCommand = new RelayCommand(OnStopRecording, CanStopRecording);
+            StartRecording = new RelayCommand(OnStartRecording, CanStartRecording);
+            StopRecording = new RelayCommand(OnStopRecording, CanStopRecording);
         }
 
-        public RelayCommand StartRecordingCommand { get; private set; }
+        public RelayCommand StartRecording { get; private set; }
 
         protected void OnStartRecording(object parameter)
         {
@@ -64,7 +52,7 @@ namespace CorySynthUI.ViewModel
             return !IsRecording && WaveOut != null && SelectedAudioDevice != null;
         }
 
-        public RelayCommand StopRecordingCommand { get; private set; }
+        public RelayCommand StopRecording { get; private set; }
 
         protected void OnStopRecording(object parameter)
         {
@@ -100,30 +88,6 @@ namespace CorySynthUI.ViewModel
 
         #region Properties
 
-
-        
-        #region Property SelectedVoice
-        private IVoice _selectedVoice = null;
-
-        /// <summary>
-        /// Gets / Sets the selected voice
-        /// </summary>
-        public IVoice SelectedVoice
-        {
-            get
-            {
-                return _selectedVoice;
-            }
-            set
-            {
-                Set(ref _selectedVoice, value);
-            }
-        }
-        #endregion
-		
-		
-
-
         public DeviceInformation SelectedAudioDevice
         {
             get { return WaveOut.SelectedAudioDevice; }
@@ -134,11 +98,6 @@ namespace CorySynthUI.ViewModel
             get { return WaveOut.AudioDevices; }
         }
 
-      
-        public ObservableCollection<DeviceInformation> MidiDevices
-        {
-            get { return MidiDevice.MidiDevices; }
-        }
 
         #region Property IsRecording
         private bool _isRecording = false;
@@ -152,8 +111,6 @@ namespace CorySynthUI.ViewModel
             set
             {
                 Set(ref _isRecording, value);
-                StartRecordingCommand.RaiseCanExecuteChanged();
-                StopRecordingCommand.RaiseCanExecuteChanged();
             }
         }
         #endregion
@@ -166,7 +123,7 @@ namespace CorySynthUI.ViewModel
 
         #endregion
 
-        public WaveOutPlayer WaveOut { get; private set; }
+        protected WaveOutPlayer WaveOut { get; private set; }
 
         #endregion
 

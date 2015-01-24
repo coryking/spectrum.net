@@ -13,6 +13,8 @@ namespace CorySignalGenerator.Filters
         protected Boolean isDirty;
         private object locker = new object();
 
+        public JSNetEffect(WaveFormat format) : base(format) { }
+
         public JSNetEffect(ISampleProvider source) : base(source)
         {
         }

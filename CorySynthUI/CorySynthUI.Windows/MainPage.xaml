@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <models:AvailableVoices x:Key="availableVoices"/>
-        
+        <models:AvailableEffects x:Key="availableEffects"/>
         <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
             <Setter Property="Margin" Value="5,0"/>
             <Setter Property="Orientation" Value="Horizontal"/>
@@ -44,23 +44,19 @@
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
-                </StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
                 <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
                 <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
+                <ContentControl
+                                Content="{Binding Envelope}"
+                                ContentTemplate="{StaticResource AdsrTemplate}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
-                </StackPanel>
+
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
                 <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 <Grid>
@@ -79,6 +75,9 @@
                     <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
 
                 </Grid>
+                <ContentControl
+                                Content="{Binding Envelope}"
+                                ContentTemplate="{StaticResource AdsrTemplate}"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
                 <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
                 <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto">
@@ -94,10 +93,7 @@
         </DataTemplate>
         <DataTemplate x:Key="GhettoReverbTemplate">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
-                </StackPanel>
+
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -137,11 +133,7 @@
         </DataTemplate>
         <DataTemplate x:Key="ChorusEffectTemplate">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Enabled</TextBlock>
-                </StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Chorus Length (ms)</TextBlock>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Chorus Length (ms)</TextBlock>
                 <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
                 <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
@@ -162,10 +154,45 @@
         <DataTemplate x:Key="DeviceInformationTemplate">
             <TextBlock Text="{Binding Name}"/>
         </DataTemplate>
+        
         <models:SamplerDataTemplateSelector
             x:Key="samplerDataTemplateSelector" 
             PadSoundDataTemplate="{StaticResource PadSoundTemplate}"
             SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"/>
+        <models:EffectsDataTemplateSelector
+            x:Key="effectsDataTemplateSelector"
+            GhettoReverbDataTemplate="{StaticResource GhettoReverbTemplate}"
+            ChorusDataTemplate="{StaticResource ChorusEffectTemplate}"
+            BandpassFilterDataTemplate="{StaticResource BandpassFilter}"/>
+        <DataTemplate x:Key="EffectsChooser">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListView
+                                Grid.Row="0"
+                    ItemsSource="{Binding}"
+                                ItemTemplateSelector="{StaticResource effectsDataTemplateSelector}"
+                    SelectedItem="{Binding SelectedEffect, Mode=TwoWay}"
+                    FontFamily="Global User Interface"
+                                />
+                <StackPanel Orientation="Vertical" Grid.Row="1">
+
+                    <ComboBox 
+                Name="AvailableEffects" 
+                ItemsSource="{Binding Choices, Source={StaticResource availableEffects}}" 
+                        SelectedValuePath="Type"
+                        />
+
+                    <Button Command="{Binding AddEffectCommand}" 
+                                        CommandParameter="{Binding ElementName=AvailableEffects,Path=SelectedValue}">
+                        Add Voice
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
@@ -179,55 +206,72 @@
                 <Setter Property="Margin" Value="10,0,10,0"/>
             </Style>
         </Grid.Resources>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="4*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <ListView
-                Grid.Row="0"
-            Name="VoiceList"
-            ItemsSource="{Binding MidiChannel.Voices}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        <StackPanel Orientation="Vertical" Grid.Row="1">
-            
-            <ComboBox 
-                Name="AvailableVoices" 
-                ItemsSource="{Binding GetChoices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
+
+        <Hub Grid.Column="1"
+             VerticalContentAlignment="Stretch">
+            <Hub.Header>
                 
-            <Button Command="{Binding MidiChannel.AddVoiceCommand}" 
-                    CommandParameter="{Binding ElementName=AvailableVoices,Path=SelectedValue}">
-                Add Voice
-            </Button>
-        </StackPanel>
-        </Grid>
-        <Hub Grid.Column="1"  DataContext="{Binding SelectedItem, ElementName=VoiceList}">
+                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Cory Synth" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                        VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" FontFamily="Global User Interface" />
+                
+            </Hub.Header>
             <Hub.Sections>
-                <HubSection >
+                <HubSection Header="Channel Effects" DataContext="{Binding MidiChannel.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+                <HubSection Header="Voices" Width="Auto">
                     <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding Name}"/>
-                            <ContentControl Content="{Binding Sampler}" ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListView
+                                Grid.Row="0"
+                                Name="VoiceList"
+                                ItemsSource="{Binding MidiChannel.Voices}"
+                                SelectedItem="{Binding SelectedVoice, Mode=TwoWay}"
+                                >
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <StackPanel Orientation="Vertical" Grid.Row="1">
+
+                                <ComboBox 
+                Name="AvailableVoices" 
+                ItemsSource="{Binding Choices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
+
+                                <Button Command="{Binding MidiChannel.AddVoiceCommand}" 
+                    CommandParameter="{Binding ElementName=AvailableVoices,Path=SelectedValue}">
+                                    Add Voice
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </HubSection>
+                <HubSection Width="Auto"  
+                            Header="{Binding Name}" 
+                            DataContext="{Binding SelectedVoice}" >
+                    <DataTemplate>
+                        <StackPanel>
+                            <ContentControl 
+                                Content="{Binding Sampler}"
+                                ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}"/>
                         </StackPanel>
                     </DataTemplate>
                 </HubSection>
+                <HubSection Width="Auto"
+                            Header="Voice Effects"
+                            DataContext="{Binding SelectedVoice.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
             </Hub.Sections>
         </Hub>
-        
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -246,7 +290,7 @@
                           SelectedItem="{Binding MidiDevice.SelectedMidiDevice, Mode=TwoWay}"
                           ItemsSource="{Binding MidiDevice.MidiDevices}"
                           ItemTemplate="{StaticResource DeviceInformationTemplate}"/>
-                    
+
             </StackPanel>
         </Grid>
     </Grid>

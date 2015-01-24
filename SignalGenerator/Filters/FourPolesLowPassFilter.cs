@@ -75,6 +75,7 @@ namespace CorySignalGenerator.Filters
             set { Set(ref _q, value, 0.1f); }
         }
 
+        public FourPolesLowPassFilter(WaveFormat format) : base(format) { }
 
         public FourPolesLowPassFilter(ISampleProvider source) :base(source)
         {

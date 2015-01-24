@@ -9,6 +9,8 @@ namespace CorySignalGenerator.Filters
 {
     public class ChorusEffect : JSNetEffect
     {
+        public ChorusEffect(WaveFormat format) : base(format) { }
+
         public ChorusEffect(ISampleProvider source)
             : base(source)
         {

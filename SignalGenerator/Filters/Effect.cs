@@ -24,11 +24,15 @@ namespace CorySignalGenerator.Filters
         protected float log(float a) { return (float)Math.Log(a); }
         protected float PI { get { return (float)Math.PI; } }
 
+        public Effect(WaveFormat format)
+        {
+            WaveFormat = format;
+            Init();
+        }
 
-        public Effect(ISampleProvider sourceProvider)
+        public Effect(ISampleProvider sourceProvider) : this(sourceProvider.WaveFormat)
         {
             Source = sourceProvider;
-            WaveFormat = Source.WaveFormat;
             Init();
         }
 
@@ -83,7 +87,9 @@ namespace CorySignalGenerator.Filters
         }
         #endregion
 		
-
+        /// <summary>
+        /// The source for this effect
+        /// </summary>
         public ISampleProvider Source
         {
             get;

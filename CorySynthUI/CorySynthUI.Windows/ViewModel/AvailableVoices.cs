@@ -1,4 +1,5 @@
-﻿using CorySignalGenerator.Sounds;
+﻿using CorySignalGenerator.Filters;
+using CorySignalGenerator.Sounds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CorySynthUI.ViewModel
 {
-    public class AvailableVoice
+    public class AvailableType
     {
-        public AvailableVoice(string name, Type type)
+        public AvailableType(string name, Type type)
         {
             Name = name;
             Type = type;
@@ -25,17 +26,32 @@ namespace CorySynthUI.ViewModel
 
     public class AvailableVoices
     {
-        public static IEnumerable<AvailableVoice> GetChoices
+        public static IEnumerable<AvailableType> Choices
         {
             get
             {
-                return new List<AvailableVoice>()
+                return new List<AvailableType>()
                 {
-                    new AvailableVoice("Pad Sound",typeof(PadSound)),
-                    new AvailableVoice("Synth Sound",typeof(SignalGeneretedSound)),
+                    new AvailableType("Pad Sound",typeof(PadSound)),
+                    new AvailableType("Synth Sound",typeof(SignalGeneretedSound)),
                 };
             }
         }
 
+    }
+
+    public class AvailableEffects
+    {
+        public static IEnumerable<AvailableType> Choices
+        {
+            get
+            {
+                return new List<AvailableType>()
+                {
+                    new AvailableType("Ghetto Reverb", typeof(GhettoReverb)),
+                    new AvailableType("Chorus", typeof(ChorusEffect))
+                };
+            }
+        }   
     }
 }

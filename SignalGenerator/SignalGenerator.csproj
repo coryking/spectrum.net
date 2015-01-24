@@ -155,6 +155,7 @@
     <Compile Include="SampleProviders\ExposedMixingSampleProvider.cs" />
     <Compile Include="Sequencer\Channel.cs" />
     <Compile Include="Sequencer\ChannelController.cs" />
+    <Compile Include="Sequencer\EffectChain.cs" />
     <Compile Include="Sequencer\SignalChain.cs" />
     <Compile Include="Sequencer\Interfaces\IChannel.cs" />
     <Compile Include="Sequencer\Interfaces\IEffect.cs" />

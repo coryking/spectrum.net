@@ -27,7 +27,7 @@ namespace CorySignalGenerator.Sequencer
             Mixer = new MixingSampleProvider(format);
             Mixer.ReadFully = true;
             
-            Effects = new SignalChain<IEffect>(Mixer);
+            Effects = new EffectChain(Mixer);
             
             Controller = new ChannelController(Voices, Effects, ChannelNumber);
 
@@ -84,7 +84,7 @@ namespace CorySignalGenerator.Sequencer
         }
 
         public ObservableCollection<IVoice> Voices { get; private set; }
-        public SignalChain<IEffect> Effects { get; private set; }
+        public EffectChain Effects { get; private set; }
 
         protected ChannelController Controller { get; private set; }
 
