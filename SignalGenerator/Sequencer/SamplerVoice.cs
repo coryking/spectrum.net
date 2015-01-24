@@ -37,8 +37,7 @@ namespace CorySignalGenerator.Sequencer
 
         public string Name
         {
-            get;
-            protected set;
+            get { return Sampler.Name; }
         }
 
         public void NoteOn(Models.MidiNote note, float velocity)

@@ -6,9 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:util="using:CorySignalGenerator.Utils"
+    xmlns:models="using:CorySynthUI.ViewModel"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
-    mc:Ignorable="d" FontFamily="Global User Interface">
+    mc:Ignorable="d">
     <Page.Resources>
+        <models:AvailableVoices x:Key="availableVoices"/>
         <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
             <Setter Property="Margin" Value="5,0"/>
             <Setter Property="Orientation" Value="Horizontal"/>
@@ -22,7 +24,7 @@
         <DataTemplate x:Key="SoundModelSelector">
             <TextBlock Text="{Binding Name}" FontFamily="Global User Interface"/>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="AdsrTemplate">
             <StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
@@ -51,7 +53,7 @@
                 <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
             </StackPanel>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
@@ -85,7 +87,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Name="RegeneratePadSound" Click="RegeneratePadSound_Click">Rebuild Pad Sound</Button>
+                <Button Name="RegeneratePadSound" FontFamily="Global User Interface">Rebuild Pad Sound</Button>
             </StackPanel>
 
         </DataTemplate>
@@ -156,7 +158,7 @@
                 <Slider Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="AudioDeviceTemplate">
+        <DataTemplate x:Key="DeviceInformationTemplate">
             <TextBlock Text="{Binding Name}"/>
         </DataTemplate>
     </Page.Resources>
@@ -172,68 +174,67 @@
                 <Setter Property="Margin" Value="10,0,10,0"/>
             </Style>
         </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Hub Grid.Row="0" Padding="40,0" >
-            <Hub.Header>
-                <!-- Back button and page title -->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button  x:Name="backButton" Style="{StaticResource NavigationBackButtonNormalStyle}"
-                        Margin="0,0,39,0" 
-                        VerticalAlignment="Top"
-                        Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
-                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Cory Synth" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" FontFamily="Global User Interface" />
-                </Grid>
-            </Hub.Header>
-            <HubSection Header="Overall">
-                <DataTemplate>
-                    <StackPanel Orientation="Vertical">
-                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Audio Device</TextBlock>
-                    <ComboBox ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}" ItemTemplate="{StaticResource AudioDeviceTemplate}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Width="700" DataContext="{Binding PadSound, Mode=TwoWay}" ContentTemplate="{StaticResource PadSoundTemplate}" Header="Pad Synth"/>
-            <HubSection Header="Generated Sounds">
-                <DataTemplate>
-                    <ItemsControl ItemTemplate="{StaticResource SignalGeneratedSoundTemplate}" ItemsSource="{Binding GeneratedSounds, Mode=TwoWay}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Width="300" DataContext="{Binding Adsr, Mode=TwoWay}" ContentTemplate="{StaticResource AdsrTemplate}" Header="Adsr"/>
-            <HubSection DataContext="{Binding BandpassFilter,Mode=TwoWay}" ContentTemplate="{StaticResource BandpassFilter}" Header="Bandpass Pass Filter" />
-            <HubSection DataContext="{Binding Reverb, Mode=TwoWay}" ContentTemplate="{StaticResource GhettoReverbTemplate}" Header="Reverb"/>
-            <HubSection DataContext="{Binding Chorus, Mode=TwoWay}" ContentTemplate="{StaticResource ChorusEffectTemplate}" Header="Chorus"/>
-        </Hub>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button  Content="Start" Name="StartButton" Click="StartButton_Click"/>
-            <Button  Content="Stop" Name="StopButton" Click="StopButton_Click"/>
-            <Button Content="Load Reverb" Name="LoadReverb" Click="LoadReverb_Click"/>
-            <Button Content="Reset Sounds" Name="ResetSounds" Click="ResetSounds_Click"/>
-            <ComboBox Name="MidiDevList" ItemsSource="{Binding MidiDevices}">
-                <ComboBox.ItemTemplate>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ListView
+                Grid.Row="0"
+            Name="VoiceList"
+            ItemsSource="{Binding MidiChannel.Voices}">
+                <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Name}"/>
-                        </StackPanel>
+                        <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                </ListView.ItemTemplate>
+            </ListView>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            
+            <ComboBox 
+                Name="AvailableVoices" 
+                ItemsSource="{Binding GetChoices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
+                
+            <Button Command="{Binding MidiChannel.AddVoiceCommand}" CommandParameter="{Binding ElementName=AvailableVoices,Path=SelectedValue}">
+                Add Voice
+            </Button>
         </StackPanel>
+        </Grid>
+        <Hub Grid.Column="1"
+             DataContext="{Binding SelectedItem, ElementName=VoiceList}">
+            <Hub.Sections>
+
+            </Hub.Sections>
+        </Hub>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Button  Content="Start" Command="{Binding StartRecordingCommand}"/>
+                <Button  Content="Stop" Command="{Binding StopRecordingCommand}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Audio Device</TextBlock>
+                <ComboBox ItemsSource="{Binding WaveOut.AudioDevices,Mode=TwoWay}" 
+                          SelectedItem="{Binding WaveOut.SelectedAudioDevice, Mode=TwoWay}" 
+                          ItemTemplate="{StaticResource DeviceInformationTemplate}"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Midi Device</TextBlock>
+                <ComboBox Name="MidiDevList"
+                          SelectedItem="{Binding MidiDevice.SelectedMidiDevice, Mode=TwoWay}"
+                          ItemsSource="{Binding MidiDevice.MidiDevices}"
+                          ItemTemplate="{StaticResource DeviceInformationTemplate}"/>
+                    
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

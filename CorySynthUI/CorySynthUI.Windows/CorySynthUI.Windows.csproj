@@ -118,6 +118,9 @@
     <Compile Include="MediaFoundationReaderRT.cs" />
     <Compile Include="MidiDeviceWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\AvailableVoices.cs" />
+    <Compile Include="ViewModel\MidiDevice.cs" />
+    <Compile Include="ViewModel\SequencerViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

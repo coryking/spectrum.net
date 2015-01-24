@@ -94,9 +94,6 @@ namespace CorySignalGenerator.Sounds
 
         public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
         {
-            if (!IsEnabled)
-                return null;
-
             return new ChangableSignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels, this)
             {
                 Frequency = frequency,

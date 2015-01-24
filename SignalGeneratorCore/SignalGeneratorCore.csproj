@@ -331,6 +331,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sequencer\Interfaces\ISourcedSampleProvider.cs" />
+    <Compile Include="Sequencer\Midi\MidiMessageConverter.cs" />
     <Compile Include="Utils\EnumHelper.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>

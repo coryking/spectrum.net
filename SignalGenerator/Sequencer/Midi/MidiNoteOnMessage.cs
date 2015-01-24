@@ -20,6 +20,7 @@ namespace CorySignalGenerator.Sequencer.Midi
         {
             Channel = message.Channel;
             Note = message.Note;
+            Velocity = message.Velocity;
             Channel = message.Channel;
             Timestamp = message.Timestamp;
             Type = MidiMessageType.NoteOn;

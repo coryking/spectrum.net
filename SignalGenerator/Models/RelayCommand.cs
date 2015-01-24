@@ -7,43 +7,80 @@ using System.Windows.Input;
 
 namespace CorySignalGenerator.Models
 {
+    /// <summary>
+    /// A command whose sole purpose is to relay its functionality 
+    /// to other objects by invoking delegates. 
+    /// The default return value for the CanExecute method is 'true'.
+    /// <see cref="RaiseCanExecuteChanged"/> needs to be called whenever
+    /// <see cref="CanExecute"/> is expected to return a different value.
+    /// </summary>
     public class RelayCommand : ICommand
     {
-        
+        private readonly Action<object> _execute;
+        private readonly Func<object,bool> _canExecute;
+
         /// <summary>
-        /// Event that fires when the enabled/disabled state of the cmd changes
+        /// Raised when RaiseCanExecuteChanged is called.
         /// </summary>
         public event EventHandler CanExecuteChanged;
 
         /// <summary>
-        /// Delegate for method to call when the cmd needs to be executed        
+        /// Creates a new command that can always execute.
         /// </summary>
- 
-        private readonly Action<object> _targetExecuteMethod;
+        /// <param name="execute">The execution logic.</param>
+        public RelayCommand(Action<object> execute)
+            : this(execute, null)
+        {
+        }
 
-        // Delegate for method that determines if cmd is enabled/disabled        
-        private readonly Predicate<object> _targetCanExecuteMethod;
+        /// <summary>
+        /// Creates a new command.
+        /// </summary>
+        /// <param name="execute">The execution logic.</param>
+        /// <param name="canExecute">The execution status logic.</param>
+        public RelayCommand(Action<object> execute, Func<object,bool> canExecute)
+        {
+            if (execute == null)
+                throw new ArgumentNullException("execute");
+            _execute = execute;
+            _canExecute = canExecute;
+        }
 
+        /// <summary>
+        /// Determines whether this <see cref="RelayCommand"/> can execute in its current state.
+        /// </summary>
+        /// <param name="parameter">
+        /// Data used by the command. If the command does not require data to be passed, this object can be set to null.
+        /// </param>
+        /// <returns>true if this command can be executed; otherwise, false.</returns>
         public bool CanExecute(object parameter)
         {
-            return _targetCanExecuteMethod == null || _targetCanExecuteMethod(parameter);
+            return _canExecute == null ? true : _canExecute(parameter);
         }
 
+        /// <summary>
+        /// Executes the <see cref="RelayCommand"/> on the current command target.
+        /// </summary>
+        /// <param name="parameter">
+        /// Data used by the command. If the command does not require data to be passed, this object can be set to null.
+        /// </param>
         public void Execute(object parameter)
         {
-            // Call the delegate if it's not null
-            if (_targetExecuteMethod != null) _targetExecuteMethod(parameter);
+            _execute(parameter);
         }
 
-        public RelayCommand(Action<object> executeMethod, Predicate<object> canExecuteMethod = null)
-        {
-            _targetExecuteMethod = executeMethod;
-            _targetCanExecuteMethod = canExecuteMethod;
-        }
-
+        /// <summary>
+        /// Method used to raise the <see cref="CanExecuteChanged"/> event
+        /// to indicate that the return value of the <see cref="CanExecute"/>
+        /// method has changed.
+        /// </summary>
         public void RaiseCanExecuteChanged()
         {
-            if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty);
+            var handler = CanExecuteChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
     }
 }

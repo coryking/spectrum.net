@@ -1,4 +1,5 @@
 ﻿using CorySynthUI.ViewModel;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,55 +30,19 @@ namespace CorySynthUI
             this.Init();
 
             this.InitializeComponent();
-            this.ViewModel.Init();
             
         }
 
-        private MainViewModel _viewModel;
-        public MainViewModel ViewModel
+        private SequencerViewModel _viewModel;
+        public SequencerViewModel ViewModel
         {
             get { return _viewModel; }
         }
 
         public void Init()
         {
-            _viewModel = new MainViewModel(this.Dispatcher);
-            _viewModel.PropertyChanged += _viewModel_PropertyChanged;
+            _viewModel = new SequencerViewModel(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
        }
-
-        void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            Debug.WriteLine("In property changed: {0}", e); ;
-            StartButton.IsEnabled = ViewModel.CanPlay && !ViewModel.IsPlaying;
-            StopButton.IsEnabled = ViewModel.IsPlaying;
-        }
-
-        private void StartButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.StartPlaying();
-            ViewModel.StartListening((Windows.Devices.Enumeration.DeviceInformation)this.MidiDevList.SelectedItem);
-        }
-        private void StopButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.StopPlaying();
-        }
-
-        private void RegeneratePadSound_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.GenerateWaveTable();
-        }
-
-        private void LoadReverb_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.LoadReverb();
-
-        }
-
-        private void ResetSounds_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.ResetSounds();
-
-        }
 
     }
 }

@@ -275,7 +275,7 @@ namespace CorySynthUI.ViewModel
         {
             if (HeadSampleProvider != null)
             {
-                _player.StartPlayback(HeadSampleProvider, SelectedAudioDevice);
+                _player.StartPlayback(HeadSampleProvider);
                 IsPlaying = true;
             }
         }

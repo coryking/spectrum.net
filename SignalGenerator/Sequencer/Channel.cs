@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using NAudio.Wave.SampleProviders;
 using MoreLinq;
 using System.Diagnostics;
+using CorySignalGenerator.Models;
 
 namespace CorySignalGenerator.Sequencer
 {
@@ -29,7 +30,28 @@ namespace CorySignalGenerator.Sequencer
             Effects = new SignalChain<IEffect>(Mixer);
             
             Controller = new ChannelController(Voices, Effects, ChannelNumber);
+
+            AddVoiceCommand = new RelayCommand(OnAddVoiceCommand);
         }
+
+        #region Relay Commands
+
+        public RelayCommand AddVoiceCommand { get; private set; }
+
+        private void OnAddVoiceCommand(object parameter)
+        {
+            var samplerType = parameter as Type;
+            if (samplerType == null)
+                return;
+
+            var sampler = Activator.CreateInstance(samplerType, WaveFormat) as ISampler;
+            if (sampler == null)
+                return;
+
+            this.Voices.Add(new SamplerVoice(sampler));
+        }
+
+        #endregion
 
         #region Event Handlers
 

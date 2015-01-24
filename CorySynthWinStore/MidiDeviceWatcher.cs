@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.UI.Core;
 
-namespace CorySynthUI
+namespace CorySynthWinStore
 {
     public delegate void MidiDevicesChangedEventArgs(MidiDeviceWatcher sender);
 
