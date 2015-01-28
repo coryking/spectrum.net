@@ -27,25 +27,29 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AdsrTemplate">
-            <StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
-
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-
-                <TextBlock  Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
-                <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
-
-                <TextBlock  Style="{StaticResource TitleTextBlockStyle}" >Sustain Level</TextBlock>
-                <Slider  Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1"/>
-
+            <StackPanel Orientation="Horizontal">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
+                    <Slider Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
+                    <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock  Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
+                    <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock  Style="{StaticResource TitleTextBlockStyle}" >Sustain Level</TextBlock>
+                    <Slider  Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" FontFamily="Global User Interface"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
-                <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
+                <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" FontFamily="Global User Interface" />
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
                 <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
 
@@ -134,7 +138,7 @@
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Chorus Length (ms)</TextBlock>
                 <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
-                <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1" FontFamily="Global User Interface"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Rate (hz)</TextBlock>
                 <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
             </StackPanel>
@@ -173,7 +177,6 @@
                     ItemsSource="{Binding}"
                                 ItemTemplateSelector="{StaticResource effectsDataTemplateSelector}"
                     SelectedItem="{Binding SelectedEffect, Mode=TwoWay}"
-                    FontFamily="Global User Interface"
                                 />
                 <StackPanel Orientation="Vertical" Grid.Row="1">
 
@@ -189,6 +192,7 @@
                     </Button>
                 </StackPanel>
             </Grid>
+
         </DataTemplate>
 
     </Page.Resources>
@@ -223,58 +227,10 @@
                     <DataTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <ItemsControl
-                                Grid.Row="0"
-                                Name="VoiceList"
-                                ItemsSource="{Binding MidiChannel.Voices}"
-                                >
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <TextBlock Text="{Binding Name}" Grid.Column="0" Grid.Row="0"  RenderTransformOrigin="0.5,0.5" FontFamily="Global User Interface"/>
-                                               
-                                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                                                <TextBlock Style="{StaticResource TitleTextBlockStyle}" RenderTransformOrigin="0.5,0.5">
-                                                    <TextBlock.RenderTransform>
-                                                        <CompositeTransform Rotation="-90" TranslateX="0" TranslateY="0"/>
-                                                    </TextBlock.RenderTransform>Volume</TextBlock>
-                                                <Slider Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
-                                                        FontFamily="Global User Interface"/>
-                                            </StackPanel>
-                                            <ContentControl
-                                                Grid.Row="1"
-                                                Grid.Column="2"
-                                Content="{Binding Envelope}"
-                                ContentTemplate="{StaticResource AdsrTemplate}" FontFamily="Global User Interface"/>
-                                            <ContentControl 
-                                                Grid.Column="3"
-                                                Grid.Row="1"
-                                Content="{Binding Sampler}"
-                                ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" FontFamily="Global User Interface"/>
-                                            <ContentControl 
-                                                Grid.Column="4"
-                                                Grid.Row="1"
-                                                Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <StackPanel Orientation="Vertical" Grid.Row="1">
+                            <StackPanel Orientation="Horizontal" Grid.Row="0">
 
                                 <ComboBox 
                 Name="AvailableVoices" 
@@ -285,6 +241,62 @@
                                     Add Voice
                                 </Button>
                             </StackPanel>
+                            <ScrollViewer Grid.Row="1">
+                                <ItemsControl 
+                                Name="VoiceList"
+                                ItemsSource="{Binding MidiChannel.Voices}"
+                                    d:ItemsSource="{Binding Source={d:DesignData Source=/SampleData/SampleData.xaml}}"
+                                    >
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#FF873FC3" BorderThickness="0,0,0,1">
+                                                
+                                                <Grid Margin="0,5,10,5">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="50"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Width="50" Background="AliceBlue" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
+                                                        <StackPanel.RenderTransform>
+                                                            <CompositeTransform Rotation="-90" TranslateX="70" TranslateY="-100"/>
+
+                                                        </StackPanel.RenderTransform>
+                                                        <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}"/>
+
+                                                        <TextBlock Style="{StaticResource TitleTextBlockStyle}" >Volume</TextBlock>
+                                                    </StackPanel>
+                                                    <Slider
+                                                Grid.Column="1" Grid.RowSpan="2"
+                                                Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+                                                        FontFamily="Global User Interface"/>
+
+                                                    <ContentControl
+                                                Grid.Column="2" Grid.Row="0"
+                                Content="{Binding Envelope}"
+                                ContentTemplate="{StaticResource AdsrTemplate}" FontFamily="Global User Interface"/>
+                                                    <ContentControl 
+                                                Grid.Column="2"
+                                                Grid.Row="1"
+                                                Content="{Binding Sampler}"
+                                                ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" FontFamily="Global User Interface"/>
+                                                    <ContentControl 
+                                                Grid.Column="3"
+                                                Grid.RowSpan="2"
+                                                Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
                         </Grid>
                     </DataTemplate>
                 </HubSection>

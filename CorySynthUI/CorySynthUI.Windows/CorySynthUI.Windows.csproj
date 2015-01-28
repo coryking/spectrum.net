@@ -118,6 +118,7 @@
     <Compile Include="MediaFoundationReaderRT.cs" />
     <Compile Include="MidiDeviceWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleData\SampleVoice.cs" />
     <Compile Include="ViewModel\AvailableVoices.cs" />
     <Compile Include="ViewModel\EffectsDataTemplateSelector.cs" />
     <Compile Include="ViewModel\MidiDevice.cs" />
@@ -142,6 +143,11 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SampleData\SampleData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
   <ItemGroup>
