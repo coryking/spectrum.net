@@ -122,7 +122,6 @@
     <Compile Include="ViewModel\EffectsDataTemplateSelector.cs" />
     <Compile Include="ViewModel\MidiDevice.cs" />
     <Compile Include="ViewModel\SequencerViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\SamplerDataTemplateSelector.cs" />
   </ItemGroup>
   <ItemGroup>

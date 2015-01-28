@@ -12,34 +12,12 @@ using CorySignalGenerator.Sequencer;
 
 namespace CorySignalGenerator.Sounds
 {
-    public class SignalGeneretedSound: NoteSampler, ISoundModel
+    public class SignalGeneretedSound: NoteSampler
     {
         public SignalGeneretedSound(WaveFormat waveFormat) :base()
         {
             WaveFormat = waveFormat;
         }
-
-
-        #region Property IsEnabled
-        private bool _isEnabled = false;
-
-        /// <summary>
-        /// Gets or sets if this sound model is enabled
-        /// </summary>
-        public bool IsEnabled
-        {
-            get
-            {
-                return _isEnabled;
-            }
-            set
-            {
-                Set(ref _isEnabled, value);
-            }
-        }
-        #endregion
-		
-
 
         #region Property Type
         private SignalGeneratorType _type = SignalGeneratorType.Sin;
@@ -92,16 +70,6 @@ namespace CorySignalGenerator.Sounds
             protected set;
         }
 
-        public ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
-        {
-            return new ChangableSignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels, this)
-            {
-                Frequency = frequency,
-                Type = Type,
-           };
-
-        }
-
 
         public void InitSamples()
         {
@@ -118,7 +86,11 @@ namespace CorySignalGenerator.Sounds
 
         protected override ISampleProvider GenerateNote(MidiNote note)
         {
-            return GetProvider((float)note.Frequency, 0, note.Number);
+            return new ChangableSignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels, this)
+            {
+                Frequency = (float)note.Frequency,
+                Type = Type,
+            };
         }
 
         protected override bool SupportsVelocity

@@ -250,9 +250,6 @@
     <Compile Include="..\SignalGenerator\Sequencer\ChannelController.cs">
       <Link>Sequencer\ChannelController.cs</Link>
     </Compile>
-    <Compile Include="..\SignalGenerator\Sequencer\ChannelSampleProvider.cs">
-      <Link>Sequencer\ChannelSampleProvider.cs</Link>
-    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\EffectChain.cs">
       <Link>Sequencer\EffectChain.cs</Link>
     </Compile>
@@ -309,9 +306,6 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\VoiceController.cs">
       <Link>Sequencer\VoiceController.cs</Link>
-    </Compile>
-    <Compile Include="..\SignalGenerator\Sounds\ISoundModel.cs">
-      <Link>Sounds\ISoundModel.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Sounds\PadSound.cs">
       <Link>Sounds\PadSound.cs</Link>

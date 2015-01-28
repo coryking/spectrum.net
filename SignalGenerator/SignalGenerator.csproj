@@ -175,13 +175,11 @@
     <Compile Include="Sequencer\VoiceController.cs" />
     <Compile Include="Sounds\PadSound.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
-    <Compile Include="Sounds\ISoundModel.cs" />
     <Compile Include="Models\MidiNotes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleProviders\AdsrSampleProvider.cs" />
     <Compile Include="SampleProviders\MusicSampleProvider.cs" />
     <Compile Include="SampleProviders\SampleSource.cs" />
-    <Compile Include="Sequencer\ChannelSampleProvider.cs" />
     <Compile Include="Sequencer\NoteTracker.cs" />
     <Compile Include="Utils\BasicCircularBuffer.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />

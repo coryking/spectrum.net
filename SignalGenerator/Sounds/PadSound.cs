@@ -73,7 +73,7 @@ namespace CorySignalGenerator.Sounds
 
     }
 
-    public class PadSound : NoteSampler, ISoundModel
+    public class PadSound : NoteSampler
     {
 
         //private readonly int[] notesToSample = new int[]{
@@ -116,26 +116,6 @@ namespace CorySignalGenerator.Sounds
             private set;
         }
 
-
-        #region Property IsEnabled
-        private bool _isEnabled = false;
-
-        /// <summary>
-        /// Gets / Sets if this is enabled
-        /// </summary>
-        public bool IsEnabled
-        {
-            get
-            {
-                return _isEnabled;
-            }
-            set
-            {
-                Set(ref _isEnabled, value);
-            }
-        }
-        #endregion
-		
         /// <summary>
         /// Number of harmonics (eg: 10)
         /// </summary>
@@ -247,49 +227,16 @@ namespace CorySignalGenerator.Sounds
             BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
         }
 
-        // TODO, remove this and anything else required by ISoundModel
-        public NAudio.Wave.ISampleProvider GetProvider(float frequency, int velocity, int noteNumber)
-        {
-            if (!IsEnabled)
-                return null;
-
-            if (!IsSampleTableLoaded)
-                throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
-            //var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
-            //var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
-            var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
-            var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
-            ISampleProvider outputProvider;
-            var noteDelta = noteNumber - nearestNote.Note;
-            if(noteDelta != 0)
-            {
-                var windowFactor = 4 + 4 * noteNumber / 128;
-                var windowSize = 50f; //windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
-                var overlapSize = windowSize * 2 / 5f;
-                Debug.WriteLine("Shift {0} ({1}hz) to {2}. w: {3}, o: {4}", noteNumber, frequency, nearestNote, windowSize, overlapSize);
-
-                outputProvider = new SuperPitch(music_sampler)
-                {
-                    PitchOctaves=0f,
-                    PitchSemitones=noteDelta,
-                    WindowSize=windowSize,
-                    OverlapSize = overlapSize
-                };
-            }
-            else
-            {
-                outputProvider =  music_sampler;
-            }
-            return outputProvider;
-        }
-
         /// <summary>
         /// Method that gets run when somebody executes the <see cref="BuildWaveTableCommand"/>
         /// </summary>
         /// <param name="parameter"></param>
         protected void BuildWaveTableCommandExecute(object parameter)
         {
-            InitSamples();
+            Task.Run(() =>
+            {
+                InitSamples();
+            });
         }
         
         public void InitSamples()
@@ -324,7 +271,34 @@ namespace CorySignalGenerator.Sounds
 
         protected override ISampleProvider GenerateNote(MidiNote note)
         {
-            return GetProvider((float)note.Frequency, 0, note.Number);
+            if (!IsSampleTableLoaded)
+                throw new InvalidOperationException("Cannot get a provider.  No wave table has been created");
+            //var largerValues = WaveTable.Values.Where(x => (frequency <= x.FundamentalFrequency));//.MinBy(x => x.FundamentalFrequency);//.MinBy(x => Math.Abs(x.FundamentalFrequency - frequency));
+            //var nearestNote = largerValues.MinBy(x => x.FundamentalFrequency);
+            var nearestNote = WaveTable.Values.MinBy(x => Math.Abs(x.FundamentalFrequency - note.Frequency));
+            var music_sampler = new MusicSampleProvider(WaveTable[nearestNote.Note]);
+            ISampleProvider outputProvider;
+            var noteDelta = note.Number - nearestNote.Note;
+            if (noteDelta != 0)
+            {
+                var windowFactor = 4 + 4 * note.Number / 128;
+                var windowSize = 50f; //windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
+                var overlapSize = windowSize * 2 / 5f;
+                Debug.WriteLine("Shift {0} to {1}. w: {2}, o: {3}", note, nearestNote, windowSize, overlapSize);
+
+                outputProvider = new SuperPitch(music_sampler)
+                {
+                    PitchOctaves = 0f,
+                    PitchSemitones = noteDelta,
+                    WindowSize = windowSize,
+                    OverlapSize = overlapSize
+                };
+            }
+            else
+            {
+                outputProvider = music_sampler;
+            }
+            return outputProvider;
         }
 
         protected override bool SupportsVelocity

@@ -89,7 +89,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Name="RegeneratePadSound" FontFamily="Global User Interface">Rebuild Pad Sound</Button>
+                <Button Command="{Binding BuildWaveTableCommand}" Name="RegeneratePadSound" FontFamily="Global User Interface">Rebuild Pad Sound</Button>
             </StackPanel>
 
         </DataTemplate>
