@@ -245,7 +245,6 @@
                                 <ItemsControl 
                                 Name="VoiceList"
                                 ItemsSource="{Binding MidiChannel.Voices}"
-                                    d:ItemsSource="{Binding Source={d:DesignData Source=/SampleData/SampleData.xaml}}"
                                     >
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -263,9 +262,9 @@
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <StackPanel Width="50" Background="AliceBlue" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
+                                                    <StackPanel Height="50" Background="AliceBlue" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
                                                         <StackPanel.RenderTransform>
-                                                            <CompositeTransform Rotation="-90" TranslateX="70" TranslateY="-100"/>
+                                                            <CompositeTransform Rotation="-90" TranslateX="0" TranslateY="0"/>
 
                                                         </StackPanel.RenderTransform>
                                                         <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}"/>

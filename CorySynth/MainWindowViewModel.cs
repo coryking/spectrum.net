@@ -151,7 +151,7 @@ namespace CorySignalGenerator
                 SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
             };
             _noteModel.InitSamples();
-            _sampler = new ChannelSampleProvider(_noteModel, Adsr);
+            _sampler = new ChannelSampleProvider(Adsr, baseWaveFormat);
             _effects = new EffectsFilter(_sampler, 2);
             _effects.GhettoReverbFilter.Delay = 0.25f;
             _effects.GhettoReverbFilter.Decay = 0.5f;
