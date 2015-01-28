@@ -5,9 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MoreLinq;
+using System.Collections.Concurrent;
+using CorySignalGenerator.Utils;
 
 namespace CorySignalGenerator.SampleProviders
 {
+    public struct MultiThreadedReadSample
+    {
+        public int samplesRead;
+        public float[] samples;
+        public ISampleProvider provider;
+    }
+
     /// <summary>
     /// A sample provider mixer, allowing inputs to be added and removed.
     /// 
@@ -19,12 +29,12 @@ namespace CorySignalGenerator.SampleProviders
         private WaveFormat waveFormat;
         private float[] sourceBuffer;
         private const int maxInputs = 1024; // protect ourselves against doing something silly
-
+        private bool useThreadedMixer = true;
         /// <summary>
         /// Creates a new MixingSampleProvider, with no inputs, but a specified WaveFormat
         /// </summary>
         /// <param name="waveFormat">The WaveFormat of this mixer. All inputs must be in this format</param>
-        public ExposedMixingSampleProvider(WaveFormat waveFormat)
+        public ExposedMixingSampleProvider(WaveFormat waveFormat, bool threaded=true)
         {
             if (waveFormat.Encoding != WaveFormatEncoding.IeeeFloat)
             {
@@ -32,6 +42,7 @@ namespace CorySignalGenerator.SampleProviders
             }
             this.sources = new List<ISampleProvider>();
             this.waveFormat = waveFormat;
+            this.useThreadedMixer = threaded;
         }
 
         /// <summary>
@@ -142,30 +153,10 @@ namespace CorySignalGenerator.SampleProviders
             this.sourceBuffer = BufferHelpers.Ensure(this.sourceBuffer, count);
             lock (sources)
             {
-                int index = sources.Count - 1;
-                while (index >= 0)
-                {
-                    var source = sources[index];
-                    int samplesRead = source.Read(this.sourceBuffer, 0, count);
-                    int outIndex = offset;
-                    for (int n = 0; n < samplesRead; n++)
-                    {
-                        if (n >= outputSamples)
-                        {
-                            buffer[outIndex++] = this.sourceBuffer[n];
-                        }
-                        else
-                        {
-                            buffer[outIndex++] += this.sourceBuffer[n];
-                        }
-                    }
-                    outputSamples = Math.Max(samplesRead, outputSamples);
-                    if (samplesRead == 0)
-                    {
-                        sources.RemoveAt(index);
-                    }
-                    index--;
-                }
+                if (useThreadedMixer)
+                    outputSamples = MultiThreadedRead(buffer, offset, count);
+                else
+                    outputSamples = SingleThreadedRead(buffer, offset, count);
             }
             // optionally ensure we return a full buffer
             if (ReadFully && outputSamples < count)
@@ -176,6 +167,67 @@ namespace CorySignalGenerator.SampleProviders
                     buffer[outputIndex++] = 0;
                 }
                 outputSamples = count;
+            }
+            return outputSamples;
+        }
+
+        private int MultiThreadedRead(float[] buffer, int offset, int count)
+        {
+            var outputSamples = 0;
+            var items = new ConcurrentQueue<MultiThreadedReadSample>();
+            Array.Clear(buffer, offset, count);
+            Parallel.ForEach(sources, (item) =>
+            {
+                var read = new MultiThreadedReadSample()
+                {
+                    provider = item,
+                    samples = new float[count]
+                };
+                read.samplesRead = item.Read(read.samples, 0, count);
+                items.Enqueue(read);
+            });
+            while (!items.IsEmpty) {
+                var sample = new MultiThreadedReadSample();
+                items.TryDequeue(out sample);
+
+                outputSamples = Math.Max(sample.samplesRead, outputSamples);
+
+                if (sample.samplesRead == 0)
+                    sources.Remove(sample.provider);
+
+                VectorMath.vadd(sample.samples, 0, 1, buffer, offset, 1, buffer, offset, 1, sample.samplesRead);
+            }
+
+            return outputSamples;
+        }
+
+        private int SingleThreadedRead(float[] buffer, int offset, int count)
+        {
+            var outputSamples = 0;
+
+            int index = sources.Count - 1;
+            while (index >= 0)
+            {
+                var source = sources[index];
+                int samplesRead = source.Read(this.sourceBuffer, 0, count);
+                int outIndex = offset;
+                for (int n = 0; n < samplesRead; n++)
+                {
+                    if (n >= outputSamples)
+                    {
+                        buffer[outIndex++] = this.sourceBuffer[n];
+                    }
+                    else
+                    {
+                        buffer[outIndex++] += this.sourceBuffer[n];
+                    }
+                }
+                outputSamples = Math.Max(samplesRead, outputSamples);
+                if (samplesRead == 0)
+                {
+                    sources.RemoveAt(index);
+                }
+                index--;
             }
             return outputSamples;
         }
