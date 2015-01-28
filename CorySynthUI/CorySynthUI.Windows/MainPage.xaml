@@ -48,9 +48,7 @@
                 <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" />
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
                 <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
-                <ContentControl
-                                Content="{Binding Envelope}"
-                                ContentTemplate="{StaticResource AdsrTemplate}"/>
+
             </StackPanel>
         </DataTemplate>
 
@@ -80,7 +78,7 @@
                                 ContentTemplate="{StaticResource AdsrTemplate}"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
                 <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
-                <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto">
+                <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto" FontFamily="Global User Interface">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal"/>
@@ -154,7 +152,7 @@
         <DataTemplate x:Key="DeviceInformationTemplate">
             <TextBlock Text="{Binding Name}"/>
         </DataTemplate>
-        
+
         <models:SamplerDataTemplateSelector
             x:Key="samplerDataTemplateSelector" 
             PadSoundDataTemplate="{StaticResource PadSoundTemplate}"
@@ -214,10 +212,10 @@
         <Hub Grid.Column="1"
              VerticalContentAlignment="Stretch">
             <Hub.Header>
-                
-                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Cory Synth" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+
+                <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Cory Synth" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" FontFamily="Global User Interface" />
-                
+
             </Hub.Header>
             <Hub.Sections>
                 <HubSection Header="Channel Effects" DataContext="{Binding MidiChannel.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
@@ -228,18 +226,54 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <ListView
+                            <ItemsControl
                                 Grid.Row="0"
                                 Name="VoiceList"
                                 ItemsSource="{Binding MidiChannel.Voices}"
-                                SelectedItem="{Binding SelectedVoice, Mode=TwoWay}"
                                 >
-                                <ListView.ItemTemplate>
+                                <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}"/>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding Name}" Grid.Column="0" Grid.Row="0"  RenderTransformOrigin="0.5,0.5" FontFamily="Global User Interface"/>
+                                               
+                                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                                                <TextBlock Style="{StaticResource TitleTextBlockStyle}" RenderTransformOrigin="0.5,0.5">
+                                                    <TextBlock.RenderTransform>
+                                                        <CompositeTransform Rotation="-90" TranslateX="0" TranslateY="0"/>
+                                                    </TextBlock.RenderTransform>Volume</TextBlock>
+                                                <Slider Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+                                                        FontFamily="Global User Interface"/>
+                                            </StackPanel>
+                                            <ContentControl
+                                                Grid.Row="1"
+                                                Grid.Column="2"
+                                Content="{Binding Envelope}"
+                                ContentTemplate="{StaticResource AdsrTemplate}" FontFamily="Global User Interface"/>
+                                            <ContentControl 
+                                                Grid.Column="3"
+                                                Grid.Row="1"
+                                Content="{Binding Sampler}"
+                                ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" FontFamily="Global User Interface"/>
+                                            <ContentControl 
+                                                Grid.Column="4"
+                                                Grid.Row="1"
+                                                Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+                                        </Grid>
                                     </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                             <StackPanel Orientation="Vertical" Grid.Row="1">
 
                                 <ComboBox 
@@ -254,22 +288,7 @@
                         </Grid>
                     </DataTemplate>
                 </HubSection>
-                <HubSection Width="Auto"  
-                            Header="{Binding Name}" 
-                            DataContext="{Binding SelectedVoice}" >
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Volume</TextBlock>
-                            <Slider Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
-                            <ContentControl 
-                                Content="{Binding Sampler}"
-                                ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </HubSection>
-                <HubSection Width="Auto"
-                            Header="Voice Effects"
-                            DataContext="{Binding SelectedVoice.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+
             </Hub.Sections>
         </Hub>
 

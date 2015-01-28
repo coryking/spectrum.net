@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Models;
+using CorySignalGenerator.SampleProviders;
 using CorySignalGenerator.Sequencer.Interfaces;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -26,6 +27,11 @@ namespace CorySignalGenerator.Sequencer
             Controller = new VoiceController(sampler);
             Effects = new EffectChain(Controller);
             _volumeSampler = new VolumeSampleProvider(Effects);
+            Envelope = new AdsrEnvelopeEffectFactory();
+            var noteSampler = Sampler as NoteSampler;
+            if (noteSampler != null)
+                noteSampler.Envelope = Envelope;
+            
         }
 
         protected VoiceController Controller { get; set; }
@@ -35,6 +41,11 @@ namespace CorySignalGenerator.Sequencer
         /// </summary>
         public ISampler Sampler { get; private set; }
 
+        public IEnvelopeEffectFactory Envelope
+        {
+            get;
+            set;
+        }
 
         #region Property Volume
         /// <summary>

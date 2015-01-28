@@ -18,8 +18,6 @@ namespace CorySignalGenerator.Sequencer
         public NoteSampler()
         {
             Effects = new ObservableCollection<IEffectFactory>();
-            // for now, set a reasonable default...
-            Envelope = new AdsrEnvelopeEffectFactory();
         }
 
         public abstract NAudio.Wave.WaveFormat WaveFormat
@@ -49,6 +47,10 @@ namespace CorySignalGenerator.Sequencer
 
             if (SupportsVelocity)
                 lastSampler = new VolumeSampleProvider(lastSampler);
+
+            Debug.Assert(Envelope != null);
+            if (Envelope == null)
+                return null;
 
             IEnvelopeEffect envelope = Envelope.GetEnvelope(lastSampler);
 

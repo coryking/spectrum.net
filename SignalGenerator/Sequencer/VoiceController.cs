@@ -12,6 +12,7 @@ using MoreLinq;
 
 namespace CorySignalGenerator.Sequencer
 {
+    
     /// <summary>
     /// Controls the notes that are currently active
     /// </summary>

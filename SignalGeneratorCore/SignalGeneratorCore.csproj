@@ -271,6 +271,9 @@
     <Compile Include="..\SignalGenerator\Sequencer\Interfaces\ISampler.cs">
       <Link>Sequencer\Interfaces\ISampler.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Interfaces\ISourcedSampleProvider.cs">
+      <Link>Sequencer\Interfaces\ISourcedSampleProvider.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\Interfaces\IVoice.cs">
       <Link>Sequencer\Interfaces\IVoice.cs</Link>
     </Compile>
@@ -333,7 +336,6 @@
     </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sequencer\Interfaces\ISourcedSampleProvider.cs" />
     <Compile Include="Sequencer\Midi\MidiMessageConverter.cs" />
     <Compile Include="Utils\EnumHelper.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
