@@ -259,6 +259,8 @@
                             DataContext="{Binding SelectedVoice}" >
                     <DataTemplate>
                         <StackPanel>
+                            <TextBlock Style="{StaticResource TitleTextBlockStyle}">Volume</TextBlock>
+                            <Slider Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
                             <ContentControl 
                                 Content="{Binding Sampler}"
                                 ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}"/>

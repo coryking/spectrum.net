@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorySynth", "CorySynth\CorySynth.csproj", "{DC9EEAF5-230C-44CD-A8C6-9D41B63EF57D}"
 EndProject
@@ -231,8 +231,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{57E66712-D5C5-4097-A705-7856A58A81C5} = {F6C97C22-E4FB-4083-B45C-D339E1CC3D6E}
 		{69E085D4-228D-4FB2-A1AC-E2F54249759C} = {F6C97C22-E4FB-4083-B45C-D339E1CC3D6E}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

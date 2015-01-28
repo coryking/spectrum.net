@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CorySignalGenerator.Sequencer.Interfaces
 {
     /// <summary>
-    /// Defines a voice, which is usually a <see cref="ISampler"/> and a chain of effects under it
+    /// Defines a voice, which is usually a <see cref="ISampler"/>.
     /// </summary>
     public interface IVoice : ISampleProvider
     {
@@ -18,6 +18,10 @@ namespace CorySignalGenerator.Sequencer.Interfaces
         /// </summary>
         String Name { get; }
 
+        /// <summary>
+        /// Gets or sets the volume for this voice (0.0 -> 1.0)
+        /// </summary>
+        float Volume { get; set; }
 
         /// <summary>
         /// A note has been played
