@@ -40,27 +40,6 @@ namespace CorySignalGenerator.Sounds
         #endregion
 
 
-        
-        #region Property Pitch
-        private float _pitch = 0f;
-
-        /// <summary>
-        /// Gets / Sets the pitch of this note on a scale of -12 to 12 (-12 is one octave below, 12 is an octave above)
-        /// </summary>
-        public float Pitch
-        {
-            get
-            {
-                return _pitch;
-            }
-            set
-            {
-                Set(ref _pitch, value, -12, 12);
-            }
-        }
-        #endregion
-		
-
         public override string Name { get { return "Signal Generated"; } }
 
 

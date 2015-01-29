@@ -59,8 +59,6 @@
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
 
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
-                <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -77,11 +75,10 @@
                     <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
 
                 </Grid>
-                <ContentControl
-                                Content="{Binding Envelope}"
-                                ContentTemplate="{StaticResource AdsrTemplate}"/>
                 <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
                 <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
+                <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto" FontFamily="Global User Interface">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

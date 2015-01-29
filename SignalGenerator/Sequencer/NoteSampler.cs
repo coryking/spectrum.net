@@ -1,6 +1,7 @@
 ﻿using CorySignalGenerator.Models;
 using CorySignalGenerator.SampleProviders;
 using CorySignalGenerator.Sequencer.Interfaces;
+using CorySignalGenerator.Utils;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -32,6 +33,9 @@ namespace CorySignalGenerator.Sequencer
             Debug.Assert(Envelope != null);
             if (Envelope == null)
                 return null;
+
+            var frequency = FrequencyUtils.ScaleFrequency((float)note.Frequency, Pitch, 12f);
+            note.Frequency = frequency;
 
             ISampleProvider lastSampler = GenerateNote(note);
             
@@ -75,6 +79,28 @@ namespace CorySignalGenerator.Sequencer
         {
             get;
         }
+
+
+        #region Property Pitch
+        private float _pitch = 0f;
+
+        /// <summary>
+        /// Sets and gets the Pitch property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float Pitch
+        {
+            get
+            {
+                return _pitch;
+            }
+            set
+            {
+                Set(ref _pitch, value,-12f,12f);
+            }
+        }
+        #endregion
+		
 
         public ObservableCollection<IEffectFactory> Effects
         {

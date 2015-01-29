@@ -49,7 +49,8 @@ namespace CorySynthUI.ViewModel
                 return new List<AvailableType>()
                 {
                     new AvailableType("Ghetto Reverb", typeof(GhettoReverb)),
-                    new AvailableType("Chorus", typeof(ChorusEffect))
+                    new AvailableType("Chorus", typeof(ChorusEffect)),
+                    new AvailableType("Bandpass Filter", typeof(FourPolesLowPassFilter))
                 };
             }
         }   
