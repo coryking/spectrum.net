@@ -114,7 +114,9 @@
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Dsp\EqFilter.cs" />
     <Compile Include="Filters\ChorusEffect.cs" />
+    <Compile Include="Filters\FlangerEffect.cs" />
     <Compile Include="JSNet\Chorus.cs" />
+    <Compile Include="JSNet\Flanger.cs" />
     <Compile Include="Models\IWrapSampleProvider.cs" />
     <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />

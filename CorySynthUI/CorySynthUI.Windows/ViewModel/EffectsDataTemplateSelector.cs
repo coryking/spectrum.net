@@ -18,6 +18,8 @@ namespace CorySynthUI.ViewModel
 
         public DataTemplate BandpassFilterDataTemplate { get; set; }
 
+        public DataTemplate FlangerEffectDataTemplate { get; set; }
+
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
@@ -36,6 +38,10 @@ namespace CorySynthUI.ViewModel
 
             if (effectType == typeof(FourPolesLowPassFilter))
                 return BandpassFilterDataTemplate;
+
+            if (effectType == typeof(FlangerEffect))
+                return FlangerEffectDataTemplate;
+
 
             return base.SelectTemplateCore(item, container);
         }

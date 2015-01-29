@@ -50,7 +50,8 @@ namespace CorySynthUI.ViewModel
                 {
                     new AvailableType("Ghetto Reverb", typeof(GhettoReverb)),
                     new AvailableType("Chorus", typeof(ChorusEffect)),
-                    new AvailableType("Bandpass Filter", typeof(FourPolesLowPassFilter))
+                    new AvailableType("Bandpass Filter", typeof(FourPolesLowPassFilter)),
+                    new AvailableType("Flanger", typeof(FlangerEffect)),
                 };
             }
         }   

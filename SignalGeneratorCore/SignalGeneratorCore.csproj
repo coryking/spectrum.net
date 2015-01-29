@@ -136,6 +136,9 @@
     <Compile Include="..\SignalGenerator\Filters\EffectsFilter.cs">
       <Link>Filters\EffectsFilter.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Filters\FlangerEffect.cs">
+      <Link>Filters\FlangerEffect.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Filters\FourPolesLowPassFilter.cs">
       <Link>Filters\FourPolesLowPassFilter.cs</Link>
     </Compile>
@@ -162,6 +165,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\JSNet\Effect.cs">
       <Link>JSNet\Effect.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\JSNet\Flanger.cs">
+      <Link>JSNet\Flanger.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\JSNet\PitchDown.cs">
       <Link>JSNet\PitchDown.cs</Link>

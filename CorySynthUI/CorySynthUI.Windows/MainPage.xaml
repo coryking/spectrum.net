@@ -26,6 +26,12 @@
             <TextBlock Text="{Binding Name}" FontFamily="Global User Interface"/>
         </DataTemplate>
 
+        <DataTemplate x:Key="FlangerEffectTemplate">
+            <StackPanel>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Length (ms)</TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        
         <DataTemplate x:Key="AdsrTemplate">
             <StackPanel Orientation="Horizontal">
                 <StackPanel>
@@ -162,7 +168,8 @@
             x:Key="effectsDataTemplateSelector"
             GhettoReverbDataTemplate="{StaticResource GhettoReverbTemplate}"
             ChorusDataTemplate="{StaticResource ChorusEffectTemplate}"
-            BandpassFilterDataTemplate="{StaticResource BandpassFilter}"/>
+            BandpassFilterDataTemplate="{StaticResource BandpassFilter}"
+            FlangerEffectDataTemplate="{StaticResource FlangerEffectTemplate}"/>
         <DataTemplate x:Key="EffectsChooser">
             <Grid>
                 <Grid.RowDefinitions>
