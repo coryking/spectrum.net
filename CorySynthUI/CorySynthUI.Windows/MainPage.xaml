@@ -34,24 +34,24 @@
                 <Slider Header="Rate (hZ)" Minimum="0.001" Maximum="100" Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="10"/>
 
             </StackPanel>
-            
-            
+
+
         </DataTemplate>
-        
+
         <DataTemplate x:Key="AdsrTemplate">
             <StackPanel Orientation="Horizontal">
-                    <Slider Header="Attack (ms)" Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                    <Slider Header="Release (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                    <Slider Header="Decay (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                    <Slider Header="Sustain" Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" />
+                <Slider Header="Attack (ms)" Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Release (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Decay (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Sustain" Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
             <StackPanel Orientation="Horizontal">
-                    <ComboBox Header="Sound" SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" FontFamily="Global User Interface" />
+                <ComboBox Header="Sound" SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" FontFamily="Global User Interface" />
                 <controls:HeaderedStackPanel HeaderText="Pitch" Orientation="Vertical">
                     <StackPanel Orientation="Vertical">
-                        <ComboBox Header="Semitones" ItemsSource="{Binding PitchAdjustment.ValidSemitones}" SelectedItem="{Binding Semitones, Mode=TwoWay}"/>
+                        <ComboBox Header="Semitones" ItemsSource="{Binding PitchAdjustment.ValidSemitones}" SelectedItem="{Binding PitchAdjustment.Semitones, Mode=TwoWay}"/>
                         <Slider Header="Cents" Value="{Binding PitchAdjustment.Cents, Mode=TwoWay}" Minimum="-100" Maximum="100" StepFrequency="5" TickFrequency="10"/>
                     </StackPanel>
                 </controls:HeaderedStackPanel>
@@ -81,16 +81,13 @@
         <DataTemplate x:Key="GhettoReverbTemplate">
             <StackPanel Orientation="Vertical">
 
-
-
-                    <Slider Header="Delay (ms)"  Maximum="1000" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                    <Slider Header="Decay" Maximum="0.45" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                <Slider Header="Delay (ms)"  Maximum="1000" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                <Slider Header="Decay" Maximum="0.45" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
                 <controls:HeaderedStackPanel HeaderText="Use EQ" Orientation="Horizontal">
-                    <CheckBox IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
+                    <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
                 </controls:HeaderedStackPanel>
-               
-                    <Slider Header="LPF Cutoff (hZ)" Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                    <Slider Header="HPF Cutoff (hZ)"  Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <Slider Header="LPF Cutoff (hZ)" Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <Slider Header="HPF Cutoff (hZ)"  Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
 
             </StackPanel>
 
@@ -161,15 +158,13 @@
                 <StackPanel Orientation="Vertical" Grid.Row="1">
 
                     <ComboBox 
+                        Header="Effects"
                 Name="AvailableEffects" 
                 ItemsSource="{Binding Choices, Source={StaticResource availableEffects}}" 
-                        SelectedValuePath="Type"
-                        />
-
+                        SelectedValuePath="Type" />
                     <Button Command="{Binding AddEffectCommand}" 
-                                        CommandParameter="{Binding ElementName=AvailableEffects,Path=SelectedValue}">
-                        Add Voice
-                    </Button>
+                            CommandParameter="{Binding ElementName=AvailableEffects,Path=SelectedValue}"
+                            Content="Add Effect"/>
                 </StackPanel>
             </Grid>
 
@@ -233,7 +228,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border BorderBrush="#FF873FC3" BorderThickness="0,0,0,1">
-                                                
+
                                                 <Grid Margin="0,5,10,5">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition/>
