@@ -15,6 +15,7 @@ using CorySignalGenerator.Sounds;
 using CorySignalGenerator.Sequencer;
 using CorySignalGenerator.Filters;
 using System.Diagnostics;
+using CorySignalGenerator.SampleProviders;
 namespace CorySignalGenerator
 {
     public class MainViewModel : PropertyChangeModel
@@ -29,63 +30,19 @@ namespace CorySignalGenerator
 
 
 
-        private readonly int m_latency = 15; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
+        private readonly int m_latency = 100; // Convert.ToInt32(Math.Pow(2, 13) / (44100 / 1000)) - 1;
 
         public const int TicksPerBeat = 24;
         public const double BeatsPerMinute = 60;
 
-        private ISoundModel _noteModel;
-        private ChannelSampleProvider _sampler;
-        private EffectsFilter _effects;
-        private ReverbFilter _reverb;
+
         private WaveOutPlayer _player;
         private Dispatcher _dispatcher;
         private NAudio.Midi.MidiIn _midiIn;
         
-
-        private String reverbFile;
-
-        public void GenerateWaveTable()
-        {
-            StopPlaying();
-            _noteModel.InitSamples();
-        }
-
         #region Properties
 
-        
-        #region Property Adsr
-        private Adsr _adsr = new Adsr();
-
-        /// <summary>
-        /// Sets and gets the Adsr property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public Adsr Adsr
-        {
-            get
-            {
-                return _adsr;
-            }
-            set
-            {
-                Set(ref _adsr, value);
-            }
-        }
-        #endregion
-		
-
-
-        public ISampleProvider HeadSampleProvider
-        {
-            get;
-            private set;
-        }
-
-        public double TicksPerMinute
-        {
-            get { return TicksPerBeat * BeatsPerMinute; }
-        }
+       
 
 
         private bool _canPlay;
@@ -102,18 +59,11 @@ namespace CorySignalGenerator
             set { Set(ref _isPlaying, value); }
         }
 
+        public MixingSampleProvider HeadSampleProvider { get; set; }
+
         public List<MidiInCapabilities> MidiDevices { get; private set; }
 
-        /// <summary>
-        /// Gets the number of ticks per millisecond
-        /// </summary>
-        public double TicksPerMs
-        {
-            get { return TicksPerMinute / (60.0 * 1000.0); }
-        }
-        public PadSound PadSound { get { return _noteModel as PadSound; } }
-
-        public EffectsFilter EffectsFilter { get { return _effects; } }
+        public PadSound PadSound { get; set; }
 
         #endregion
 
@@ -135,64 +85,15 @@ namespace CorySignalGenerator
 
         private void BuildSignalChain()
         {
-            HeadSampleProvider = null;
-            var baseWaveFormat = NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
-            //_noteModel = new SignalGeneretedSound(NAudio.Wave.WaveFormat.CreateIeeeFloatWaveFormat(44100,1))
-            //{
-            //    AttackSeconds=0.5f,
-            //    ReleaseSeconds=0.5f,
-            //    Type=NAudio.Wave.SampleProviders.SignalGeneratorType.Square,
-            //};
-            _noteModel = new PadSound(baseWaveFormat)
-            {
-                Harmonics = 12,
-                Bandwidth = 20,
-                BandwidthScale = 1.0f,
-                SampleSize = (int)Math.Pow(2, 15) * 2,//baseWaveFormat.SampleRate * 2,
-            };
-            _noteModel.InitSamples();
-            //_sampler = new ChannelSampleProvider(Adsr, baseWaveFormat);
-            _effects = new EffectsFilter(_sampler, 2);
-            _effects.GhettoReverbFilter.Delay = 0.25f;
-            _effects.GhettoReverbFilter.Decay = 0.5f;
-            HeadSampleProvider = _effects;
 
-        }
-
-        private void SetReverbFilter()
-        {
-            if (!String.IsNullOrEmpty(reverbFile))
-            {
-                //var renderSliceSize = m_latency * 44100/1000;
-                using (var stream = new AudioFileReader(reverbFile))
-                {
-                    _reverb = new ReverbFilter(_effects, MaxFFTSize, true);
-                    _reverb.LoadImpuseResponseWaveStream(stream);
-                }
-                HeadSampleProvider = _reverb;
-            }
-            else
-            {
-                HeadSampleProvider = _effects;
-                _reverb = null;
-            }
-
+            HeadSampleProvider = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
+            HeadSampleProvider.ReadFully = true;
+            PadSound = new PadSound(HeadSampleProvider.WaveFormat);
+            PadSound.Envelope = new AdsrEnvelopeEffectFactory();
+            PadSound.InitSamples();
         }
 
 
-        public void LoadReverb()
-        {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.DefaultExt = "*.wav";
-            dlg.Filter = "Wave Files (.wav)|*.wav";
-            var result = dlg.ShowDialog();
-            if (result == true)
-            {
-                CanPlay = true;
-                reverbFile = dlg.FileName;
-                this.SetReverbFilter();
-            }
-        }
 
         public void StartPlaying()
         {
@@ -229,51 +130,7 @@ namespace CorySignalGenerator
         void _midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
         {
 
-            if (_sampler == null || !_player.IsActive)
-                return;
-
-            switch (e.MidiEvent.CommandCode)
-            {
-                case MidiCommandCode.AutoSensing:
-                    break;
-                case MidiCommandCode.ChannelAfterTouch:
-                    break;
-                case MidiCommandCode.ContinueSequence:
-                    break;
-                case MidiCommandCode.ControlChange:
-                    break;
-                case MidiCommandCode.Eox:
-                    break;
-                case MidiCommandCode.KeyAfterTouch:
-                    break;
-                case MidiCommandCode.MetaEvent:
-                    break;
-                case MidiCommandCode.NoteOff:
-                    var offNote = (NAudio.Midi.NoteEvent)e.MidiEvent;
-                    _sampler.StopNote(offNote.NoteNumber);
-                    break;
-                case MidiCommandCode.NoteOn:
-                    var onNote = (NAudio.Midi.NoteOnEvent)e.MidiEvent;
-                    if (onNote.Velocity > 0)
-                        _sampler.PlayNote(onNote.NoteNumber, onNote.Velocity);
-                    else
-                        _sampler.StopNote(onNote.NoteNumber);
-                    break;
-                case MidiCommandCode.PatchChange:
-                    break;
-                case MidiCommandCode.PitchWheelChange:
-                    break;
-                case MidiCommandCode.StartSequence:
-                    break;
-                case MidiCommandCode.StopSequence:
-                    break;
-                case MidiCommandCode.Sysex:
-                    break;
-                case MidiCommandCode.TimingClock:
-                    break;
-                default:
-                    break;
-            }
+            
         }
 
 
@@ -289,6 +146,17 @@ namespace CorySignalGenerator
         }
 
 
+
+        internal void PlayNote()
+        {
+            var note = PadSound.GetNote(new MidiNote(69, 440.0),127);
+            HeadSampleProvider.AddMixerInput(note);
+        }
+
+        internal void StopNote()
+        {
+            HeadSampleProvider.RemoveAllMixerInputs();
+        }
     }
 
 }

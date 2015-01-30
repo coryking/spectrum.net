@@ -53,6 +53,7 @@ namespace CorySignalGenerator.Dsp
             var sampleData = synth.synth(freq, bw, bwscale);
 
             var outputData = new float[sampleData.Length * channels];
+
             var channelOffsets = sampleData.Length / channels;
             for (var x = 0; x < channels; x++)
             {

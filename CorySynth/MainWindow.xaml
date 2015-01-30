@@ -12,7 +12,6 @@
     <Window.CommandBindings>
         <CommandBinding Command="MediaCommands.Stop" CanExecute="CanStop" Executed="StopExecuted"/>
         <CommandBinding Command="MediaCommands.Record" CanExecute="CanRecord" Executed="RecordExecuted"/>
-        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenReverbExecuted"/>
     </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,7 +26,8 @@
             <TextBlock Text="{Binding SampleRate, StringFormat=\{0:d0\}hz}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-
+            <Button Name="PlayNote" Click="PlayNote_Click">Play Note</Button>
+            <Button Name="StopPlayNote" Click="StopPlayNote_Click">Stop playing note</Button>
         </StackPanel>
 
     </Grid>

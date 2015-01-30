@@ -101,10 +101,6 @@ namespace CorySignalGenerator
 
         #endregion
 
-        private void OpenReverbExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            Model.LoadReverb();
-        }
 
         private void CanPlay(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -141,6 +137,17 @@ namespace CorySignalGenerator
         private void RecordExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             Play();
+        }
+
+        private void PlayNote_Click(object sender, RoutedEventArgs e)
+        {
+            Model.PlayNote();
+
+        }
+
+        private void StopPlayNote_Click(object sender, RoutedEventArgs e)
+        {
+            Model.StopNote();
         }
     }
 }

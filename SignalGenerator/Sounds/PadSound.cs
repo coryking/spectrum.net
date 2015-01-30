@@ -221,7 +221,7 @@ namespace CorySignalGenerator.Sounds
 
             Harmonics = 4;
             WaveFormat = waveFormat;
-            SampleSize = waveFormat.SampleRate;
+            SampleSize = (int)Math.Pow(2, 16);
             HarmonicTypeString = HarmonicType.Linear.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
             BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
