@@ -28,6 +28,11 @@ namespace CorySignalGenerator.Filters
 
         public GhettoReverb(ISampleProvider source) : base(source)
         {
+            Decay = 85f;
+            Delay = 100;
+            SecondaryDelayRight = 20;
+            SecondaryDelayLeft = 30;
+            SecondaryDecay = 50f;
         }
 
         protected override void Init()
@@ -50,16 +55,18 @@ namespace CorySignalGenerator.Filters
 
         private void SetDelayLineParams()
         {
+            var adjustedDecay = Decay / 200;
+            var adjustedSecondaryDecay = SecondaryDecay / 200;
             if(Channels ==1 ){
-                _delayLines[0].Decay = Decay;
+                _delayLines[0].Decay = adjustedDecay;
                 _delayLines[0].SampleDelay = SampleDelay;
             }
             else if (Channels == 2)
             {
-                _delayLines[0].Decay = Decay;
-                _delayLines[2].Decay = Decay;
-                _delayLines[1].Decay = SecondaryDecay;
-                _delayLines[3].Decay = SecondaryDecay;
+                _delayLines[0].Decay = adjustedDecay;
+                _delayLines[2].Decay = adjustedDecay;
+                _delayLines[1].Decay = adjustedSecondaryDecay;
+                _delayLines[3].Decay = adjustedSecondaryDecay;
 
                 _delayLines[0].SampleDelay = SampleDelay;
                 _delayLines[2].SampleDelay = SampleDelay;
@@ -203,7 +210,7 @@ namespace CorySignalGenerator.Filters
 		
 
 
-        private float _secondaryDecay = 0.25f;
+        private float _secondaryDecay = 0;
 
         /// <summary>
         /// Controls the amount of decay that is fed into the other channel.

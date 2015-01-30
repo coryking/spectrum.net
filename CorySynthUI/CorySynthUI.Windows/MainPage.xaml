@@ -80,9 +80,11 @@
         </DataTemplate>
         <DataTemplate x:Key="GhettoReverbTemplate">
             <StackPanel Orientation="Vertical">
-
-                <Slider Header="Delay (ms)"  Maximum="1000" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                <Slider Header="Decay" Maximum="0.45" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                <Slider Header="Delay (ms)"  Maximum="1000" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Decay" Maximum="100" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Secondary Decay" Minimum="0" Maximum="100" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding SecondaryDecay, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Secondary Delay Left (ms)"  Maximum="1000" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding SecondaryDelayLeft, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Secondary Delay Right (ms)"  Maximum="1000" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding DelayRight, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
                 <controls:HeaderedStackPanel HeaderText="Use EQ" Orientation="Horizontal">
                     <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
                 </controls:HeaderedStackPanel>
