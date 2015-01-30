@@ -32,6 +32,7 @@ namespace CorySignalGenerator.Sequencer
             Controller = new ChannelController(Voices, Effects, ChannelNumber);
 
             AddVoiceCommand = new RelayCommand(OnAddVoiceCommand);
+            RemoveVoiceCommand = new RelayCommand(OnRemoveVoiceCommand);
         }
 
         #region Relay Commands
@@ -49,6 +50,17 @@ namespace CorySignalGenerator.Sequencer
                 return;
 
             this.Voices.Add(new SamplerVoice(sampler));
+        }
+
+        public RelayCommand RemoveVoiceCommand { get; private set; }
+
+        private void OnRemoveVoiceCommand(object parameter)
+        {
+            var voice = parameter as IVoice;
+            if (voice == null)
+                return;
+
+            this.Voices.Remove(voice);
         }
 
         #endregion

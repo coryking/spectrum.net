@@ -166,10 +166,10 @@
             SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"/>
         <models:EffectsDataTemplateSelector
             x:Key="effectsDataTemplateSelector"
+            FlangerEffectDataTemplate="{StaticResource FlangerEffectTemplate}"
             GhettoReverbDataTemplate="{StaticResource GhettoReverbTemplate}"
             ChorusDataTemplate="{StaticResource ChorusEffectTemplate}"
-            BandpassFilterDataTemplate="{StaticResource BandpassFilter}"
-            FlangerEffectDataTemplate="{StaticResource FlangerEffectTemplate}"/>
+            BandpassFilterDataTemplate="{StaticResource BandpassFilter}"/>
         <DataTemplate x:Key="EffectsChooser">
             <Grid>
                 <Grid.RowDefinitions>
@@ -179,9 +179,32 @@
                 <ListView
                                 Grid.Row="0"
                     ItemsSource="{Binding}"
-                                ItemTemplateSelector="{StaticResource effectsDataTemplateSelector}"
+                    x:Name="ChannelEffectsList"      
                     SelectedItem="{Binding SelectedEffect, Mode=TwoWay}"
-                                />
+                                >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Name}"/>
+                                <HyperlinkButton 
+                                    Command="{Binding ElementName=ChannelEffectsList, Path=DataContext.RemoveEffectCommand}"
+                                    CommandParameter="{Binding}"
+                                    Content="Remove" Grid.Column="1"/>
+                                <ContentControl
+                                    Grid.Row="1" Grid.ColumnSpan="2"
+                                    Content="{Binding}" ContentTemplateSelector="{StaticResource effectsDataTemplateSelector}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
                 <StackPanel Orientation="Vertical" Grid.Row="1">
 
                     <ComboBox 
@@ -258,6 +281,7 @@
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition/>
                                                         <RowDefinition/>
+                                                        <RowDefinition/>
                                                     </Grid.RowDefinitions>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="50"/>
@@ -293,6 +317,13 @@
                                                 Grid.Column="3"
                                                 Grid.RowSpan="2"
                                                 Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+                                                    <HyperlinkButton 
+                                                        Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        Grid.ColumnSpan="3"
+                                                        Content="Remove"
+                                                        Command="{Binding ElementName=VoiceList, Path=DataContext.MidiChannel.RemoveVoiceCommand}"
+                                                        CommandParameter="{Binding}"/>
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>
