@@ -159,6 +159,8 @@
     <Compile Include="Sequencer\ChannelController.cs" />
     <Compile Include="Sequencer\EffectChain.cs" />
     <Compile Include="Sequencer\Interfaces\ISourcedSampleProvider.cs" />
+    <Compile Include="Sequencer\Midi\MidiTimeCodeMessage.cs" />
+    <Compile Include="Sequencer\Midi\MidiTimingClockMessage.cs" />
     <Compile Include="Sequencer\SignalChain.cs" />
     <Compile Include="Sequencer\Interfaces\IChannel.cs" />
     <Compile Include="Sequencer\Interfaces\IEffect.cs" />

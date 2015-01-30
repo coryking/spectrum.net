@@ -13,7 +13,7 @@ namespace CorySignalGenerator.Sequencer.Midi
     {
         public static IMidiMessage ToMidiMessage(WindowsPreview.Devices.Midi.IMidiMessage windowsMidiMessage)
         {
-            IMidiMessage result = null;
+            Type messageType = null;
             switch (windowsMidiMessage.Type)
             {
                 case WindowsPreview.Devices.Midi.MidiMessageType.ActiveSensing:
@@ -23,17 +23,18 @@ namespace CorySignalGenerator.Sequencer.Midi
                 case WindowsPreview.Devices.Midi.MidiMessageType.Continue:
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.ControlChange:
-                    result = new MidiControlChangeMessage((WindowsPreview.Devices.Midi.MidiControlChangeMessage)windowsMidiMessage);
+                    messageType = typeof(MidiControlChangeMessage);
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.MidiTimeCode:
+                    messageType = typeof(MidiTimeCodeMessage);
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.None:
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.NoteOff:
-                    result = new MidiNoteOffMessage((WindowsPreview.Devices.Midi.MidiNoteOffMessage)windowsMidiMessage);
+                    messageType = typeof(MidiNoteOffMessage);
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.NoteOn:
-                    result = new MidiNoteOnMessage((WindowsPreview.Devices.Midi.MidiNoteOnMessage)windowsMidiMessage);
+                    messageType = typeof(MidiNoteOnMessage);
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.PitchBendChange:
                     break;
@@ -54,13 +55,22 @@ namespace CorySignalGenerator.Sequencer.Midi
                 case WindowsPreview.Devices.Midi.MidiMessageType.SystemReset:
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.TimingClock:
+                    messageType = typeof(MidiTimingClockMessage);
                     break;
                 case WindowsPreview.Devices.Midi.MidiMessageType.TuneRequest:
                     break;
                 default:
                     break;
             }
-            return result;
+
+            if (messageType != null)
+            {
+                return (IMidiMessage)Activator.CreateInstance(messageType, windowsMidiMessage);
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }

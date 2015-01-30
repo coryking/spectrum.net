@@ -295,6 +295,12 @@
     <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiNoteOnMessage.cs">
       <Link>Sequencer\Midi\MidiNoteOnMessage.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiTimeCodeMessage.cs">
+      <Link>Sequencer\Midi\MidiTimeCodeMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiTimingClockMessage.cs">
+      <Link>Sequencer\Midi\MidiTimingClockMessage.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\NoteSampler.cs">
       <Link>Sequencer\NoteSampler.cs</Link>
     </Compile>

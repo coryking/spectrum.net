@@ -84,7 +84,9 @@ namespace CorySynthUI.ViewModel
         {
             Task.Run(() =>
             {
-                MidiChannel.ProcessMidiMessage(CorySignalGenerator.Sequencer.Midi.MidiMessageConverter.ToMidiMessage(args.Message));
+                var msg = CorySignalGenerator.Sequencer.Midi.MidiMessageConverter.ToMidiMessage(args.Message);
+                if(msg != null)
+                    MidiChannel.ProcessMidiMessage(msg);
             });
         }
 
