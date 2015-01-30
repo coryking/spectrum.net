@@ -50,7 +50,7 @@ namespace CorySignalGenerator.Sequencer
             }
 
             if (SupportsVelocity)
-                lastSampler = new VolumeSampleProvider(lastSampler);
+                lastSampler = new VolumeSampleProvider(lastSampler) { Volume = velocity };
 
             Debug.Assert(Envelope != null);
             if (Envelope == null)
