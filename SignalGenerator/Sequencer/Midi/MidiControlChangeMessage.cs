@@ -17,13 +17,9 @@ namespace CorySignalGenerator.Sequencer.Midi
         }
 
 #if NETFX_CORE
-        public MidiControlChangeMessage(WindowsPreview.Devices.Midi.MidiControlChangeMessage message)
+        public MidiControlChangeMessage(WindowsPreview.Devices.Midi.MidiControlChangeMessage message) : this(message.Channel,message.Controller,message.ControlValue)
         {
-            Channel = message.Channel;
-            ControlValue = message.ControlValue;
-            Channel = message.Channel;
             Timestamp = message.Timestamp;
-            Type = (MidiMessageType)message.Type;
         }
 #endif
         
