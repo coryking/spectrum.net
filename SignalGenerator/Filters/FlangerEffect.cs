@@ -42,7 +42,7 @@ namespace CorySignalGenerator.Filters
             SetEffectSlider(3, this.DryMix);
             SetEffectSlider(4, this.Rate);
         }
-        public override string Name { get { return "Chorus"; } }
+        public override string Name { get { return "Flanger"; } }
 
         #region properties
 

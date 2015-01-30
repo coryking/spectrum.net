@@ -118,6 +118,7 @@
     <Compile Include="JSNet\Chorus.cs" />
     <Compile Include="JSNet\Flanger.cs" />
     <Compile Include="Models\IWrapSampleProvider.cs" />
+    <Compile Include="Models\PitchAdjustment.cs" />
     <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />

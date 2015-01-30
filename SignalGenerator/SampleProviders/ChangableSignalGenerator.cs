@@ -32,23 +32,6 @@ namespace CorySignalGenerator.SampleProviders
 
         }
 
-        void eventSource_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Debug.WriteLine("Got property changed: {0}", e.PropertyName);
-            switch (e.PropertyName)
-            {
-                case "Pitch":
-                    this.Pitch = _eventSource.Pitch;
-                    break;
-                case "Type":
-                    this.Type = _eventSource.Type;
-                    break;
-                default:
-                    break;
-            }
-            
-        }
-
         public float Pitch { get; set; }
 
         public float Frequency { get; set; }

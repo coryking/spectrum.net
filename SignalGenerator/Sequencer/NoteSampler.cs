@@ -34,7 +34,7 @@ namespace CorySignalGenerator.Sequencer
             if (Envelope == null)
                 return null;
 
-            var frequency = FrequencyUtils.ScaleFrequency((float)note.Frequency, Pitch, 12f);
+            var frequency = PitchAdjustment.AdjustPitch((float)note.Frequency);
             note.Frequency = frequency;
 
             ISampleProvider lastSampler = GenerateNote(note);
@@ -80,27 +80,14 @@ namespace CorySignalGenerator.Sequencer
             get;
         }
 
-
-        #region Property Pitch
-        private float _pitch = 0f;
-
-        /// <summary>
-        /// Sets and gets the Pitch property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public float Pitch
+        private Lazy<PitchAdjustment> _pitchAdjustment = new Lazy<PitchAdjustment>(() => { return new PitchAdjustment(); });
+        public PitchAdjustment PitchAdjustment
         {
             get
             {
-                return _pitch;
-            }
-            set
-            {
-                Set(ref _pitch, value,-12f,12f);
+                return _pitchAdjustment.Value;
             }
         }
-        #endregion
-		
 
         public ObservableCollection<IEffectFactory> Effects
         {

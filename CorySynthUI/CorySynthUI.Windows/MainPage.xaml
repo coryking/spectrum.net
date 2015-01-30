@@ -7,6 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:util="using:CorySignalGenerator.Utils"
     xmlns:models="using:CorySynthUI.ViewModel"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:controls="using:CorySynthUI.Controls"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -16,75 +18,55 @@
             <Setter Property="Margin" Value="5,0"/>
             <Setter Property="Orientation" Value="Horizontal"/>
         </Style>
+        <Style BasedOn="{StaticResource headeredStackPanelStyle}" TargetType="controls:HeaderedStackPanel">
+            <Setter Property="HeaderStyle" Value="{StaticResource TitleTextBlockStyle}"/>
+        </Style>
         <DataTemplate x:Key="AmplitudeValueSelector">
             <StackPanel Orientation="Vertical">
-                <TextBlock Text="{Binding Index}" FontFamily="Global User Interface"/>
-                <Slider Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" FontFamily="Global User Interface"/>
+                <Slider Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" FontFamily="Global User Interface"/>
             </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="SoundModelSelector">
-            <TextBlock Text="{Binding Name}" FontFamily="Global User Interface"/>
         </DataTemplate>
 
         <DataTemplate x:Key="FlangerEffectTemplate">
             <StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Length (ms)</TextBlock>
+                <Slider Header="Length (ms)" Minimum="0" Maximum="200" Value="{Binding Length, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Feedback (dB)" Minimum="-120" Maximum="6" Value="{Binding Feedback, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Rate (hZ)" Minimum="0.001" Maximum="100" Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="10"/>
+
             </StackPanel>
+            
+            
         </DataTemplate>
         
         <DataTemplate x:Key="AdsrTemplate">
             <StackPanel Orientation="Horizontal">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Attack (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Release (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock  Style="{StaticResource TitleTextBlockStyle}">Decay (ms)</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10" FontFamily="Global User Interface"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock  Style="{StaticResource TitleTextBlockStyle}" >Sustain Level</TextBlock>
-                    <Slider  Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" FontFamily="Global User Interface"/>
-                </StackPanel>
+                    <Slider Header="Attack (ms)" Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                    <Slider Header="Release (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                    <Slider Header="Decay (ms)" Style="{StaticResource HorizontalMarginSlider}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                    <Slider Header="Sustain" Style="{StaticResource HorizontalMarginSlider}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="SignalGeneratedSoundTemplate">
-            <StackPanel>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Generated Sound Type</TextBlock>
-                <ComboBox SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" FontFamily="Global User Interface" />
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Pitch</TextBlock>
-                <Slider Value="{Binding Pitch, Mode=TwoWay}" Minimum="-12" Maximum="12" StepFrequency="0.04" TickFrequency="0.16"/>
-
+            <StackPanel Orientation="Horizontal">
+                    <ComboBox Header="Sound" SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8" FontFamily="Global User Interface" />
+                <controls:HeaderedStackPanel HeaderText="Pitch" Orientation="Vertical">
+                    <StackPanel Orientation="Vertical">
+                        <ComboBox Header="Semitones" ItemsSource="{Binding PitchAdjustment.ValidSemitones}" SelectedItem="{Binding Semitones, Mode=TwoWay}"/>
+                        <Slider Header="Cents" Value="{Binding PitchAdjustment.Cents, Mode=TwoWay}" Minimum="-100" Maximum="100" StepFrequency="5" TickFrequency="10"/>
+                    </StackPanel>
+                </controls:HeaderedStackPanel>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="PadSoundTemplate">
             <StackPanel Width="700" Orientation="Vertical">
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Bandwidth</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" FontFamily="Global User Interface"/>
-
-                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" >Bandwidth Scale</TextBlock>
-                    <Slider Style="{StaticResource HorizontalMarginSlider}" Grid.Column="1" Grid.Row="1"  Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
-
-                </Grid>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Harmonic Type</TextBlock>
-                <ComboBox Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Harmonics</TextBlock>
-                <Slider Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                <StackPanel Orientation="Vertical">
+                    <Slider Header="Bandwidth" Style="{StaticResource HorizontalMarginSlider}" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" FontFamily="Global User Interface"/>
+                    <Slider Header="Bandwidth Scale" Style="{StaticResource HorizontalMarginSlider}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+                </StackPanel>
+                <ComboBox Header="Harmonic Type" Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}"/>
+                <Slider Header="Harmonics" Maximum="12" Minimum="1" Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 <ItemsControl ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto" FontFamily="Global User Interface">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -100,60 +82,31 @@
             <StackPanel Orientation="Vertical">
 
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Reverb Delay (ms)</TextBlock>
-                    <Slider Grid.Column="0" Grid.Row="1" Maximum="1000" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">Reverb Decay</TextBlock>
-                    <Slider Grid.Column="1" Grid.Row="1" Maximum="0.45" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
-                </Grid>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox  IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
-                    <TextBlock Style="{StaticResource TitleTextBlockStyle}">Use EQ</TextBlock>
-                </StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">LPF Cutoff (hZ)</TextBlock>
-                    <Slider Grid.Column="0" Grid.Row="1" Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">HPF Cutoff (hZ)</TextBlock>
-                    <Slider Grid.Column="1" Grid.Row="1" Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
 
-                </Grid>
+                    <Slider Header="Delay (ms)"  Maximum="1000" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Delay, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                    <Slider Header="Decay" Maximum="0.45" Minimum="0" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding Decay, Mode=TwoWay}" StepFrequency="0.01" TickFrequency="0.05"/>
+                <controls:HeaderedStackPanel HeaderText="Use EQ" Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding UseEQ, Mode=TwoWay}"/>
+                </controls:HeaderedStackPanel>
+               
+                    <Slider Header="LPF Cutoff (hZ)" Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}" Value="{Binding LowPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                    <Slider Header="HPF Cutoff (hZ)"  Maximum="22050" Minimum="1" Style="{StaticResource HorizontalMarginSlider}"  Value="{Binding HighPassCutoffFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+
             </StackPanel>
 
         </DataTemplate>
         <DataTemplate x:Key="ChorusEffectTemplate">
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" FontFamily="Global User Interface">Chorus Length (ms)</TextBlock>
-                <Slider Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Voices</TextBlock>
-                <Slider Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1" FontFamily="Global User Interface"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Rate (hz)</TextBlock>
-                <Slider Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
+                <Slider Header="Length (ms)" Maximum="250" Minimum="1"  Value="{Binding ChorusLength, Mode=TwoWay}" StepFrequency="1" TickFrequency="5"/>
+                <Slider Header="Voices" Maximum="8" Minimum="1"  Value="{Binding Voices, Mode=TwoWay}" StepFrequency="1" TickFrequency="1" FontFamily="Global User Interface"/>
+                <Slider Header="Rate (hZ)" Maximum="16" Minimum="0.1"  Value="{Binding Rate, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="1"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="BandpassFilter">
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Low Frequency Cutoff (hZ)</TextBlock>
-                <Slider Maximum="22050" Minimum="200" Value="{Binding LPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">High Frequency Cutoff (hZ)</TextBlock>
-                <Slider Maximum="4000" Minimum="0" Value="{Binding HPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Q</TextBlock>
-                <Slider Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
+                <Slider Header="Low Frequency Cutoff (hZ)" Maximum="22050" Minimum="200" Value="{Binding LPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <Slider Header="High Frequency Cutoff (hZ)" Maximum="4000" Minimum="0" Value="{Binding HPFrequency, Mode=TwoWay}" StepFrequency="0.5" TickFrequency="220.5"/>
+                <Slider Header="Q" Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DeviceInformationTemplate">
@@ -234,6 +187,10 @@
             <Style TargetType="StackPanel">
                 <Setter Property="Margin" Value="10,0,10,0"/>
             </Style>
+            <Style TargetType="ComboBox" >
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -340,23 +297,22 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Button  Content="Start" Command="{Binding StartRecordingCommand}"/>
                 <Button  Content="Stop" Command="{Binding StopRecordingCommand}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Audio Device</TextBlock>
-                <ComboBox ItemsSource="{Binding WaveOut.AudioDevices,Mode=TwoWay}" 
+                <ComboBox Header="Audio Device" ItemsSource="{Binding WaveOut.AudioDevices,Mode=TwoWay}" 
                           SelectedItem="{Binding WaveOut.SelectedAudioDevice, Mode=TwoWay}" 
-                          ItemTemplate="{StaticResource DeviceInformationTemplate}"/>
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}">Midi Device</TextBlock>
-                <ComboBox Name="MidiDevList"
+                          ItemTemplate="{StaticResource DeviceInformationTemplate}" Width="300"/>
+
+                <ComboBox Header="Midi Device" Name="MidiDevList"
                           SelectedItem="{Binding MidiDevice.SelectedMidiDevice, Mode=TwoWay}"
                           ItemsSource="{Binding MidiDevice.MidiDevices}"
-                          ItemTemplate="{StaticResource DeviceInformationTemplate}"/>
+                          ItemTemplate="{StaticResource DeviceInformationTemplate}" Width="200"/>
 
             </StackPanel>
         </Grid>

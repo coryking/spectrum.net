@@ -2,6 +2,29 @@
     x:Class="CorySynthUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CorySynthUI.Controls"
     xmlns:local="using:CorySynthUI">
 
+    <Application.Resources>
+        <Style TargetType="controls:HeaderedStackPanel" x:Key="headeredStackPanelStyle">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="HeaderStyle" Value="{StaticResource TitleTextBlockStyle}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="controls:HeaderedStackPanel">
+                        <StackPanel Orientation="{TemplateBinding Orientation}">
+                            <TextBlock Text="{TemplateBinding HeaderText}" Style="{TemplateBinding HeaderStyle}"/>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                            />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
 </Application>
