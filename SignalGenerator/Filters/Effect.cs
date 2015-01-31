@@ -112,6 +112,10 @@ namespace CorySignalGenerator.Filters
             get { return WaveFormat.SampleRate; }
         }
 
+        public virtual int Order
+        {
+            get { return 50; }
+        }
 
         public abstract string Name
         {

@@ -325,5 +325,16 @@ namespace CorySignalGenerator.Filters
             base.HandlePropertyChanged(propertyName);
             SetDelayLineParams();
         }
+
+        /// <summary>
+        /// Reverb should come almost dead last in the chain
+        /// </summary>
+        public override int Order
+        {
+            get
+            {
+                return 1000;
+            }
+        }
     }
 }

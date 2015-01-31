@@ -17,6 +17,11 @@ namespace CorySignalGenerator.Sequencer.Interfaces
         /// </summary>
         String Name { get; }
 
+        /// <summary>
+        /// What order should this effect be?  Lower is closer to the source, higher is further away from the source
+        /// </summary>
+        int Order { get; }
+
     }
 
     /// <summary>

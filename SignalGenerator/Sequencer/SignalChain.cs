@@ -57,14 +57,24 @@ namespace CorySignalGenerator.Sequencer
             RebuildEffectsChain();
             base.OnCollectionChanged(e);
         }
-        
+
+        /// <summary>
+        /// Give you a chance to order (or remove) effects
+        /// </summary>
+        protected virtual IEnumerable<T> OrderedEffects
+        {
+            get
+            {
+                return this;
+            }
+        }
 
         protected void RebuildEffectsChain()
         {
             lock (_lock)
             {
                 ISampleProvider lastSource = Source;
-                foreach (var effect in this)
+                foreach (var effect in OrderedEffects)
                 {
                     // Sanity check... everything must have the same wave format.
                     if (effect.WaveFormat != lastSource.WaveFormat)

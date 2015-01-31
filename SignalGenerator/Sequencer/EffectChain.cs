@@ -48,6 +48,17 @@ namespace CorySignalGenerator.Sequencer
 
         #region Properties
 
+        /// <summary>
+        /// Order our effects
+        /// </summary>
+        protected override IEnumerable<IEffect> OrderedEffects
+        {
+            get
+            {
+                return base.OrderedEffects.OrderBy(x => x.Order);
+            }
+        }
+
 
         private IEffect _selectedEffect = null;
         /// <summary>
