@@ -24,7 +24,7 @@ namespace CorySignalGenerator.Models
         #region Properties
 
         #region Property SustainLevel
-        private float _sustainLevel = 0.8f;
+        private float _sustainLevel = 1f;
 
         /// <summary>
         /// Sets and gets the SustainLevel property.
