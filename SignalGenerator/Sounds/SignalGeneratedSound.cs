@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CorySignalGenerator.Models;
 using CorySignalGenerator.Utils;
 using CorySignalGenerator.Sequencer;
+using System.Diagnostics;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -65,11 +66,19 @@ namespace CorySignalGenerator.Sounds
 
         protected override ISampleProvider GenerateNote(MidiNote note)
         {
-            return new ChangableSignalGenerator(WaveFormat.SampleRate, WaveFormat.Channels, this)
+            var generator = new ChangableSignalGenerator(WaveFormat.SampleRate, 1, this)
             {
                 Frequency = (float)note.Frequency,
                 Type = Type,
             };
+            var panAmount = (note.Number - 63) / 128f;
+            Debug.WriteLine("Pan Amount: {0}", panAmount);
+            var panned = new PanningSampleProvider(generator)
+            {
+                Pan = panAmount,
+            };
+            return panned;
+
         }
 
         protected override bool SupportsVelocity

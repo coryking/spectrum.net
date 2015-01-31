@@ -23,10 +23,15 @@ namespace CorySignalGenerator.Filters
         public GhettoReverb(WaveFormat format)
             : base(format)
         {
-
+            SetDefaults();
         }
 
         public GhettoReverb(ISampleProvider source) : base(source)
+        {
+            SetDefaults();
+        }
+
+        private void SetDefaults()
         {
             Decay = 85f;
             Delay = 100;
@@ -70,8 +75,9 @@ namespace CorySignalGenerator.Filters
 
                 _delayLines[0].SampleDelay = SampleDelay;
                 _delayLines[2].SampleDelay = SampleDelay;
-                _delayLines[1].SampleDelay = SampleSecondaryDelayRight + SampleDelay; 
-                _delayLines[3].SampleDelay = SampleSecondaryDelayLeft + SampleDelay;
+                // Only set the delays if they are active
+                _delayLines[1].SampleDelay = SampleSecondaryDelayRight > 0 ? SampleSecondaryDelayRight + SampleDelay : 0; 
+                _delayLines[3].SampleDelay = SampleSecondaryDelayLeft > 0 ? SampleSecondaryDelayLeft + SampleDelay : 0;
             }
         }
         protected override void Reset()
@@ -112,7 +118,11 @@ namespace CorySignalGenerator.Filters
                 Parallel.ForEach(_delayLines, (line, state, index) =>
                 {
                     tempBus[index] = new float[count];
-                    reads[index] = line.Read(tempBus[index], 0, count);
+
+                    if (line.SampleDelay > 0)
+                    {
+                        reads[index] = line.Read(tempBus[index], 0, count);
+                    }
                 });
                 foreach (var item in reads)
                 {
