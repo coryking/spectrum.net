@@ -59,25 +59,6 @@ namespace CorySignalGenerator.Sequencer
             }
         }
 
-
-        private IEffect _selectedEffect = null;
-        /// <summary>
-        /// The selected effect.
-        /// </summary>
-        /// <remarks>I don't like this here... but it is here to help out data templating</remarks>
-        public IEffect SelectedEffect
-        {
-            get { return _selectedEffect; }
-            set
-            {
-                if (value == _selectedEffect)
-                    return;
-                _selectedEffect = value;
-                OnPropertyChanged("SelectedEffect");
-
-            }
-        }
-
         #endregion
     }
 }

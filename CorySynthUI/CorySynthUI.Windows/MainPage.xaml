@@ -151,13 +151,11 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListView
+                <ItemsControl
                                 Grid.Row="0"
                     ItemsSource="{Binding}"
-                    x:Name="ChannelEffectsList"      
-                    SelectedItem="{Binding SelectedEffect, Mode=TwoWay}"
-                                >
-                    <ListView.ItemTemplate>
+                    x:Name="ChannelEffectsList">
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -178,8 +176,8 @@
                                     Content="{Binding}" ContentTemplateSelector="{StaticResource effectsDataTemplateSelector}"/>
                             </Grid>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <StackPanel Orientation="Vertical" Grid.Row="1">
 
                     <ComboBox 
@@ -227,7 +225,7 @@
             </Hub.Header>
             <Hub.Sections>
                 <HubSection Header="Channel Effects" DataContext="{Binding MidiChannel.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
-                <HubSection Header="Voices" Width="Auto">
+                <HubSection Header="Voices" Width="Auto" Height="Auto" ScrollViewer.HorizontalScrollBarVisibility="Visible">
                     <DataTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -245,8 +243,8 @@
                                     Add Voice
                                 </Button>
                             </StackPanel>
-                            <ScrollViewer Grid.Row="1">
                                 <ItemsControl 
+                                    Grid.Row="1"
                                 Name="VoiceList"
                                 ItemsSource="{Binding MidiChannel.Voices}"
                                     >
@@ -306,7 +304,6 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                            </ScrollViewer>
 
                         </Grid>
                     </DataTemplate>
