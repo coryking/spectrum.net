@@ -26,11 +26,14 @@ namespace CorySignalGenerator.Filters
 
         public Effect(WaveFormat format)
         {
+            if(RequiresStereo && format.Channels != 2)
+                throw new InvalidOperationException(String.Format("Effect {0} requires stereo", this.Name));
             WaveFormat = format;
             Init();
         }
 
-        public Effect(ISampleProvider sourceProvider) : this(sourceProvider.WaveFormat)
+        public Effect(ISampleProvider sourceProvider)
+            : this(sourceProvider.WaveFormat)
         {
             Source = sourceProvider;
             Init();
@@ -86,7 +89,7 @@ namespace CorySignalGenerator.Filters
             }
         }
         #endregion
-		
+
         /// <summary>
         /// The source for this effect
         /// </summary>
@@ -112,6 +115,11 @@ namespace CorySignalGenerator.Filters
             get { return WaveFormat.SampleRate; }
         }
 
+        protected virtual bool RequiresStereo
+        {
+            get { return false; }
+        }
+
         public virtual int Order
         {
             get { return 50; }
@@ -121,5 +129,6 @@ namespace CorySignalGenerator.Filters
         {
             get;
         }
+
     }
 }

@@ -12,7 +12,7 @@ namespace CorySignalGenerator.Models
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected bool Set<T>(ref T field, T newValue = default(T), [CallerMemberName] string propertyName = null)
+        protected bool Set<T>(ref T field, T newValue = default(T), Action changeCallback = null, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, newValue))
                 return false;
@@ -20,26 +20,29 @@ namespace CorySignalGenerator.Models
             field = newValue;
 
             OnPropertyChanged(propertyName);
+            if (changeCallback != null)
+                changeCallback.Invoke();
+
             return true;
         }
 
-        protected bool Set(ref float field, float newValue, float minValue, [CallerMemberName] string propertyName = null)
+        protected bool Set(ref float field, float newValue, float minValue, Action changeCallback = null, [CallerMemberName] string propertyName = null)
         {
-            return Set(ref field, (float)Math.Max(minValue, newValue), propertyName);
+            return Set(ref field, (float)Math.Max(minValue, newValue), changeCallback, propertyName);
         }
 
-        protected bool Set(ref float field, float newValue, float minValue, float maxValue, [CallerMemberName] string propertyName = null)
+        protected bool Set(ref float field, float newValue, float minValue, float maxValue, Action changeCallback = null, [CallerMemberName] string propertyName = null)
         {
-            return Set(ref field, (float)Math.Min(maxValue, newValue), minValue, propertyName);
+            return Set(ref field, (float)Math.Min(maxValue, newValue), minValue, changeCallback, propertyName);
         }
-        protected bool Set(ref int field, int newValue, int minValue, [CallerMemberName] string propertyName = null)
+        protected bool Set(ref int field, int newValue, int minValue, Action changeCallback = null,[CallerMemberName] string propertyName = null)
         {
-            return Set(ref field, (int)Math.Max(minValue, newValue), propertyName);
+            return Set(ref field, (int)Math.Max(minValue, newValue), changeCallback, propertyName);
         }
 
-        protected bool Set(ref int field, int newValue, int minValue, int maxValue, [CallerMemberName] string propertyName = null)
+        protected bool Set(ref int field, int newValue, int minValue, int maxValue, Action changeCallback = null, [CallerMemberName] string propertyName = null)
         {
-            return Set(ref field, (int)Math.Min(maxValue, newValue), minValue, propertyName);
+            return Set(ref field, (int)Math.Min(maxValue, newValue), minValue, changeCallback, propertyName);
         }
 
 

@@ -115,6 +115,7 @@
     <Compile Include="Dsp\EqFilter.cs" />
     <Compile Include="Filters\ChorusEffect.cs" />
     <Compile Include="Filters\FlangerEffect.cs" />
+    <Compile Include="Filters\ZynAddSubReverb.cs" />
     <Compile Include="JSNet\Chorus.cs" />
     <Compile Include="JSNet\Flanger.cs" />
     <Compile Include="Models\IWrapSampleProvider.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Utils\FastMath.cs" />
     <Compile Include="Utils\FrequencyUtils.cs" />
+    <Compile Include="Utils\Unison.cs" />
     <Compile Include="Utils\VectorMath.cs" />
   </ItemGroup>
   <ItemGroup>

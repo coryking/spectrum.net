@@ -47,6 +47,27 @@ namespace CorySignalGenerator.Utils
                 n--;
             }
         }
+        public static void vadd(
+            float[] source1, int offset1, int sourceStride1, float scale1,
+            float[] source2, int offset2, int sourceStride2, float scale2,
+            float[] destination, int destinationOffset, int destinationStride,
+            int framesToProcess)
+        {
+            var n = framesToProcess;
+            var destP = destinationOffset;
+            var source1P = offset1;
+            var source2P = offset2;
+            while (n > 0)
+            {
+                destination[destP] = 
+                    source1[source1P] * scale1 + 
+                    source2[source2P] * scale2;
+                source1P += sourceStride1;
+                source2P += sourceStride2;
+                destP += destinationStride;
+                n--;
+            }
+        }
 
         public static void vadd(
             float[] source1, int offset1, int sourceStride1,
@@ -64,6 +85,33 @@ namespace CorySignalGenerator.Utils
             while (n > 0)
             {
                 destination[destP] = source1[source1P] + source2[source2P] + source3[source3P];
+                source1P += sourceStride1;
+                source2P += sourceStride2;
+                source3P += sourceStride3; ;
+                destP += destinationStride;
+                n--;
+            }
+        }
+
+        public static void vadd(
+            float[] source1, int offset1, int sourceStride1, float scale1,
+            float[] source2, int offset2, int sourceStride2, float scale2,
+            float[] source3, int offset3, int sourceStride3, float scale3,
+            float[] destination, int destinationOffset, int destinationStride,
+
+            int framesToProcess)
+        {
+            var n = framesToProcess;
+            var destP = destinationOffset;
+            var source1P = offset1;
+            var source2P = offset2;
+            var source3P = offset3;
+            while (n > 0)
+            {
+                destination[destP] = 
+                    source1[source1P] * scale1 + 
+                    source2[source2P] * scale2 + 
+                    source3[source3P] * scale3;
                 source1P += sourceStride1;
                 source2P += sourceStride2;
                 source3P += sourceStride3; ;

@@ -32,7 +32,7 @@ namespace CorySignalGenerator.Models
         {
             get
             {
-                return Semitones + Cents / 100;
+                return (float)Semitones + Cents / 100.0f;
             }
         }
 

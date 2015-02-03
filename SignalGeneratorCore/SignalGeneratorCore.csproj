@@ -160,6 +160,9 @@
     <Compile Include="..\SignalGenerator\Filters\SuperPitch.cs">
       <Link>Filters\SuperPitch.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Filters\ZynAddSubReverb.cs">
+      <Link>Filters\ZynAddSubReverb.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\JSNet\Chorus.cs">
       <Link>JSNet\Chorus.cs</Link>
     </Compile>
@@ -339,6 +342,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Utils\FrequencyUtils.cs">
       <Link>Utils\FrequencyUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Utils\Unison.cs">
+      <Link>Utils\Unison.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Utils\VectorMath.cs">
       <Link>Utils\VectorMath.cs</Link>
