@@ -26,15 +26,18 @@ namespace CorySignalGenerator.Filters
 
         public Effect(WaveFormat format)
         {
-            if(RequiresStereo && format.Channels != 2)
-                throw new InvalidOperationException(String.Format("Effect {0} requires stereo", this.Name));
-            WaveFormat = format;
-            Init();
+            setupVars(format, null);
         }
 
         public Effect(ISampleProvider sourceProvider)
-            : this(sourceProvider.WaveFormat)
         {
+            setupVars(sourceProvider.WaveFormat, sourceProvider);
+        }
+        private void setupVars(WaveFormat format, ISampleProvider sourceProvider)
+        {
+            if (RequiresStereo && format.Channels != 2)
+                throw new InvalidOperationException(String.Format("Effect {0} requires stereo", this.Name));
+            WaveFormat = format;
             Source = sourceProvider;
             Init();
         }

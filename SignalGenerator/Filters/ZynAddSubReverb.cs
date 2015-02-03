@@ -286,7 +286,7 @@ namespace CorySignalGenerator.Filters
             float t = pow(60f, Time / 127f) - 0.97f;
             for (int i = 0; i < REV_COMBS * 2; i++)
             {
-                combfb[i] = -exp(comblen[i] / SampleRate * log(0.001f) / t);
+                combfb[i] = -exp((float)comblen[i] / SampleRate * log(0.001f) / t);
             }
             //the feedback is negative because it removes the DC
         }
@@ -304,7 +304,7 @@ namespace CorySignalGenerator.Filters
                     lohidamptype = 1;
                 if (LoHiDamp > 64)
                     lohidamptype = 2;
-                float x = abs((LoHiDamp - 60f) / 64.1f);
+                float x = abs((LoHiDamp - 64f) / 64.1f);
                 lohifb = x * x;
             }
         }
@@ -349,7 +349,7 @@ namespace CorySignalGenerator.Filters
                 lpfFilter = null;
             else
             {
-                float fr = exp(sqrt(HPF / 127f) * log(25000f)) + 40.0f;
+                float fr = exp(sqrt(LPF / 127f) * log(25000f)) + 40.0f;
                 hpfFilter = NAudio.Dsp.BiQuadFilter.LowPassFilter(SampleRate, fr, Q);
             }
         }
@@ -418,7 +418,7 @@ namespace CorySignalGenerator.Filters
         {
             roomsize = (RoomSize - 64f) / 64f;
             if (roomsize > 0f)
-                roomsize *= 2;
+                roomsize *= 2f;
             roomsize = pow(10f, roomsize);
             rs = sqrt(roomsize);
             settype();
@@ -531,7 +531,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _loHiDamp, value, changeCallback: LockedSet(()=>setLoHiDamp()));
+                Set(ref _loHiDamp, value, 64f, changeCallback: LockedSet(()=>setLoHiDamp()));
             }
         }
         #endregion
@@ -579,7 +579,7 @@ namespace CorySignalGenerator.Filters
         #endregion
 		
         #region Property InitialDelayFeedback
-        private float _initialDelayFeedback = 0f;
+        private float _initialDelayFeedback;
 
         /// <summary>
         /// Sets and gets the InitialDelayFeedback property.
@@ -732,8 +732,8 @@ namespace CorySignalGenerator.Filters
                 //    lvol *= 2f;
                 //    rvol *= 2f;
                 //}
-                VectorMath.vadd(buffer, offset, 2, 1f, efxoutl, 0, 1, lvol, buffer,offset, 2, bufferSize);
-                VectorMath.vadd(buffer, offset + 1, 2, 1f, efxoutr, 0, 1, rvol, buffer,offset  + 2, 2, bufferSize);
+                VectorMath.vadd(buffer, offset, 2, 1f, efxoutl, 0, 1, lvol, buffer, offset, 2, bufferSize);
+                VectorMath.vadd(buffer, offset + 1, 2, 1f, efxoutr, 0, 1, rvol, buffer, offset  + 1, 2, bufferSize);
 
                 return bufferSize * 2;
             }
