@@ -10,9 +10,9 @@ namespace CorySignalGenerator.Filters
 {
     public enum ReverbType
     {
-        Random=0,
-        Freeverb=1,
-        Bandwidth=2
+        Random = 0,
+        Freeverb = 1,
+        Bandwidth = 2
     }
 
 
@@ -93,12 +93,12 @@ namespace CorySignalGenerator.Filters
     {
         object _lock = new object();
 
-        public const int REV_COMBS=8;
+        public const int REV_COMBS = 8;
         public const int REV_APS = 4;
         public const float Q = 0.5f;
         public const int BUFFER_SIZE = 400000; // pull this out of my ass...
 
-        protected static Dictionary<ReverbType,int[]> combtunings = new Dictionary<ReverbType,int[]>(){
+        protected static Dictionary<ReverbType, int[]> combtunings = new Dictionary<ReverbType, int[]>(){
             //this is unused (for random)
             {ReverbType.Random, new int[]{0,    0,    0,    0,    0,    0,    0,    0      }},
             //Freeverb by Jezar at Dreampoint
@@ -107,7 +107,7 @@ namespace CorySignalGenerator.Filters
             {ReverbType.Bandwidth, new int[]{1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617   }}
         };
 
-        protected static Dictionary<ReverbType,int[]> aptunings = new Dictionary<ReverbType,int[]>(){
+        protected static Dictionary<ReverbType, int[]> aptunings = new Dictionary<ReverbType, int[]>(){
             //this is unused (for random)
             {ReverbType.Random,new int[]{0,   0,   0,   0    }},
             //Freeverb by Jezar at Dreampoint
@@ -127,25 +127,25 @@ namespace CorySignalGenerator.Filters
         float volume;
 
         //Parameters
-        int   lohidamptype;   //0=disable, 1=highdamp (lowpass), 2=lowdamp (highpass)
-        int   idelaylen;
-        int   idelayk;
+        int lohidamptype;   //0=disable, 1=highdamp (lowpass), 2=lowdamp (highpass)
+        int idelaylen;
+        int idelayk;
         float lohifb;
         float idelayfb;
         float roomsize;
         float rs;   //rs is used to "normalise" the volume according to the roomsize
-        int[]   comblen= new int[REV_COMBS * 2];
-        int[]   aplen = new int[REV_APS * 2];
+        int[] comblen = new int[REV_COMBS * 2];
+        int[] aplen = new int[REV_APS * 2];
         Unison bandwidth;
         //class Unison * bandwidth;
 
         //Internal Variables
         float[][] comb = new float[REV_COMBS * 2][]; // PORT: this was a pointer (float *comb[REV_COMBS*2])
-        int[]    combk = new int[REV_COMBS * 2];
-        float[]  combfb = new float[REV_COMBS * 2]; //feedback-ul fiecarui filtru "comb"
-        float[]  lpcomb = new float[REV_COMBS * 2]; //pentru Filtrul LowPass
+        int[] combk = new int[REV_COMBS * 2];
+        float[] combfb = new float[REV_COMBS * 2]; //feedback-ul fiecarui filtru "comb"
+        float[] lpcomb = new float[REV_COMBS * 2]; //pentru Filtrul LowPass
         float[][] ap = new float[REV_APS * 2][]; // PORT: this was a pointer (float *ap[REV_APS])
-        int[]    apk = new int[REV_APS * 2];
+        int[] apk = new int[REV_APS * 2];
         float[] idelay;
         NAudio.Dsp.BiQuadFilter lpfFilter;
         NAudio.Dsp.BiQuadFilter hpfFilter;
@@ -161,12 +161,14 @@ namespace CorySignalGenerator.Filters
 
         #endregion
 
-        public ZynAddSubReverb(WaveFormat format) :base(format)
+        public ZynAddSubReverb(WaveFormat format)
+            : base(format)
         {
 
         }
 
-        public ZynAddSubReverb(ISampleProvider source) : base(source)
+        public ZynAddSubReverb(ISampleProvider source)
+            : base(source)
         {
 
         }
@@ -176,7 +178,7 @@ namespace CorySignalGenerator.Filters
             idelaylen = 0;
             roomsize = 1f;
             rs = 1f;
-            
+
             Volume = 48;
             Time = 64;
             InitialDelay = 40f;
@@ -187,7 +189,7 @@ namespace CorySignalGenerator.Filters
             Type = ReverbType.Freeverb;
             RoomSize = 64;
             Bandwidth = 30;
-            
+
 
             foreach (var item in ReverbPreset.Presets)
             {
@@ -219,7 +221,7 @@ namespace CorySignalGenerator.Filters
         protected void OnSetPresetCommand(object parameter)
         {
             var preset = parameter as ReverbPreset;
-            if(preset == null)
+            if (preset == null)
                 return;
 
             LoadFromPreset(preset);
@@ -293,7 +295,7 @@ namespace CorySignalGenerator.Filters
 
         protected void setLoHiDamp()
         {
-            if(LoHiDamp == 64)
+            if (LoHiDamp == 64)
             {
                 lohidamptype = 0;
                 lohifb = 0f;
@@ -349,8 +351,8 @@ namespace CorySignalGenerator.Filters
                 lpfFilter = null;
             else
             {
-                float fr = exp(sqrt(LPF / 127f) * log(25000f)) + 40.0f;
-                hpfFilter = NAudio.Dsp.BiQuadFilter.LowPassFilter(SampleRate, fr, Q);
+                float fr = exp(sqrt(LPF / 127f) * log(SampleRate/2f - 1000f)) + 40.0f;
+                lpfFilter = NAudio.Dsp.BiQuadFilter.LowPassFilter(SampleRate, fr, Q);
             }
         }
 
@@ -372,12 +374,10 @@ namespace CorySignalGenerator.Filters
                     tmp = 10.0f;
                 combk[i] = 0;
                 lpcomb[i] = 0;
-                if (comblen[i] != (int)tmp || comb[i] == null)
-                {
-                    comblen[i] = (int)tmp;
-                    comb[i] = new float[comblen[i]];
-                    
-                }
+
+                comblen[i] = (int)tmp;
+                comb[i] = new float[comblen[i]];
+
             }
 
             for (int i = 0; i < REV_APS * 2; ++i)
@@ -393,14 +393,12 @@ namespace CorySignalGenerator.Filters
                 if (tmp < 10)
                     tmp = 10;
                 apk[i] = 0;
-                if (aplen[i] != (int)tmp || ap[i] == null)
-                {
-                    aplen[i] = (int)tmp;
-                    ap[i] = new float[aplen[i]];
-                }
+
+                aplen[i] = (int)tmp;
+                ap[i] = new float[aplen[i]];
             }
             bandwidth = null;
-            if(Type==ReverbType.Bandwidth)
+            if (Type == ReverbType.Bandwidth)
             { //bandwidth
                 //TODO the size of the unison buffer may be too small, though this has
                 //not been verified yet.
@@ -430,22 +428,28 @@ namespace CorySignalGenerator.Filters
             float v = Bandwidth / 127f;
             if (bandwidth != null)
                 bandwidth.Bandwidth = pow(v, 2f) * 200f;
-        }        
+        }
         #endregion
         protected override void Reset()
         {
             for (int i = 0; i < REV_COMBS * 2; i++)
             {
                 lpcomb[i] = 0f;
-                Array.Clear(comb[i], 0, comblen[i]);
+                comb[i] = new float[comblen[i]];
+
             }
             for (int i = 0; i < REV_APS * 2; i++)
             {
-                Array.Clear(ap[i], 0, aplen[i]);
+                ap[i] = new float[aplen[i]];
+
             }
-            if (idelay != null)
-                Array.Clear(idelay, 0, idelaylen);
-            
+            if (idelaylen > 1)
+                idelay = new float[idelaylen];
+            else
+                idelay = null;
+
+            sethpf();
+            setlpf();
         }
 
 
@@ -472,7 +476,7 @@ namespace CorySignalGenerator.Filters
         }
         #endregion
 
-        
+
         #region Property Bandwidth
         private float _bandwidth;
 
@@ -492,7 +496,7 @@ namespace CorySignalGenerator.Filters
             }
         }
         #endregion
-		
+
 
 
         #region Property RoomSize
@@ -514,8 +518,8 @@ namespace CorySignalGenerator.Filters
             }
         }
         #endregion
-		
-        
+
+
         #region Property LoHiDamp
         private float _loHiDamp;
 
@@ -531,11 +535,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _loHiDamp, value, 64f, changeCallback: LockedSet(()=>setLoHiDamp()));
+                Set(ref _loHiDamp, value, 64f, changeCallback: LockedSet(() => setLoHiDamp()));
             }
         }
         #endregion
-		
+
 
         #region Property HPF
         private float _hpf;
@@ -552,11 +556,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _hpf, value, changeCallback: LockedSet(()=>sethpf()));
+                Set(ref _hpf, value, changeCallback: LockedSet(() => sethpf()));
             }
         }
         #endregion
-		
+
 
         #region Property LPF
         private float _lpf;
@@ -573,11 +577,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _lpf, value, changeCallback: LockedSet(()=>setlpf()));
+                Set(ref _lpf, value, changeCallback: LockedSet(() => setlpf()));
             }
         }
         #endregion
-		
+
         #region Property InitialDelayFeedback
         private float _initialDelayFeedback;
 
@@ -593,11 +597,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _initialDelayFeedback, value, changeCallback:LockedSet(()=>setiDelayFb()));
+                Set(ref _initialDelayFeedback, value, changeCallback: LockedSet(() => setiDelayFb()));
             }
         }
         #endregion
-		
+
 
         #region Property InitialDelay
         private float _initialDelay;
@@ -614,11 +618,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _initialDelay, value, changeCallback:LockedSet(()=>setiDelay()));
+                Set(ref _initialDelay, value, changeCallback: LockedSet(() => setiDelay()));
             }
         }
         #endregion
-		
+
         #region Property Pan
         private float _pan;
 
@@ -626,7 +630,7 @@ namespace CorySignalGenerator.Filters
         /// Sets and gets the Pan property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public float  Pan
+        public float Pan
         {
             get
             {
@@ -634,11 +638,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _pan, value, changeCallback:LockedSet(()=>setpan()));
+                Set(ref _pan, value, changeCallback: LockedSet(() => setpan()));
             }
         }
         #endregion
-		
+
 
         #region Property Volume
         private float _volume;
@@ -655,11 +659,11 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _volume, value, LockedSet(()=>setvolume()));
+                Set(ref _volume, value, LockedSet(() => setvolume()));
             }
         }
         #endregion
-		
+
 
         #region Property Time
         private float _time;
@@ -676,7 +680,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _time, value, LockedSet(()=>settime()));
+                Set(ref _time, value, LockedSet(() => settime()));
             }
         }
 
@@ -697,7 +701,7 @@ namespace CorySignalGenerator.Filters
                 int inBuffOffset = offset;
                 for (int i = 0; i < bufferSize; i++)
                     inputbuf[i] = (buffer[inBuffOffset++] + buffer[inBuffOffset++]) / 2f;
-                if(idelay != null)
+                if (idelay != null)
                 {
                     for (int i = 0; i < bufferSize; i++)
                     {
@@ -719,11 +723,11 @@ namespace CorySignalGenerator.Filters
                     if (hpfFilter != null)
                         inputbuf[i] = hpfFilter.Transform(inputbuf[i]);
                 }
-                
+
                 float[] efxoutl = new float[bufferSize];
                 float[] efxoutr = new float[bufferSize];
                 processmono(0, efxoutl, inputbuf, bufferSize);
-                processmono(0, efxoutr, inputbuf, bufferSize);
+                processmono(1, efxoutr, inputbuf, bufferSize);
 
                 float lvol = rs / REV_COMBS * pangainL;
                 float rvol = rs / REV_COMBS * pangainR;
@@ -733,56 +737,54 @@ namespace CorySignalGenerator.Filters
                 //    rvol *= 2f;
                 //}
                 VectorMath.vadd(buffer, offset, 2, 1f, efxoutl, 0, 1, lvol, buffer, offset, 2, bufferSize);
-                VectorMath.vadd(buffer, offset + 1, 2, 1f, efxoutr, 0, 1, rvol, buffer, offset  + 1, 2, bufferSize);
+                VectorMath.vadd(buffer, offset + 1, 2, 1f, efxoutr, 0, 1, rvol, buffer, offset + 1, 2, bufferSize);
 
                 return bufferSize * 2;
             }
         }
 
-        private unsafe void processmono(int ch, float[] output, float[] inputbuf, int bufferSize)
+        private void processmono(int ch, float[] output, float[] inputbuf, int bufferSize)
         {
             for (int j = REV_COMBS * ch; j < REV_COMBS * (ch + 1); j++)
             {
                 // this is kind of awkward, but it is as close to the original c++ code as I could make it
-                fixed (int* ck = &combk[j])
+
+                int comblength = comblen[j];
+
+                for (int i = 0; i < bufferSize; i++)
                 {
-                    fixed (float* lpcombj = &lpcomb[j])
-                    {
-                        int comblength = comblen[j];
+                    var comb_k = combk[j];
 
-                        for (int i = 0; i < bufferSize; i++)
-                        {
-                            float fbout = comb[j][*ck] * combfb[j];
-                            fbout = fbout * (1f - lohifb) + *lpcombj * lohifb;
-                            *lpcombj = fbout;
+                    float fbout = comb[j][comb_k] * combfb[j];
+                    fbout = fbout * (1f - lohifb) + lpcomb[j] * lohifb;
+                    lpcomb[j] = fbout;
 
 
-                            comb[j][*ck] = inputbuf[i] + fbout;
-                            output[i] += fbout;
+                    comb[j][comb_k] = inputbuf[i] + fbout;
+                    output[i] += fbout;
 
-                            *ck += 1;
-                            if (*ck >= comblength)
-                                *ck = 0;
-                        }
-
-                    }
+                    combk[j] += 1;
+                    if (combk[j] >= comblength)
+                        combk[j] = 0;
                 }
+
+
             }
-            for (int j = REV_APS*ch; j <  REV_APS * (1 + ch); j++)
+            for (int j = REV_APS * ch; j < REV_APS * (1 + ch); j++)
             {
-                fixed (int* ak = &apk[j])
+
+                int aplength = aplen[j];
+                for (int i = 0; i < bufferSize; i++)
                 {
-                    int aplength = aplen[j];
-                    for (int i = 0; i < bufferSize; i++)
-                    {
-                        float tmp = ap[j][*ak];
-                        ap[j][*ak] = 0.7f * tmp + output[i];
-                        output[i] = tmp - 0.7f * ap[j][*ak];
-                        *ak += 1;
-                        if (*ak >= aplength)
-                            *ak = 0;
-                    }
+                    var ap_k = apk[j];
+                    float tmp = ap[j][ap_k];
+                    ap[j][ap_k] = 0.7f * tmp + output[i];
+                    output[i] = tmp - 0.7f * ap[j][ap_k];
+                    apk[j] += 1;
+                    if (apk[j] >= aplength)
+                        apk[j] = 0;
                 }
+
             }
 
         }
