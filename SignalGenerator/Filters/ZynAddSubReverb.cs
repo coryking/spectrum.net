@@ -124,7 +124,7 @@ namespace CorySignalGenerator.Filters
                           * this setting tells me how is the volume to the
                           * Master Output only.*/
 
-        float volume;
+        float volume; // port note:  this appears to be the volume of the original dry signal...
 
         //Parameters
         int lohidamptype;   //0=disable, 1=highdamp (lowpass), 2=lowdamp (highpass)
@@ -278,9 +278,17 @@ namespace CorySignalGenerator.Filters
         protected void setvolume()
         {
             // there was code for when this was an insertion effect
-            volume = outvolume = Volume / 127f;
+
+            outvolume = pow(0.01f, (1f - Volume / 127f)) * 4.0f;
+            volume = 1f;
             if (Volume == 0)
                 Reset();
+
+            // this is when it is an insertion effect:
+            //volume = outvolume = Pvolume / 127.0f;
+            //if (Pvolume == 0)
+            //    cleanup();
+            
         }
 
         protected void settime()
@@ -731,6 +739,9 @@ namespace CorySignalGenerator.Filters
 
                 float lvol = rs / REV_COMBS * pangainL;
                 float rvol = rs / REV_COMBS * pangainR;
+                // if not insertion...
+                lvol *= outvolume;
+                rvol *= outvolume;
                 //if(insertion == true)
                 //{
                 //    lvol *= 2f;
