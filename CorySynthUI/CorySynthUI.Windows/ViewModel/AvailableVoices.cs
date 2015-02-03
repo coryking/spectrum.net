@@ -52,6 +52,7 @@ namespace CorySynthUI.ViewModel
                     new AvailableType("Chorus", typeof(ChorusEffect)),
                     new AvailableType("Bandpass Filter", typeof(FourPolesLowPassFilter)),
                     new AvailableType("Flanger", typeof(FlangerEffect)),
+                    new AvailableType("ZynAddSub Reverb", typeof(ZynAddSubReverb)),
                 };
             }
         }   

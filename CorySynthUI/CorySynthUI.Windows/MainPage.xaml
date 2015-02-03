@@ -37,7 +37,29 @@
 
 
         </DataTemplate>
+        <DataTemplate x:Key="ZynAddSubReverbTemplate">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Header="Preset" ItemsSource="{Binding Presets, Mode=OneTime}" DisplayMemberPath="Name" x:Name="ReverbPreset"/>
+                    <Button Content="Use Preset" Command="{Binding SetPresetCommand}" CommandParameter="{Binding SelectedItem, ElementName=ReverbPreset}"/>
+                </StackPanel>
+                <Slider Header="Volume" Minimum="0" Maximum="127" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Pan" Minimum="0" Maximum="127" Value="{Binding Pan, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Time" Minimum="0" Maximum="127" Value="{Binding Time, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Initial Delay" Minimum="0" Maximum="127" Value="{Binding InitialDelay, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Initial Delay Feedback" Minimum="0" Maximum="127" Value="{Binding InitialDelayFeedback, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="LPF" Minimum="0" Maximum="127" Value="{Binding LPF, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="HPF" Minimum="0" Maximum="127" Value="{Binding HPF, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="LoHiDamp" Minimum="0" Maximum="127" Value="{Binding LoHiDamp, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Room Size" Minimum="0" Maximum="127" Value="{Binding RoomSize, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Bandwidth" Minimum="0" Maximum="127" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <ComboBox Header="Type" x:Name="ReverbType" util:EnumHelper.Enum="CorySignalGenerator.Filters.ReverbType, SignalGeneratorCore" SelectedItem="{Binding Type, Mode=TwoWay}"/>
+            </StackPanel>
 
+
+        </DataTemplate>
+        
+        
         <DataTemplate x:Key="AdsrTemplate">
             <StackPanel Orientation="Horizontal">
                 <Slider Header="Attack (ms)" Style="{StaticResource HorizontalMarginSlider}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
@@ -118,6 +140,7 @@
             SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"/>
         <models:EffectsDataTemplateSelector
             x:Key="effectsDataTemplateSelector"
+            ZynAddSubReverbDataTemplate="{StaticResource ZynAddSubReverbTemplate}"
             FlangerEffectDataTemplate="{StaticResource FlangerEffectTemplate}"
             GhettoReverbDataTemplate="{StaticResource GhettoReverbTemplate}"
             ChorusDataTemplate="{StaticResource ChorusEffectTemplate}"

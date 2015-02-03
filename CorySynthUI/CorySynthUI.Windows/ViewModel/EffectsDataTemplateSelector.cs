@@ -12,6 +12,8 @@ namespace CorySynthUI.ViewModel
 {
     public class EffectsDataTemplateSelector : DataTemplateSelector
     {
+        public DataTemplate ZynAddSubReverbDataTemplate { get; set; }
+
         public DataTemplate GhettoReverbDataTemplate { get; set; }
 
         public DataTemplate ChorusDataTemplate { get; set; }
@@ -42,6 +44,8 @@ namespace CorySynthUI.ViewModel
             if (effectType == typeof(FlangerEffect))
                 return FlangerEffectDataTemplate;
 
+            if (effectType == typeof(ZynAddSubReverb))
+                return ZynAddSubReverbDataTemplate;
 
             return base.SelectTemplateCore(item, container);
         }
