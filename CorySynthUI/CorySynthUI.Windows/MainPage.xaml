@@ -192,7 +192,13 @@
             </Grid>
 
         </DataTemplate>
+        <SolidColorBrush x:Key="NavBarBackground" Color="#FF551755"/>
+        <SolidColorBrush x:Key="NavBarForeground" Color="White"/>
+        <Style x:Key="BackgroundColorKey" TargetType="Panel">
+            <Setter Property="Background" Value="{StaticResource NavBarBackground}"/>
+        </Style>
 
+               
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
@@ -211,18 +217,23 @@
 
         </Grid.Resources>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-
-        <Hub Grid.Column="1"
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Style="{StaticResource BackgroundColorKey}">
+            <StackPanel.Resources>
+                <Style TargetType="HyperlinkButton">
+                    <Setter Property="Foreground" Value="{StaticResource NavBarForeground}"/>
+                    <Setter Property="FontWeight" Value="Normal"/>
+                </Style>
+            </StackPanel.Resources>
+            <HyperlinkButton Content="Home"/>
+            <HyperlinkButton Content="Effects"/>
+            <HyperlinkButton Content="Layers"/>
+        </StackPanel>
+        <Hub Grid.Column="1" Grid.Row="1"
              VerticalContentAlignment="Stretch">
-            <Hub.Header>
-
-                <TextBlock x:Name="pageTitle" x:Uid="Header" Text="Cory Synth" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" FontFamily="Global User Interface" />
-
-            </Hub.Header>
             <Hub.Sections>
                 <HubSection Header="Channel Effects" DataContext="{Binding MidiChannel.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
                 <HubSection Header="Voices" Width="Auto" Height="Auto" ScrollViewer.HorizontalScrollBarVisibility="Visible">
@@ -312,7 +323,7 @@
             </Hub.Sections>
         </Hub>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
