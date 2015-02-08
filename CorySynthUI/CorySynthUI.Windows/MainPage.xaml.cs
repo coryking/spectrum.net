@@ -44,5 +44,15 @@ namespace CorySynthUI
             _viewModel = new SequencerViewModel(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
        }
 
+        private void LayersLink_Click(object sender, RoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "LayersView", true);
+        }
+
+        private void EffectsLink_Click(object sender, RoutedEventArgs e)
+        {
+            VisualStateManager.GoToState(this, "EffectsView", true);
+        }
+
     }
 }
