@@ -331,16 +331,16 @@
                         >
 
                 <ComboBox
-        				x:Name="AvailableEffects" 
+        				x:Name="GlobalAvailableEffects" 
         				ItemsSource="{Binding Choices, Source={StaticResource availableEffects}}" 
         				SelectedValuePath="Type" />
-                <Button Command="{Binding AddEffectCommand}" 
-        				CommandParameter="{Binding SelectedValue, ElementName=AvailableEffects}"
+                <Button Command="{Binding MidiChannel.Effects.AddEffectCommand}" 
+        				CommandParameter="{Binding SelectedValue, ElementName=GlobalAvailableEffects}"
         				Content="Add Effect" Style="{StaticResource SecondaryControlButton}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.ColumnSpan="2" DataContext="{Binding SelectedItem, ElementName=GlobalEffectsList}">
-                <HyperlinkButton 
-        							Command="{Binding DataContext.RemoveEffectCommand, ElementName=ChannelEffectsList}"
+                <HyperlinkButton  Content="Remove"
+        							Command="{Binding MidiChannel.Effects.RemoveEffectCommand, ElementName=GlobalEffectsList}"
         							CommandParameter="{Binding}"
         							/>
                 <ContentControl
@@ -371,7 +371,7 @@
 				<Button Command="{Binding MidiChannel.AddVoiceCommand}" 
 					CommandParameter="{Binding SelectedValue, ElementName=AvailableVoices}" Content="Add Voice" Style="{StaticResource SecondaryControlButton}"/>
 			</StackPanel>
-			<Grid  Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,10,5">
+			<Grid DataContext="{Binding ElementName=VoiceList, Path=SelectedItem}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,10,5">
 				<Grid.RowDefinitions>
 					<RowDefinition/>
 					<RowDefinition/>
