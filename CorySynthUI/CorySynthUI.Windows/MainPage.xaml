@@ -338,7 +338,7 @@
         				CommandParameter="{Binding SelectedValue, ElementName=AvailableEffects}"
         				Content="Add Effect" Style="{StaticResource SecondaryControlButton}"/>
             </StackPanel>
-            <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" DataContext="{Binding SelectedItem, ElementName=GlobalEffectsList}">
                 <HyperlinkButton 
         							Command="{Binding DataContext.RemoveEffectCommand, ElementName=ChannelEffectsList}"
         							CommandParameter="{Binding}"
