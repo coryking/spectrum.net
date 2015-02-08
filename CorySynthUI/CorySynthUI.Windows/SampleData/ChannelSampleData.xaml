@@ -1,0 +1,24 @@
+﻿<Sequencer:Channel xmlns:Sequencer="using:CorySignalGenerator.Sequencer" xmlns:Models="using:CorySignalGenerator.Models" xmlns:Wave="using:NAudio.Wave" ChannelNumber="37">
+	<Sequencer:Channel.AddVoiceCommand>
+		<Models:RelayCommand/>
+	</Sequencer:Channel.AddVoiceCommand>
+	<Sequencer:Channel.Effects>
+		<Sequencer:EffectChain>
+			<Sequencer:EffectChain.AddEffectCommand>
+				<Models:RelayCommand/>
+			</Sequencer:EffectChain.AddEffectCommand>
+			<Sequencer:EffectChain.RemoveEffectCommand>
+				<Models:RelayCommand/>
+			</Sequencer:EffectChain.RemoveEffectCommand>
+			<Sequencer:EffectChain.WaveFormat>
+				<Wave:WaveFormat AverageBytesPerSecond="27" BlockAlign="47" BitsPerSample="32" Channels="56" Encoding="Dts" ExtraSize="28" SampleRate="64"/>
+			</Sequencer:EffectChain.WaveFormat>
+		</Sequencer:EffectChain>
+	</Sequencer:Channel.Effects>
+	<Sequencer:Channel.RemoveVoiceCommand>
+		<Models:RelayCommand/>
+	</Sequencer:Channel.RemoveVoiceCommand>
+	<Sequencer:Channel.WaveFormat>
+		<Wave:WaveFormat AverageBytesPerSecond="17" BlockAlign="32" BitsPerSample="86" Channels="43" Encoding="WindowsMediaAudioProfessional" ExtraSize="68" SampleRate="33"/>
+	</Sequencer:Channel.WaveFormat>
+</Sequencer:Channel>

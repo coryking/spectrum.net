@@ -1,0 +1,21 @@
+﻿<Sequencer:SamplerVoice xmlns:Sequencer="using:CorySignalGenerator.Sequencer" xmlns:Models="using:CorySignalGenerator.Models" xmlns:Wave="using:NAudio.Wave" xmlns:System="using:System" Name="Vestibulum curabitur aenean adipiscing maecenas">
+	<Sequencer:SamplerVoice.Effects>
+		<Sequencer:EffectChain>
+			<Sequencer:EffectChain.AddEffectCommand>
+				<Models:RelayCommand/>
+			</Sequencer:EffectChain.AddEffectCommand>
+			<Sequencer:EffectChain.RemoveEffectCommand>
+				<Models:RelayCommand/>
+			</Sequencer:EffectChain.RemoveEffectCommand>
+			<Sequencer:EffectChain.WaveFormat>
+				<Wave:WaveFormat AverageBytesPerSecond="12" BlockAlign="59" BitsPerSample="81" Channels="90" Encoding="MuLaw" ExtraSize="28" SampleRate="35"/>
+			</Sequencer:EffectChain.WaveFormat>
+		</Sequencer:EffectChain>
+	</Sequencer:SamplerVoice.Effects>
+	<Sequencer:SamplerVoice.Volume>
+		<System:Single/>
+	</Sequencer:SamplerVoice.Volume>
+	<Sequencer:SamplerVoice.WaveFormat>
+		<Wave:WaveFormat AverageBytesPerSecond="36" BlockAlign="28" BitsPerSample="84" Channels="11" Encoding="Gsm610" ExtraSize="95" SampleRate="70"/>
+	</Sequencer:SamplerVoice.WaveFormat>
+</Sequencer:SamplerVoice>
