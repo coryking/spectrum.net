@@ -11,6 +11,10 @@
         <SampleData:VoicesItem1 Name="Class nam" />
         <SampleData:VoicesItem1 Name="Duis maecenas praesent integer" />
       </SampleData:MidiChannel.Voices>
+      <SampleData:MidiChannel.Effects>
+        <SampleData:EffectsItem Name="Aenean cras maecenas nam" />
+        <SampleData:EffectsItem Name="Duis mauris" />
+      </SampleData:MidiChannel.Effects>
     </SampleData:MidiChannel>
   </SampleData:SampleDataSource.MidiChannel>
 </SampleData:SampleDataSource>

@@ -14,6 +14,7 @@
   <xs:complexType name="MidiChannel">
     <xs:sequence>
       <xs:element name="Voices" type="tns:Voices1" />
+      <xs:element name="Effects" type="tns:Effects" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Voices1">
@@ -22,6 +23,14 @@
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="VoicesItem1">
+    <xs:attribute name="Name" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Effects">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="EffectsItem" type="tns:EffectsItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EffectsItem">
     <xs:attribute name="Name" type="xs:string" />
   </xs:complexType>
 </xs:schema>

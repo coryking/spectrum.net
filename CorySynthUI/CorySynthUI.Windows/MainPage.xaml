@@ -312,11 +312,43 @@
 			<HyperlinkButton Content="Layers" x:Name="LayersLink" Click="LayersLink_Click"/>
 		</StackPanel>
 		<Grid Grid.Row="1" x:Name="GlobalEffectsPane">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-			</Grid.ColumnDefinitions>
-			<ContentControl Content="{Binding MidiChannel.Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
-		</Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListView x:Name="GlobalEffectsList" 
+				ItemsSource="{Binding MidiChannel.Effects}"
+				Grid.Row="0" Grid.Column="0" 
+                      ItemsPanel="{StaticResource SubHeaderItemsPanel}" 
+                      ItemTemplate="{StaticResource VoiceListItem}" 
+                      Background="{StaticResource SecondaryNavBarBackground}"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1"
+                        Background="{StaticResource SecondaryNavBarBackground}" Margin="0" HorizontalAlignment="Right"
+                        >
+
+                <ComboBox
+        				x:Name="AvailableEffects" 
+        				ItemsSource="{Binding Choices, Source={StaticResource availableEffects}}" 
+        				SelectedValuePath="Type" />
+                <Button Command="{Binding AddEffectCommand}" 
+        				CommandParameter="{Binding SelectedValue, ElementName=AvailableEffects}"
+        				Content="Add Effect" Style="{StaticResource SecondaryControlButton}"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                <HyperlinkButton 
+        							Command="{Binding DataContext.RemoveEffectCommand, ElementName=ChannelEffectsList}"
+        							CommandParameter="{Binding}"
+        							/>
+                <ContentControl
+        							Content="{Binding}" ContentTemplateSelector="{StaticResource effectsDataTemplateSelector}"/>
+            </StackPanel>
+
+
+        </Grid>
 		<Grid Grid.Row="1" x:Name="LayersPane">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
@@ -328,7 +360,7 @@
 			</Grid.RowDefinitions>
 			<ListView x:Name="VoiceList" 
 				ItemsSource="{Binding MidiChannel.Voices}"
-				Grid.Row="0" Grid.Column="0" ItemsPanel="{StaticResource SubHeaderItemsPanel}" ItemTemplate="{StaticResource VoiceListItem}" Background="{StaticResource SecondaryNavBarBackground}" ItemContainerStyle="{StaticResource NavListViewItem}"/>
+				Grid.Row="0" Grid.Column="0" ItemsPanel="{StaticResource SubHeaderItemsPanel}" ItemTemplate="{StaticResource VoiceListItem}" Background="{StaticResource SecondaryNavBarBackground}"/>
 
 			<StackPanel Grid.Column="1" Orientation="Horizontal" Grid.Row="0" Background="{StaticResource SecondaryNavBarBackground}" Margin="0" HorizontalAlignment="Right">
 
@@ -337,61 +369,58 @@
 					ItemsSource="{Binding Choices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
 
 				<Button Command="{Binding MidiChannel.AddVoiceCommand}" 
-					CommandParameter="{Binding SelectedValue, ElementName=AvailableVoices}" Foreground="White" Background="{StaticResource SecondaryControlBackground}" BorderBrush="#FF020202" Content="Add Voice"/>
+					CommandParameter="{Binding SelectedValue, ElementName=AvailableVoices}" Content="Add Voice" Style="{StaticResource SecondaryControlButton}"/>
 			</StackPanel>
-               
-			<Border  Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="#FF873FC3" BorderThickness="0,0,0,1" DataContext="{Binding SelectedItem, ElementName=VoiceList}">
-				<Grid Margin="0,5,10,5">
-					<Grid.RowDefinitions>
-						<RowDefinition/>
-						<RowDefinition/>
-						<RowDefinition/>
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="50"/>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition/>
-						<ColumnDefinition/>
-					</Grid.ColumnDefinitions>
+			<Grid  Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,10,5">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="50"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
 
-					<StackPanel Height="50" Background="AliceBlue" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
-						<StackPanel.RenderTransform>
-							<CompositeTransform Rotation="-90" TranslateX="0" TranslateY="0"/>
+				<StackPanel Height="50" Background="AliceBlue" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
+					<StackPanel.RenderTransform>
+						<CompositeTransform Rotation="-90" TranslateX="0" TranslateY="0"/>
 
-						</StackPanel.RenderTransform>
-						<TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}"/>
+					</StackPanel.RenderTransform>
+					<TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}"/>
 
-						<TextBlock Style="{StaticResource TitleTextBlockStyle}" >
-							<Run Text="Volume"/>
-						</TextBlock>
-					</StackPanel>
-					<Slider
-						Grid.Column="1" Grid.RowSpan="2"
-						Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
-						FontFamily="Global User Interface"/>
+					<TextBlock Style="{StaticResource TitleTextBlockStyle}" >
+						<Run Text="Volume"/>
+					</TextBlock>
+				</StackPanel>
+				<Slider
+					Grid.Column="1" Grid.RowSpan="2"
+					Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+					FontFamily="Global User Interface"/>
 
-					<ContentControl
-						Grid.Column="2" Grid.Row="0"
-						Content="{Binding Envelope}"
-						ContentTemplate="{StaticResource AdsrTemplate}" FontFamily="Global User Interface"/>
-					<ContentControl 
-						Grid.Column="2"
-						Grid.Row="1"
-						Content="{Binding Sampler}"
-						ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" FontFamily="Global User Interface"/>
-					<ContentControl 
-						Grid.Column="3"
-						Grid.RowSpan="2"
-						Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
-					<HyperlinkButton 
-						Grid.Row="2"
-						Grid.Column="1"
-						Grid.ColumnSpan="3"
-						Content="Remove"
-						Command="{Binding DataContext.MidiChannel.RemoveVoiceCommand, ElementName=VoiceList}"
-						CommandParameter="{Binding}"/>
-				</Grid>
-			</Border>
+				<ContentControl
+					Grid.Column="2" Grid.Row="0"
+					Content="{Binding Envelope}"
+					ContentTemplate="{StaticResource AdsrTemplate}" FontFamily="Global User Interface"/>
+				<ContentControl 
+					Grid.Column="2"
+					Grid.Row="1"
+					Content="{Binding Sampler}"
+					ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" FontFamily="Global User Interface"/>
+				<ContentControl 
+					Grid.Column="3"
+					Grid.RowSpan="2"
+					Content="{Binding Effects}" ContentTemplate="{StaticResource EffectsChooser}"/>
+				<HyperlinkButton 
+					Grid.Row="2"
+					Grid.Column="1"
+					Grid.ColumnSpan="3"
+					Content="Remove"
+					Command="{Binding DataContext.MidiChannel.RemoveVoiceCommand, ElementName=VoiceList}"
+					CommandParameter="{Binding}"/>
+			</Grid>
                        
 		</Grid>
 		<!--<Hub Grid.Column="1" Grid.Row="1"
@@ -485,7 +514,7 @@
             </Hub.Sections>
         </Hub>-->
 
-		<Grid Grid.Row="2">
+		<Grid Grid.Row="2" Background="{StaticResource BottomBarBackgroundColor}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>

@@ -56,6 +56,38 @@ namespace Blend.SampleData.SampleDataSource
 		}
 	}
 
+	public class EffectsItem : INotifyPropertyChanged
+	{
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected virtual void OnPropertyChanged(string propertyName)
+		{
+			if (this.PropertyChanged != null)
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
+		private string _Name = string.Empty;
+
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+
+			set
+			{
+				if (this._Name != value)
+				{
+					this._Name = value;
+					this.OnPropertyChanged("Name");
+				}
+			}
+		}
+	}
+
 	public class MidiChannel : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -75,6 +107,16 @@ namespace Blend.SampleData.SampleDataSource
 			get
 			{
 				return this._Voices;
+			}
+		}
+
+		private Effects _Effects = new Effects();
+
+		public Effects Effects
+		{
+			get
+			{
+				return this._Effects;
 			}
 		}
 	}
@@ -109,6 +151,10 @@ namespace Blend.SampleData.SampleDataSource
 				}
 			}
 		}
+	}
+
+	public class Effects : System.Collections.ObjectModel.ObservableCollection<EffectsItem>
+	{ 
 	}
 
 	public class Voices1 : System.Collections.ObjectModel.ObservableCollection<VoicesItem1>
