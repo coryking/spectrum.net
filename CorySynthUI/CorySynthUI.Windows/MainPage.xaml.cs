@@ -54,5 +54,17 @@ namespace CorySynthUI
             VisualStateManager.GoToState(this, "EffectsView", true);
         }
 
+        private void EffectsOrVoice_Effects_Click(object sender, RoutedEventArgs e)
+        {
+            if(EffectsOrVoice_Voice.IsChecked.HasValue && EffectsOrVoice_Voice.IsChecked.Value)
+            {
+                VisualStateManager.GoToState(this, "VoiceLayerSelected", true);
+            }
+            else
+            {
+                VisualStateManager.GoToState(this, "VoiceEffectsLayerSelected", true);
+            }
+        }
+
     }
 }

@@ -26,41 +26,78 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <SolidColorBrush x:Key="SliderForeground" Color="#FFC766C7"/>
+		<Style x:Key="VerticalSliderStyle" TargetType="Slider">
+			<Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+			<Setter Property="TickPlacement" Value="Outside"/>
+			<Setter Property="Orientation" Value="Vertical"/>
+		</Style>
+        <SolidColorBrush x:Key="SecondarySelectedItemBackground" Color="#FFdde397"/>
+
         <SolidColorBrush x:Key="SecondaryControlBackground" Color="#FF5B611A"/>
         <SolidColorBrush x:Key="SeconadryListItemForegroundBrush" Color="Black"/>
 
         <DataTemplate x:Key="VoiceListItem">
-        	<Grid>
-						<TextBlock Text="{Binding Name}" Foreground="{StaticResource SeconadryListItemForegroundBrush}"/>
-
-			</Grid>
+            <Grid>
+            	<Grid.ColumnDefinitions>
+            		<ColumnDefinition/>
+            	</Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Name}" Foreground="{StaticResource SeconadryListItemForegroundBrush}"/>
+            </Grid>
         </DataTemplate>
-        
+
         <SolidColorBrush x:Key="SecondaryNavControlBorderBrush" Color="#FF020202"/>
         <SolidColorBrush x:Key="SecondaryNavControlForegroundBrush" Color="White"/>
-        
+
         <Style x:Key="SecondaryControlButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource SecondaryControlBackground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource SecondaryNavControlBorderBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource SecondaryNavControlForegroundBrush}"/>
         </Style>
         <SolidColorBrush x:Key="BottomBarBackgroundColor" Color="#FF686F1E"/>
-        <Style x:Key="SubHeadListViewItemStyle" TargetType="ListViewItem">
-        	<Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-        	<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
-        	<Setter Property="Background" Value="Transparent"/>
-        	<Setter Property="TabNavigation" Value="Local"/>
-        	<Setter Property="IsHoldingEnabled" Value="True"/>
-        	<Setter Property="Margin" Value="0,0,18,2"/>
-        	<Setter Property="HorizontalContentAlignment" Value="Left"/>
-        	<Setter Property="VerticalContentAlignment" Value="Top"/>
-        	<Setter Property="Template">
-        		<Setter.Value>
-        			<ControlTemplate TargetType="ListViewItem">
-        				<ListViewItemPresenter CheckHintBrush="{ThemeResource ListViewItemCheckHintThemeBrush}" CheckBrush="{ThemeResource ListViewItemCheckThemeBrush}" ContentMargin="4" ContentTransitions="{TemplateBinding ContentTransitions}" CheckSelectingBrush="{ThemeResource ListViewItemCheckSelectingThemeBrush}" DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}" DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}" DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}" DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" FocusBorderBrush="{ThemeResource ListViewItemFocusBorderThemeBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" PointerOverBackgroundMargin="1" PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" PointerOverBackground="{ThemeResource ListViewItemPointerOverBackgroundThemeBrush}" ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}" SelectedPointerOverBorderBrush="{ThemeResource ListViewItemSelectedPointerOverBorderThemeBrush}" SelectionCheckMarkVisualEnabled="True" SelectedForeground="{ThemeResource ListViewItemSelectedForegroundThemeBrush}" SelectedPointerOverBackground="{ThemeResource ListViewItemSelectedPointerOverBackgroundThemeBrush}" SelectedBorderThickness="{ThemeResource ListViewItemCompactSelectedBorderThemeThickness}" SelectedBackground="{ThemeResource ListViewItemSelectedBackgroundThemeBrush}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
-        			</ControlTemplate>
-        		</Setter.Value>
-        	</Setter>
+        <SolidColorBrush x:Key="NavBarSelectedPointerOverBrush" Color="#FFD0D86F"/>
+
+        <Style x:Key="SubHeaderListViewItemStyle" TargetType="ListViewItem">
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="TabNavigation" Value="Local"/>
+            <Setter Property="IsHoldingEnabled" Value="True"/>
+            <Setter Property="Margin" Value="0,0,18,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <ListViewItemPresenter 
+                            CheckHintBrush="{ThemeResource ListViewItemCheckHintThemeBrush}" 
+                            CheckBrush="{ThemeResource ListViewItemCheckThemeBrush}" 
+                            ContentMargin="4" 
+                            ContentTransitions="{TemplateBinding ContentTransitions}" 
+                            CheckSelectingBrush="{ThemeResource ListViewItemCheckSelectingThemeBrush}" 
+                            DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
+                            DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
+                            DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
+                            DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" 
+                            FocusBorderBrush="{ThemeResource ListViewItemFocusBorderThemeBrush}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Padding="{TemplateBinding Padding}" 
+                            PointerOverBackgroundMargin="1" 
+                            PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" 
+                            PointerOverBackground="{ThemeResource ListViewItemPointerOverBackgroundThemeBrush}" 
+                            ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
+                            SelectedPointerOverBorderBrush="{StaticResource NavBarSelectedPointerOverBrush}" 
+                            SelectedPointerOverBackground="{StaticResource NavBarSelectedPointerOverBrush}" 
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" 
+                            FontFamily="Global User Interface" SelectedBackground="{StaticResource SecondarySelectedItemBackground}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="ControlGroupingBorderBrush" Color="#FF4B4B4B"/>
+        <Style x:Key="ControlGroupingBorderStyle" TargetType="Border">
+        	<Setter Property="BorderBrush" Value="{StaticResource ControlGroupingBorderBrush}"/>
+        	<Setter Property="Padding" Value="7"/>
         </Style>
     </Application.Resources>
 </Application>
