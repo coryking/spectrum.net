@@ -13,7 +13,7 @@ using CorySignalGenerator.Models;
 
 namespace CorySignalGenerator.Sequencer
 {
-    public class Channel : IChannel
+    public class Channel : PropertyChangeModel, IChannel
     {
         private object _lock = new object();
         public Channel(int channelNumber, WaveFormat format)
@@ -73,6 +73,8 @@ namespace CorySignalGenerator.Sequencer
             {
                 Mixer.RemoveAllMixerInputs();
                 Voices.ForEach(AddMixerInput);
+                if (SelectedVoice == null || !Voices.Contains(SelectedVoice))
+                    SelectedVoice = Voices.FirstOrDefault();
             }
         }
 
@@ -94,6 +96,27 @@ namespace CorySignalGenerator.Sequencer
             get;
             private set;
         }
+
+        
+        #region Property SelectedVoice
+        private IVoice _selectedVoice = null;
+
+        /// <summary>
+        /// The Selected Voice
+        /// </summary>
+        public IVoice SelectedVoice
+        {
+            get
+            {
+                return _selectedVoice;
+            }
+            set
+            {
+                Set(ref _selectedVoice, value);
+            }
+        }
+        #endregion
+		
 
         public ObservableCollection<IVoice> Voices { get; private set; }
         public EffectChain Effects { get; private set; }

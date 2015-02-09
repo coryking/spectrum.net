@@ -40,6 +40,31 @@ namespace CorySignalGenerator.Sequencer
             }
         }
 
+        
+        #region Property SelectedItem
+        private T _selectedItem = default(T);
+
+        /// <summary>
+        /// Sets and gets the SelectedItem property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public T SelectedItem
+        {
+            get
+            {
+                return _selectedItem;
+            }
+            set
+            {
+                if (EqualityComparer<T>.Default.Equals(_selectedItem, value))
+                    return;
+
+                _selectedItem = value;
+                OnPropertyChanged("SelectedItem");
+            }
+        }
+        #endregion
+		
 
         /// <summary>
         /// The very last item in the signal chain
@@ -56,6 +81,10 @@ namespace CorySignalGenerator.Sequencer
         {
             RebuildEffectsChain();
             base.OnCollectionChanged(e);
+            if(SelectedItem == null || !this.Items.Contains(SelectedItem))
+            {
+                SelectedItem = this.Items.FirstOrDefault();
+            }
         }
 
         /// <summary>
