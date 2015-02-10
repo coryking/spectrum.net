@@ -71,10 +71,11 @@ namespace CorySignalGenerator.Sequencer
         {
             lock (_lock)
             {
+
                 Mixer.RemoveAllMixerInputs();
                 Voices.ForEach(AddMixerInput);
                 if (SelectedVoice == null || !Voices.Contains(SelectedVoice))
-                    SelectedVoice = Voices.FirstOrDefault();
+                    SelectedVoice = Voices.FirstOrDefault();                
             }
         }
 

@@ -234,6 +234,7 @@
         						</Grid.RowDefinitions>
         						<TextBlock Text="{Binding Name}"/>
         						<HyperlinkButton 
+                                    x:Name="RemoveChannelEffectsButton"
         							Command="{Binding DataContext.RemoveEffectCommand, ElementName=ChannelEffectsList}"
         							CommandParameter="{Binding}"
         							Content="Remove" Grid.Column="1"/>
@@ -363,13 +364,6 @@
 			<VisualStateGroup x:Name="VoiceLayer">
 				<VisualState x:Name="VoiceLayerSelected">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VoicePanel">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Visible</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VoiceEffectsPanel">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
@@ -384,17 +378,17 @@
                                 </DiscreteObjectKeyFrame.Value>
                             </DiscreteObjectKeyFrame>
                         </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VoicePanel">
+                        	<DiscreteObjectKeyFrame KeyTime="0">
+                        		<DiscreteObjectKeyFrame.Value>
+                        			<Visibility>Visible</Visibility>
+                        		</DiscreteObjectKeyFrame.Value>
+                        	</DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
 				</VisualState>
 				<VisualState x:Name="VoiceEffectsLayerSelected">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VoicePanel">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VoiceEffectsPanel">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
@@ -406,6 +400,13 @@
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Visible</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Control.FontFamily)" Storyboard.TargetName="VoiceEffectsPanel">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<FontFamily>Global User Interface</FontFamily>
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
@@ -435,7 +436,7 @@
 			<HyperlinkButton Content="Effects" x:Name="EffectsLink" Click="EffectsLink_Click"/>
 			<HyperlinkButton Content="Layers" x:Name="LayersLink" Click="LayersLink_Click"/>
 		</StackPanel>
-		<Grid Visibility="Collapsed" Grid.Row="1" x:Name="GlobalEffectsPane">
+		<Grid DataContext="{Binding MidiChannel.Effects}" Visibility="Collapsed" Grid.Row="1" x:Name="GlobalEffectsPane">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
@@ -446,8 +447,10 @@
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 			<ListView x:Name="GlobalEffectsList" 
-				ItemsSource="{Binding MidiChannel.Effects}"
-				Grid.Row="0" Grid.Column="0" 
+				ItemsSource="{Binding}"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+				
+                Grid.Row="0" Grid.Column="0" 
 				ItemsPanel="{StaticResource SubHeaderItemsPanel}" 
 				ItemTemplate="{StaticResource VoiceListItem}" 
 				ItemContainerStyle="{StaticResource SubHeaderListViewItemStyle}"
@@ -460,14 +463,15 @@
 					x:Name="GlobalAvailableEffects" 
 					ItemsSource="{Binding Choices, Source={StaticResource availableEffects}}" 
 					SelectedValuePath="Type" />
-				<Button Command="{Binding MidiChannel.Effects.AddEffectCommand}" 
+				<Button Command="{Binding AddEffectCommand}" 
 					CommandParameter="{Binding SelectedValue, ElementName=GlobalAvailableEffects}"
-					Content="Add Effect" Style="{StaticResource SecondaryControlButton}"/>
+					Content="Add Effect" 
+                    Style="{StaticResource SecondaryControlButton}"/>
 			</StackPanel>
 			<HyperlinkButton  Content="Remove"
-				Command="{Binding RemoveEffectCommand, ElementName=GlobalEffectsList}"
-				CommandParameter="{Binding}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" 
-                DataContext="{Binding SelectedItem, ElementName=GlobalEffectsList}"
+                              x:Name="RemoveGlobalEffectsButton"
+				Command="{Binding RemoveEffectCommand}"
+				CommandParameter="{Binding SelectedItem}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" 
         							/>
 			<ContentControl
 				Content="{Binding}" ContentTemplateSelector="{StaticResource effectsDataTemplateSelector}" 
@@ -477,7 +481,7 @@
 
 
 		</Grid>
-		<Grid Visibility="Collapsed" Grid.Row="1" x:Name="LayersPane">
+		<Grid DataContext="{Binding MidiChannel}" Visibility="Collapsed" Grid.Row="1" x:Name="LayersPane">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
@@ -487,8 +491,8 @@
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<ListView x:Name="VoiceList" 
-				ItemsSource="{Binding MidiChannel.Voices}"
-                SelectedItem="{Binding Path=MidiChannel.SelectedVoice, Mode=TwoWay}"
+				ItemsSource="{Binding Voices}"
+                SelectedItem="{Binding SelectedVoice, Mode=TwoWay}"
 				Grid.Row="0" Grid.Column="0" 
 				ItemsPanel="{StaticResource SubHeaderItemsPanel}"
 				ItemTemplate="{StaticResource VoiceListItem}"
@@ -501,10 +505,12 @@
 					x:Name="AvailableVoices" 
 					ItemsSource="{Binding Choices, Source={StaticResource availableVoices}}" SelectedValuePath="Type"/>
 
-				<Button Command="{Binding MidiChannel.AddVoiceCommand}" 
-					CommandParameter="{Binding SelectedValue, ElementName=AvailableVoices}" Content="Add Voice" Style="{StaticResource SecondaryControlButton}"/>
+				<Button Command="{Binding AddVoiceCommand}" 
+					CommandParameter="{Binding SelectedValue, ElementName=AvailableVoices}" 
+                        Content="Add Voice" 
+                        Style="{StaticResource SecondaryControlButton}"/>
 			</StackPanel>
-			<Grid DataContext="{Binding Path=MidiChannel.SelectedVoice}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,10,5">
+			<Grid DataContext="{Binding SelectedVoice}" Grid.Row="1" Grid.ColumnSpan="2">
 				<Grid.RowDefinitions>
 					<RowDefinition/>
 					<RowDefinition Height="Auto"/>
@@ -516,20 +522,34 @@
 				<StackPanel Grid.Column="0">
 					<RadioButton Content="Voice" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="EffectsOrVoice" x:Name="EffectsOrVoice_Voice" Click="EffectsOrVoice_Effects_Click"/>
 					<RadioButton Content="Effects" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="EffectsOrVoice" x:Name="EffectsOrVoice_Effects" Click="EffectsOrVoice_Effects_Click"/>
-                    <ListBox Visibility="Collapsed" SelectedItem="{Binding Effects.SelectedItem,Mode=TwoWay}" ItemsSource="{Binding Effects}" ItemTemplate="{StaticResource VoiceListItem}"  x:Name="VoiceEffectsList"/>
+                    <ListBox Visibility="Collapsed" 
+                             SelectedItem="{Binding Effects.SelectedItem,Mode=TwoWay}" 
+                             ItemsSource="{Binding Effects}" 
+                             ItemTemplate="{StaticResource VoiceListItem}"  x:Name="VoiceEffectsList"/>
 				</StackPanel>
-				<StackPanel Visibility="Collapsed" Grid.Column="1" Orientation="Horizontal" x:Name="VoicePanel">
+				<Grid Visibility="Collapsed" Grid.Column="1" x:Name="VoicePanel">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="2*"/>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition/>
+					</Grid.ColumnDefinitions>
 					<Slider
-						Orientation="Vertical" Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+					Header="Volume"
+						Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+						Style="{StaticResource VerticalSliderStyle}" 
+						Grid.RowSpan="2"
 						 />
 
-					<ContentControl
+					<ContentControl x:Name="contentControl"
 						Content="{Binding Envelope}"
-						ContentTemplate="{StaticResource AdsrTemplate}" />
-					<ContentControl
+						ContentTemplate="{StaticResource AdsrTemplate}" Grid.Column="1" VerticalContentAlignment="Stretch" />
+					<ContentControl x:Name="contentControl1"
 						Content="{Binding Sampler}"
-						ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" />
-				</StackPanel>
+						ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+				</Grid>
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Grid.Row="1">
 					<ComboBox
 						x:Name="VoiceAvailableEffects" 
@@ -541,11 +561,11 @@
 					<HyperlinkButton
 						x:Name="RemoveVoiceButton"
 						Content="Remove Voice"
-						Command="{Binding DataContext.MidiChannel.RemoveVoiceCommand, ElementName=VoiceList}"
+						Command="{Binding DataContext.RemoveVoiceCommand, ElementName=VoiceList}"
 						CommandParameter="{Binding}" HorizontalAlignment="Right"/>
 				</StackPanel>
 				<ContentControl Visibility="Collapsed" x:Name="VoiceEffectsPanel" Grid.Column="1"
-                                Content="{Binding ElementName=VoiceEffectsList, Path=SelectedItem}"
+                                Content="{Binding Effects.SelectedItem}"
                                 ContentTemplateSelector="{StaticResource effectsDataTemplateSelector}"/>
 			</Grid>
 

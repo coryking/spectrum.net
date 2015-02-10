@@ -81,10 +81,12 @@ namespace CorySignalGenerator.Sequencer
         {
             RebuildEffectsChain();
             base.OnCollectionChanged(e);
-            if(SelectedItem == null || !this.Items.Contains(SelectedItem))
+            if (SelectedItem == null || !this.Contains(SelectedItem))
             {
-                SelectedItem = this.Items.FirstOrDefault();
-            }
+                SelectedItem = this.FirstOrDefault();
+                Debug.WriteLine("Setting selected item for SignalChain to {0}", SelectedItem);
+
+            }           
         }
 
         /// <summary>
