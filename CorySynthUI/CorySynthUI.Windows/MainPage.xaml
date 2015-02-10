@@ -17,20 +17,10 @@
         <SampleData:SampleDataSource x:Key="SampleDataSource" d:IsDataSource="True"/>
         <models:AvailableVoices x:Key="availableVoices"/>
         <models:AvailableEffects x:Key="availableEffects"/>
-        <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
-        	<Setter Property="Margin" Value="5,0"/>
-        	<Setter Property="Orientation" Value="Horizontal"/>
-        	<Setter Property="TickPlacement" Value="Outside"/>
-        	<Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
-        </Style>
+
         <Style BasedOn="{StaticResource headeredStackPanelStyle}" TargetType="controls:HeaderedStackPanel">
             <Setter Property="HeaderStyle" Value="{StaticResource TitleTextBlockStyle}"/>
         </Style>
-        <DataTemplate x:Key="AmplitudeValueSelector">
-        	<StackPanel Orientation="Vertical">
-        		<Slider Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
-        	</StackPanel>
-        </DataTemplate>
 
         <DataTemplate x:Key="FlangerEffectTemplate">
         	<StackPanel Orientation="Horizontal">
@@ -83,64 +73,6 @@
         </DataTemplate>
 
 
-        <DataTemplate x:Key="AdsrTemplate">
-        	<StackPanel Orientation="Horizontal">
-                <Slider Header="Attack (ms)" Style="{StaticResource VerticalSliderStyle}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                <Slider Header="Release (ms)" Style="{StaticResource VerticalSliderStyle}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                <Slider Header="Decay (ms)" Style="{StaticResource VerticalSliderStyle}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
-                <Slider Header="Sustain" Style="{StaticResource VerticalSliderStyle}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" />
-        	</StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="SignalGeneratedSoundTemplate">
-        	<StackPanel Orientation="Horizontal">
-        		<ComboBox Header="Sound" SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8"  />
-        		<controls:HeaderedStackPanel HeaderText="Pitch" Orientation="Vertical">
-        			<StackPanel Orientation="Vertical">
-        				<ComboBox Header="Semitones" ItemsSource="{Binding PitchAdjustment.ValidSemitones}" SelectedItem="{Binding PitchAdjustment.Semitones, Mode=TwoWay}"/>
-        				<Slider Header="Cents" Value="{Binding PitchAdjustment.Cents, Mode=TwoWay}" Minimum="-100" Maximum="100" StepFrequency="5" TickFrequency="10"/>
-        			</StackPanel>
-        		</controls:HeaderedStackPanel>
-        	</StackPanel>
-        </DataTemplate>
-
-        <DataTemplate x:Key="PadSoundTemplate">
-        	<Grid >
-        		<Grid.RowDefinitions>
-        			<RowDefinition/>
-        			<RowDefinition/>
-        			<RowDefinition/>
-
-        		</Grid.RowDefinitions>
-        		<Border Style="{StaticResource ControlGroupingBorderStyle}">
-
-        			<StackPanel Orientation="Vertical">
-        				<Slider Header="Bandwidth" Style="{StaticResource HorizontalMarginSlider}" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
-        				<Slider Header="Bandwidth Scale" Style="{StaticResource HorizontalMarginSlider}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
-        			</StackPanel>
-        		</Border>
-        		<Border Grid.Row="1" Style="{StaticResource ControlGroupingBorderStyle}" >
-        			<Grid>
-        				<Grid.ColumnDefinitions>
-        					<ColumnDefinition/>
-        					<ColumnDefinition Width="Auto"/>
-        				</Grid.ColumnDefinitions>
-        				<Slider Header="Harmonics" Maximum="12" Minimum="1" x:Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
-        				<StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
-        					<ComboBox Header="Harmonic Type" x:Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}" />
-        					<Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
-        				</StackPanel>
-        			</Grid>
-        		</Border>
-        		<ItemsControl Grid.Row="2" ItemsSource="{Binding Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" ScrollViewer.HorizontalScrollMode="Auto">
-        			<ItemsControl.ItemsPanel>
-        				<ItemsPanelTemplate>
-        					<StackPanel Orientation="Horizontal"/>
-        				</ItemsPanelTemplate>
-        			</ItemsControl.ItemsPanel>
-        		</ItemsControl>
-        	</Grid>
-
-        </DataTemplate>
         <DataTemplate x:Key="GhettoReverbTemplate">
         	<Grid >
         		<Grid.RowDefinitions>
@@ -403,13 +335,7 @@
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Control.FontFamily)" Storyboard.TargetName="VoiceEffectsPanel">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<FontFamily>Global User Interface</FontFamily>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
+						
 					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
@@ -527,29 +453,9 @@
                              ItemsSource="{Binding Effects}" 
                              ItemTemplate="{StaticResource VoiceListItem}"  x:Name="VoiceEffectsList"/>
 				</StackPanel>
-				<Grid Visibility="Collapsed" Grid.Column="1" x:Name="VoicePanel">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="*"/>
-						<RowDefinition Height="2*"/>
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition/>
-					</Grid.ColumnDefinitions>
-					<Slider
-					Header="Volume"
-						Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
-						Style="{StaticResource VerticalSliderStyle}" 
-						Grid.RowSpan="2"
-						 />
-
-					<ContentControl x:Name="contentControl"
-						Content="{Binding Envelope}"
-						ContentTemplate="{StaticResource AdsrTemplate}" Grid.Column="1" VerticalContentAlignment="Stretch" />
-					<ContentControl x:Name="contentControl1"
-						Content="{Binding Sampler}"
-						ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
-				</Grid>
+                <ContentControl x:Name="VoicePanel" Visibility="Collapsed"
+                                Content="{Binding}"
+						ContentTemplateSelector="{StaticResource samplerDataTemplateSelector}" Grid.Column="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Grid.Row="1">
 					<ComboBox
 						x:Name="VoiceAvailableEffects" 

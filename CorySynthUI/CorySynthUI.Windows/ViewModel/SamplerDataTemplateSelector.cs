@@ -25,16 +25,16 @@ namespace CorySynthUI.ViewModel
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
             // All we know how to handle is the SamplerVoice right now...
-            var sampler = item as ISampler;
+            var voice = item as SamplerVoice;
 
-            if (sampler == null)
+            if (voice == null)
                 return base.SelectTemplateCore(item, container);
 
-            var samplerType = sampler.GetType();
-            if (samplerType == typeof(PadSound))
+            var samplerType = voice.Sampler;
+            if (samplerType is PadSound)
                 return PadSoundDataTemplate;
 
-            if (samplerType == typeof(SignalGeneretedSound))
+            if (samplerType is SignalGeneretedSound)
                 return SynthSoundDataTemplate;
 
             return base.SelectTemplateCore(item, container);

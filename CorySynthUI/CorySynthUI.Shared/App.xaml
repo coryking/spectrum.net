@@ -2,10 +2,16 @@
     x:Class="CorySynthUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:util="using:CorySignalGenerator.Utils"
+
     xmlns:controls="using:CorySynthUI.Controls"
     xmlns:local="using:CorySynthUI">
 
     <Application.Resources>
+
+
+
+
         <Style TargetType="controls:HeaderedStackPanel" x:Key="headeredStackPanelStyle">
             <Setter Property="Orientation" Value="Horizontal"/>
             <Setter Property="HeaderStyle" Value="{StaticResource TitleTextBlockStyle}"/>
@@ -27,11 +33,11 @@
             </Setter>
         </Style>
         <SolidColorBrush x:Key="SliderForeground" Color="#FFC766C7"/>
-		<Style x:Key="VerticalSliderStyle" TargetType="Slider">
-			<Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
-			<Setter Property="TickPlacement" Value="Outside"/>
-			<Setter Property="Orientation" Value="Vertical"/>
-		</Style>
+        <Style x:Key="VerticalSliderStyle" TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+            <Setter Property="TickPlacement" Value="Outside"/>
+            <Setter Property="Orientation" Value="Vertical"/>
+        </Style>
         <SolidColorBrush x:Key="SecondarySelectedItemBackground" Color="#FFdde397"/>
 
         <SolidColorBrush x:Key="SecondaryControlBackground" Color="#FF5B611A"/>
@@ -39,9 +45,9 @@
 
         <DataTemplate x:Key="VoiceListItem">
             <Grid>
-            	<Grid.ColumnDefinitions>
-            		<ColumnDefinition/>
-            	</Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding Name}" Foreground="{StaticResource SeconadryListItemForegroundBrush}"/>
             </Grid>
         </DataTemplate>
@@ -96,8 +102,125 @@
         </Style>
         <SolidColorBrush x:Key="ControlGroupingBorderBrush" Color="#FF4B4B4B"/>
         <Style x:Key="ControlGroupingBorderStyle" TargetType="Border">
-        	<Setter Property="BorderBrush" Value="{StaticResource ControlGroupingBorderBrush}"/>
-        	<Setter Property="Padding" Value="7"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ControlGroupingBorderBrush}"/>
+            <Setter Property="Padding" Value="7"/>
         </Style>
+        <Style TargetType="Slider" x:Key="HorizontalMarginSlider">
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="TickPlacement" Value="Outside"/>
+            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+        </Style>
+
+        <DataTemplate x:Key="AmplitudeValueSelector">
+            <StackPanel Orientation="Vertical">
+                <Slider Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
+            </StackPanel>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="AdsrTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Slider Header="Attack (ms)" Style="{StaticResource VerticalSliderStyle}" Minimum="0" Maximum="1000"  Value="{Binding AttackMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Release (ms)" Style="{StaticResource VerticalSliderStyle}"  Minimum="0" Maximum="1000" Value="{Binding ReleaseMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Decay (ms)" Style="{StaticResource VerticalSliderStyle}"  Minimum="0" Maximum="1000"  Value="{Binding DecayMs, Mode=TwoWay}" StepFrequency="1" TickFrequency="10"/>
+                <Slider Header="Sustain" Style="{StaticResource VerticalSliderStyle}" Minimum="0.1" Maximum="1" Value="{Binding SustainLevel, Mode=TwoWay}" StepFrequency="0.05" TickFrequency="0.1" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SignalGeneratedSoundTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Slider
+					Header="Volume"
+						Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+						Style="{StaticResource VerticalSliderStyle}" 
+						Grid.RowSpan="2"
+						 />
+
+                <ContentControl x:Name="contentControl"
+						Content="{Binding Envelope}"
+						ContentTemplate="{StaticResource AdsrTemplate}" Grid.Column="1" VerticalContentAlignment="Stretch" />
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" DataContext="{Binding Sampler}">
+                    <ComboBox Header="Sound" SelectedItem="{Binding Type, Mode=TwoWay}" util:EnumHelper.Enum="NAudio.Wave.SampleProviders.SignalGeneratorType, NAudio.Win8"  />
+                    <controls:HeaderedStackPanel HeaderText="Pitch" Orientation="Vertical">
+                        <StackPanel Orientation="Vertical">
+                            <ComboBox Header="Semitones" ItemsSource="{Binding PitchAdjustment.ValidSemitones}" SelectedItem="{Binding PitchAdjustment.Semitones, Mode=TwoWay}"/>
+                            <Slider Header="Cents" Value="{Binding PitchAdjustment.Cents, Mode=TwoWay}" Minimum="-100" Maximum="100" StepFrequency="5" TickFrequency="10"/>
+                        </StackPanel>
+                    </controls:HeaderedStackPanel>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+
+
+        <DataTemplate x:Key="PadSoundTemplate">
+
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Slider
+					Header="Volume"
+						Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1" 
+						Style="{StaticResource VerticalSliderStyle}" 
+						Grid.RowSpan="3"
+						 />
+
+                <ContentControl x:Name="contentControl"
+						Content="{Binding Envelope}"
+						ContentTemplate="{StaticResource AdsrTemplate}" Grid.Column="1" VerticalContentAlignment="Stretch" />
+                <Border DataContext="{Binding Sampler}" Style="{StaticResource ControlGroupingBorderStyle}" Grid.Column="2">
+
+                	<StackPanel Orientation="Horizontal">
+                		<Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
+                		<Slider Header="Bandwidth Scale" Style="{StaticResource VerticalSliderStyle}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+                	</StackPanel>
+                </Border>
+                <Border  DataContext="{Binding Sampler}" Style="{StaticResource ControlGroupingBorderStyle}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" >
+                	<Grid>
+                		<Grid.ColumnDefinitions>
+                			<ColumnDefinition/>
+                			<ColumnDefinition Width="Auto"/>
+                		</Grid.ColumnDefinitions>
+                		<Slider Header="Harmonics" Maximum="12" Minimum="1" x:Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                		<StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
+                			<ComboBox Header="Harmonic Type" x:Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}" />
+                			<Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
+                		</StackPanel>
+                	</Grid>
+                </Border>
+                <ItemsControl ItemsSource="{Binding Sampler.Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" 
+				ScrollViewer.HorizontalScrollMode="Auto"
+				Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1"
+				>
+                	<ItemsControl.ItemsPanel>
+                		<ItemsPanelTemplate>
+                			<StackPanel Orientation="Horizontal"/>
+                		</ItemsPanelTemplate>
+                	</ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+
+        </DataTemplate>
+
+
     </Application.Resources>
 </Application>
