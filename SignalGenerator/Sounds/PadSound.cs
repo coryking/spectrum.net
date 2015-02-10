@@ -142,6 +142,38 @@ namespace CorySignalGenerator.Sounds
         #endregion
 
 
+        #region Property HarmonicOffsetMaker
+        private IHarmonicMaker _harmonicOffsetMaker = null;
+
+        /// <summary>
+        /// Sets and gets the HarmonicOffsetMaker property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public IHarmonicMaker HarmonicOffsetMaker
+        {
+            get
+            {
+                return _harmonicOffsetMaker;
+            }
+            set
+            {
+                Set(ref _harmonicOffsetMaker, value);
+            }
+        }
+        #endregion
+
+        private List<IHarmonicMaker> _harmonicOffsetMakerList = new List<IHarmonicMaker>()
+        {
+            new LinearHarmonic(),
+            new NonLinearHarmonic()
+        };
+
+        public List<IHarmonicMaker> HarmonicOffsetMakerList
+        {
+            get { return _harmonicOffsetMakerList; }
+        }
+
+
         /// <summary>
         /// bandwidth in cents of the fundamental frequency (eg. 25 cents)
         /// </summary>
@@ -157,20 +189,6 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
         public int SampleSize { get; set; }
 
-        private List<string> _harmonicTypeList = new List<string>()
-        {
-            CorySignalGenerator.Dsp.HarmonicType.Linear.ToString(),
-            CorySignalGenerator.Dsp.HarmonicType.Non_Harmonic.ToString(),
-        };
-
-        public List<string> HarmonicTypeList
-        {
-            get { return _harmonicTypeList; }
-        }
-
-        public String HarmonicTypeString { get; set; }
-
-        public HarmonicType HarmonicType { get { return (HarmonicType)Enum.Parse(typeof(HarmonicType), HarmonicTypeString); } }
 
         public ObservableCollection<AmplitudeValue> Amplitudes { get; set; }
 
@@ -222,7 +240,6 @@ namespace CorySignalGenerator.Sounds
             Harmonics = 4;
             WaveFormat = waveFormat;
             SampleSize = (int)Math.Pow(2, 16);
-            HarmonicTypeString = HarmonicType.Linear.ToString();
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
             BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
         }
@@ -258,10 +275,12 @@ namespace CorySignalGenerator.Sounds
             //var freqs = new float[] { 440f };
             var amplitude_values = Amplitudes.Select((x) => { return x.Value; }).ToArray();
             var newWaveTable = new ConcurrentDictionary<int, SampleSource>();
+            var harmonicOffsetMaker = (HarmonicOffsetMaker == null) ? new LinearHarmonic() : HarmonicOffsetMaker;
+
             Parallel.ForEach(notesToGen, (note) =>
             {
                 var sample =
-                     PADsynth.GenerateWaveTable(amplitude_values, (float)note.Frequency, Bandwidth, BandwidthScale, HarmonicType, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                     PADsynth.GenerateWaveTable(amplitude_values, (float)note.Frequency, Bandwidth, BandwidthScale, harmonicOffsetMaker, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
                 newWaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
 
             });

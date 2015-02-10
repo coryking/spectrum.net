@@ -200,7 +200,11 @@
                 		</Grid.ColumnDefinitions>
                 		<Slider Header="Harmonics" Maximum="24" Minimum="1" x:Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 		<StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
-                			<ComboBox Header="Harmonic Type" x:Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}" />
+                            <ComboBox Header="Harmonic Type" x:Name="PadHarmonicTypes" 
+                                      ItemsSource="{Binding HarmonicOffsetMakerList}" 
+                                      SelectedValue="{Binding HarmonicOffsetMaker, Mode=TwoWay}"
+                                      DisplayMemberPath="Name"
+                                      />
                 			<Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
                 		</StackPanel>
                 	</Grid>
