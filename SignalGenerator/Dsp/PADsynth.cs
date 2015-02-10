@@ -17,6 +17,41 @@ namespace CorySignalGenerator.Dsp
         Non_Harmonic,
     }
 
+    public interface IHarmonicMaker
+    {
+        string Name { get; }
+        double GetOvertone(double fundamentalFrequency);
+    }
+
+    public class LinearHarmonic :IHarmonicMaker
+    {
+
+        public string Name
+        {
+            get { return "Linear"; }
+        }
+
+        public double GetOvertone(double fundamentalFrequency)
+        {
+            return fundamentalFrequency;
+        }
+    }
+
+    public class NonLinearHarmonic : IHarmonicMaker
+    {
+        public string Name
+        {
+            get { return "Non Linear"; }
+        }
+
+        public double GetOvertone(double fundamentalFrequency)
+        {
+            return fundamentalFrequency * (1.0 + fundamentalFrequency * 0.1); ;
+        }
+    }
+
+
+
     public class PADsynth
     {
         private float[] A;

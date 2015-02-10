@@ -140,7 +140,7 @@ namespace CorySignalGenerator.Sounds
             }
         }
         #endregion
-		
+
 
         /// <summary>
         /// bandwidth in cents of the fundamental frequency (eg. 25 cents)
@@ -238,7 +238,8 @@ namespace CorySignalGenerator.Sounds
                 InitSamples();
             });
         }
-        
+
+
         public void InitSamples()
         {
             if (WaveTable == null || WaveTable.Count == 0)
