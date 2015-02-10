@@ -113,9 +113,7 @@
         </Style>
 
         <DataTemplate x:Key="AmplitudeValueSelector">
-            <StackPanel Orientation="Vertical">
-                <Slider Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Orientation="Vertical" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
-            </StackPanel>
+           <Slider Style="{StaticResource VerticalSliderStyle}" Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Minimum="0" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
         </DataTemplate>
 
 
@@ -190,7 +188,7 @@
                 <Border DataContext="{Binding Sampler}" Style="{StaticResource ControlGroupingBorderStyle}" Grid.Column="2">
 
                 	<StackPanel Orientation="Horizontal">
-                		<Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="1000" Minimum="0" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
+                		<Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="100" Minimum="1" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
                 		<Slider Header="Bandwidth Scale" Style="{StaticResource VerticalSliderStyle}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
                 	</StackPanel>
                 </Border>
@@ -200,7 +198,7 @@
                 			<ColumnDefinition/>
                 			<ColumnDefinition Width="Auto"/>
                 		</Grid.ColumnDefinitions>
-                		<Slider Header="Harmonics" Maximum="12" Minimum="1" x:Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
+                		<Slider Header="Harmonics" Maximum="24" Minimum="1" x:Name="PadHarmonics" Value="{Binding Harmonics, Mode=TwoWay}" StepFrequency="1" TickFrequency="1"/>
                 		<StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
                 			<ComboBox Header="Harmonic Type" x:Name="PadHarmonicTypes" ItemsSource="{Binding HarmonicTypeList}" SelectedValue="{Binding HarmonicTypeString, Mode=TwoWay}" />
                 			<Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
