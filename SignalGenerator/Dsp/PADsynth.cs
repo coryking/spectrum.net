@@ -146,7 +146,7 @@ namespace CorySignalGenerator.Dsp
                 }
             }
 
-            var complex_freq = new System.Numerics.Complex[N / 2]; // new Complex[N / 2];
+            var complex_freq = new System.Numerics.Complex[N]; // new Complex[N / 2];
             for (var i = 0; i < N/2; i++)
             {
                 var phase = RND() * 2.0f * Math.PI;
@@ -159,7 +159,7 @@ namespace CorySignalGenerator.Dsp
             MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(complex_freq, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
             //FastFourierTransform.FFT(false, m, complex_freq);
             var max = 0d;
-            for (var i = 0; i < N/2; i++)
+            for (var i = 0; i < N; i++)
             {
                 if (Math.Abs(complex_freq[i].Real) > max)
                 {
@@ -169,8 +169,8 @@ namespace CorySignalGenerator.Dsp
             }
             if (max < 1e-5)
                 max = 1e-5f;
-            var output = new float[N/2];
-            for (var i = 0; i < N/2; i++)
+            var output = new float[N];
+            for (var i = 0; i < N; i++)
             {
                 output[i] = (float)(complex_freq[i].Real / (max * 1.4142d));
             }
