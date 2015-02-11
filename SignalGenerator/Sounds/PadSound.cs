@@ -244,7 +244,7 @@ namespace CorySignalGenerator.Sounds
                 var i = Amplitudes.Count;
                 var value = 1f;
                 if (i > 0)
-                    value = 0; // Amplitudes[i - 1].Value * 0.5f;
+                    value = Amplitudes[i - 1].Value * 0.5f;
 
                 var index = i + 1;
                 Amplitudes.Add(new AmplitudeValue(index) { Value = value });

@@ -119,7 +119,10 @@ namespace CorySignalGenerator.Dsp
             {
                 var realfreq = f * relF(nh);
                 if (realfreq > samplerate * 0.499999f)
+                {
+                    Debug.WriteLine("Bailing out of synth. f: {0:f}, realfreq: {1:f}, nh: {2}", f, realfreq, nh);
                     break;
+                }
                 //if (realfreq < 20.0f)
                 //    break;
                 //if (freq_amp[nh - 1] < 1e-4)

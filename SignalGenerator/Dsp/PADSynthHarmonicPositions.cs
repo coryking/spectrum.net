@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,9 @@ namespace CorySignalGenerator.Dsp.Harmonics
             float iresult = (float)Math.Floor(result + 0.5f);
             float dresult = result - iresult;
 
-            return iresult + (1.0f - par3) * dresult;
+            var total =  iresult + (1.0f - par3) * dresult;
+            Debug.WriteLine("total: {0:f}, fundamentalFreq: {1}, result: {2:f}", total, fundamentalFrequency, result);
+            return total;
         }
     }
 
