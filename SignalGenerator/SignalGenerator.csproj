@@ -113,6 +113,7 @@
     <Compile Include="Dsp\DelayLine.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Dsp\EqFilter.cs" />
+    <Compile Include="Dsp\PADSynthHarmonicPositions.cs" />
     <Compile Include="Filters\ChorusEffect.cs" />
     <Compile Include="Filters\FlangerEffect.cs" />
     <Compile Include="Filters\ZynAddSubReverb.cs" />

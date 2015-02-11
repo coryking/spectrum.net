@@ -11,39 +11,11 @@ using System.Threading.Tasks;
 
 namespace CorySignalGenerator.Dsp
 {
-    public interface IHarmonicMaker
+    public interface IHarmonicPosition
     {
         string Name { get; }
-        double GetOvertone(double fundamentalFrequency);
+        float GetPosition(int fundamentalFrequency);
     }
-
-    public class LinearHarmonic :IHarmonicMaker
-    {
-
-        public string Name
-        {
-            get { return "Linear"; }
-        }
-
-        public double GetOvertone(double fundamentalFrequency)
-        {
-            return fundamentalFrequency;
-        }
-    }
-
-    public class NonLinearHarmonic : IHarmonicMaker
-    {
-        public string Name
-        {
-            get { return "Non Linear"; }
-        }
-
-        public double GetOvertone(double fundamentalFrequency)
-        {
-            return fundamentalFrequency * (1.0 + fundamentalFrequency * 0.1); ;
-        }
-    }
-
 
 
     public class PADsynth
@@ -69,17 +41,11 @@ namespace CorySignalGenerator.Dsp
         /// <param name="channels">Number of channels</param>
         /// <param name="midiNote">The midi note number</param>
         /// <returns></returns>
-        public static SampleSource GenerateWaveTable(float[] amplitudeValues, float freq, float bw, float bwscale, IHarmonicMaker harmonicmaker, int midiNote, int sampleSize, int sampleRate, int channels=1)
+        public static SampleSource GenerateWaveTable(float[] amplitudeValues, float freq, float bw, float bwscale, IHarmonicPosition harmonicmaker, int midiNote, int sampleSize, int sampleRate, int channels=1)
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. bw: {1}, bwscale: {2}", freq, bw, bwscale);
         
-            //var a = new float[] {4f, 0f, 0f, 0.4f, 1f, 2f, 1f, 0.2f, 0, 1.2f, 1f, 0 };
-            var rescaleLength = Math.Max(4, 440f / freq);
-            var a_rescaled =  Dsp.LinearInterpolator.Rescale(amplitudeValues, rescaleLength);
-            //var a_rescaled = new float[(int)Math.Ceiling(numberHarmonics * 440f / freq)];
-            //for (var i = 1; i < a_rescaled.Length; i++)
-            //    a_rescaled[i] = Convert.ToSingle(1.0 / i);
-            var synth = new PADsynth(sampleSize, sampleRate, a_rescaled, harmonicmaker);
+            var synth = new PADsynth(sampleSize, sampleRate, amplitudeValues, harmonicmaker);
             var sampleData = synth.synth(freq, bw, bwscale);
 
             var outputData = new float[sampleData.Length * channels];
@@ -104,7 +70,7 @@ namespace CorySignalGenerator.Dsp
         /// <param name="n">is the samplesize (eg: 262144)</param>
         /// <param name="samplerate">samplerate (eg. 44100)</param>
         /// <param name="number_harmonics">the number of harmonics that are computed</param>
-        public PADsynth(int n, int samplerate, float[] a, IHarmonicMaker harmonicmaker)
+        public PADsynth(int n, int samplerate, float[] a, IHarmonicPosition harmonicmaker)
         {
             rnd = new System.Random();
             N=n;
@@ -151,9 +117,17 @@ namespace CorySignalGenerator.Dsp
             Array.Clear(freq_amp, 0, freq_amp.Length);
             for (var nh = 1; nh < number_harmonics; nh++)
             {
-                var bw_Hz = (Math.Pow(2.0, bw / 1200.0) - 1.0) * f * Math.Pow(relF(nh), bwscale);
+                var realfreq = f * relF(nh);
+                if (realfreq > samplerate * 0.499999f)
+                    break;
+                //if (realfreq < 20.0f)
+                //    break;
+                //if (freq_amp[nh - 1] < 1e-4)
+                //    continue;
+
+                var bw_Hz = (Math.Pow(2.0, bw / 1200.0) - 1.0) * f * Math.Pow(realfreq/f, bwscale);
                 var bwi = bw_Hz / (2.0 * samplerate);
-                var fi = f * relF(nh) / samplerate;
+                var fi = realfreq / samplerate;
 #if SHOW_DEBUG
                 Debug.WriteLine("freq: {0}, bw_Hz, {1}, bwi: {2}, fi: {3}, bwscale: {4}, bw: {5}, relF({6}): {7}", f, bw_Hz, bwi, fi, bwscale, bw, nh, relF(nh));
 #endif
@@ -206,7 +180,7 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         protected virtual double relF(int nh)
         {
-            return harmonicMaker.GetOvertone(nh);
+            return harmonicMaker.GetPosition(nh);
         }
         /// <summary>
         /// This is the profile of one harmonic
@@ -235,6 +209,6 @@ namespace CorySignalGenerator.Dsp
             return (float)rnd.NextDouble();
         }
 
-        protected IHarmonicMaker harmonicMaker { get; set; }
+        protected IHarmonicPosition harmonicMaker { get; set; }
     }
 }

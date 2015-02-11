@@ -121,6 +121,9 @@
     <Compile Include="..\SignalGenerator\Dsp\PADsynth.cs">
       <Link>Dsp\PADsynth.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Dsp\PADSynthHarmonicPositions.cs">
+      <Link>Dsp\PADSynthHarmonicPositions.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Extensions\EnumerableExtensions.cs">
       <Link>Extensions\EnumerableExtensions.cs</Link>
     </Compile>

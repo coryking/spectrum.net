@@ -16,6 +16,7 @@ using NAudio.Wave.SampleProviders;
 using System.Collections.ObjectModel;
 using CorySignalGenerator.Sequencer.Interfaces;
 using CorySignalGenerator.Sequencer;
+using CorySignalGenerator.Dsp.Harmonics;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -121,7 +122,7 @@ namespace CorySignalGenerator.Sounds
         /// </summary>
 
         #region Property Harmonics
-        private int _harmonics = 1;
+        private int _harmonics = 24;
 
         /// <summary>
         /// Sets and gets the Harmonics property.
@@ -143,13 +144,13 @@ namespace CorySignalGenerator.Sounds
 
 
         #region Property HarmonicOffsetMaker
-        private IHarmonicMaker _harmonicOffsetMaker = null;
+        private IHarmonicPosition _harmonicOffsetMaker = null;
 
         /// <summary>
         /// Sets and gets the HarmonicOffsetMaker property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public IHarmonicMaker HarmonicOffsetMaker
+        public IHarmonicPosition HarmonicOffsetMaker
         {
             get
             {
@@ -162,16 +163,37 @@ namespace CorySignalGenerator.Sounds
         }
         #endregion
 
-        private List<IHarmonicMaker> _harmonicOffsetMakerList = new List<IHarmonicMaker>()
+        private List<IHarmonicPosition> _harmonicOffsetMakerList = new List<IHarmonicPosition>()
         {
             new LinearHarmonic(),
-            new NonLinearHarmonic()
+            new PowerHarmonicPosition()
         };
 
-        public List<IHarmonicMaker> HarmonicOffsetMakerList
+        public List<IHarmonicPosition> HarmonicOffsetMakerList
         {
             get { return _harmonicOffsetMakerList; }
         }
+
+
+        #region Property InterpolateAmplitudes
+        private bool _interpolateAmplitudes = false;
+
+        /// <summary>
+        /// Gets or Sets if the amlitude values should be interpolated
+        /// </summary>
+        public bool InterpolateAmplitudes
+        {
+            get
+            {
+                return _interpolateAmplitudes;
+            }
+            set
+            {
+                Set(ref _interpolateAmplitudes, value);
+            }
+        }
+        #endregion
+		
 
 
         /// <summary>
@@ -222,7 +244,7 @@ namespace CorySignalGenerator.Sounds
                 var i = Amplitudes.Count;
                 var value = 1f;
                 if (i > 0)
-                    value = Amplitudes[i-1].Value * 0.5f;
+                    value = 0; // Amplitudes[i - 1].Value * 0.5f;
 
                 var index = i + 1;
                 Amplitudes.Add(new AmplitudeValue(index) { Value = value });
@@ -237,7 +259,7 @@ namespace CorySignalGenerator.Sounds
             BandwidthScale = 1.0f;
             Amplitudes = new ObservableCollection<AmplitudeValue>();
 
-            Harmonics = 4;
+            Harmonics = 24;
             WaveFormat = waveFormat;
             SampleSize = (int)Math.Pow(2, 16);
             WaveTable = new ConcurrentDictionary<int, SampleSource>();
@@ -279,8 +301,16 @@ namespace CorySignalGenerator.Sounds
 
             Parallel.ForEach(notesToGen, (note) =>
             {
+                var amplitudes = amplitude_values;
+                if(InterpolateAmplitudes)
+                {
+                    var rescaleLength = (float)Math.Max(4, 440f / note.Frequency);
+                    amplitudes = Dsp.LinearInterpolator.Rescale(amplitude_values, rescaleLength);
+            
+                }
+
                 var sample =
-                     PADsynth.GenerateWaveTable(amplitude_values, (float)note.Frequency, Bandwidth, BandwidthScale, harmonicOffsetMaker, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                     PADsynth.GenerateWaveTable(amplitudes, (float)note.Frequency, Bandwidth, BandwidthScale, harmonicOffsetMaker, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
                 newWaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
 
             });
