@@ -1,6 +1,7 @@
 ﻿using CorySignalGenerator.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -28,16 +29,14 @@ namespace CorySignalGenerator.Oscillator
             Prepare();
         }
 
-        public int GetFrequencies(Complex[] buffer, float freqHz)
+        public float[] GetFrequencies(float freqHz)
         {
+
             if (NeedsPrepare)
                 Prepare();
 
             var input = FFTFrequencies;
             var output = new Complex[OSCILLATOR_SIZE];
-
-            var outpos = (int)((rnd.NextDouble() * 2.0 - 1.0) * (double)OSCILLATOR_SIZE * (Randomness - 64.0)/64.0);
-            outpos = (outpos + 2 * OSCILLATOR_SIZE) % OSCILLATOR_SIZE;
 
             int nyquist = OSCILLATOR_SIZE / 2;
 
@@ -48,13 +47,12 @@ namespace CorySignalGenerator.Oscillator
             // TODO: Apply any resonance...
 
             FrequencyUtils.RmsNormalize(output, OSCILLATOR_SIZE/2);
-            Array.Copy(output, 1, buffer, 0, OSCILLATOR_SIZE / 2);
             
-            // Since we aren't actually using the Randomness... I question the value of this...
-            if (Randomness < 64)
-                return outpos;
-            else
-                return 0;
+            var outputFloat = new float[OSCILLATOR_SIZE];
+            for (int i = 1; i < OSCILLATOR_SIZE /2; i++)
+                outputFloat[i - 1] = (float)output[i].Magnitude;
+            
+            return outputFloat;
         }
 
         
@@ -223,7 +221,7 @@ namespace CorySignalGenerator.Oscillator
 
         private void HarmonicsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            NeedsPrepare = true;
+            dirtyParams = true;
         }
 
         #endregion

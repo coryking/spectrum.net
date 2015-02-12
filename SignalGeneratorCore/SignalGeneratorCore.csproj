@@ -121,9 +121,6 @@
     <Compile Include="..\SignalGenerator\Dsp\LinearInterpolator.cs">
       <Link>Dsp\LinearInterpolator.cs</Link>
     </Compile>
-    <Compile Include="..\SignalGenerator\Dsp\PADSynth.cs">
-      <Link>Dsp\PADSynth.cs</Link>
-    </Compile>
     <Compile Include="..\SignalGenerator\Dsp\PADSynthHarmonicPositions.cs">
       <Link>Dsp\PADSynthHarmonicPositions.cs</Link>
     </Compile>
@@ -345,6 +342,12 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Sounds\PadSound.cs">
       <Link>Sounds\PadSound.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sounds\PADSynth.cs">
+      <Link>Sounds\PADSynth.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sounds\PAD\HarmonicProfile.cs">
+      <Link>Sounds\PAD\HarmonicProfile.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Sounds\SignalGeneratedSound.cs">
       <Link>Sounds\SignalGeneratedSound.cs</Link>
