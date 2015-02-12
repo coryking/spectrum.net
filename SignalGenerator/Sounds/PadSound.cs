@@ -310,7 +310,7 @@ namespace CorySignalGenerator.Sounds
                 }
 
                 var sample =
-                     PADsynth.GenerateWaveTable(amplitudes, (float)note.Frequency, Bandwidth, BandwidthScale, harmonicOffsetMaker, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
+                     LegacyPADsynth.GenerateWaveTable(amplitudes, (float)note.Frequency, Bandwidth, BandwidthScale, harmonicOffsetMaker, note.Number, SampleSize, WaveFormat.SampleRate, WaveFormat.Channels);
                 newWaveTable.AddOrUpdate(note.Number, sample, (key, value) => sample);
 
             });
