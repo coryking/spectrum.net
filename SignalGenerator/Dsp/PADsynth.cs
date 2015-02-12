@@ -21,7 +21,7 @@ namespace CorySignalGenerator.Dsp
     public class PADsynth
     {
         private float[] A;
-        private float[] freq_amp;
+        //private float[] freq_amp;
         private int samplerate;
         private int number_harmonics;
         private System.Random rnd;
@@ -78,7 +78,7 @@ namespace CorySignalGenerator.Dsp
             this.number_harmonics=a.Length;
             this.harmonicMaker = harmonicmaker;
             A = a; // new float[number_harmonics];
-            freq_amp = new float[N/2];
+            //freq_amp = new float[N/2];
         }
         /// <summary>
         /// set the amplitude of the n'th harmonic
@@ -113,38 +113,7 @@ namespace CorySignalGenerator.Dsp
         /// <returns></returns>
         public float[] synth(float f, float bw, float bwscale)
         {
-
-            Array.Clear(freq_amp, 0, freq_amp.Length);
-            for (var nh = 1; nh < number_harmonics; nh++)
-            {
-                var realfreq = f * relF(nh);
-                if (realfreq > samplerate * 0.499999f)
-                {
-                    Debug.WriteLine("Bailing out of synth. f: {0:f}, realfreq: {1:f}, nh: {2}", f, realfreq, nh);
-                    break;
-                }
-                //if (realfreq < 20.0f)
-                //    break;
-                //if (freq_amp[nh - 1] < 1e-4)
-                //    continue;
-
-                var bw_Hz = (Math.Pow(2.0, bw / 1200.0) - 1.0) * f * Math.Pow(realfreq/f, bwscale);
-                var bwi = bw_Hz / (2.0 * samplerate);
-                var fi = realfreq / samplerate;
-#if SHOW_DEBUG
-                Debug.WriteLine("freq: {0}, bw_Hz, {1}, bwi: {2}, fi: {3}, bwscale: {4}, bw: {5}, relF({6}): {7}", f, bw_Hz, bwi, fi, bwscale, bw, nh, relF(nh));
-#endif
-                for (var i = 0; i < N / 2; i++)
-                {
-                    var fiH = ((double)i / (double)N) - fi;
-                    var hprofile = profile(fiH, bwi);
-#if SHOW_DEBUG
-                    Debug.WriteLineIf((i < 2), String.Format("> i: {0}, fiH: {1}", i, fiH));
-                    Debug.WriteLineIf((hprofile > 0.0), String.Format("> i: {0} fiH: {1}, hProfile: {2}", i, fiH, hprofile));
-#endif
-                    freq_amp[i] += Convert.ToSingle(hprofile * A[nh]);
-                }
-            }
+            var freq_amp = GenerateSpectrum(f, bw, bwscale);
 
             var complex_freq = new System.Numerics.Complex[N]; // new Complex[N / 2];
             for (var i = 0; i < N/2; i++)
@@ -175,6 +144,45 @@ namespace CorySignalGenerator.Dsp
                 output[i] = (float)(complex_freq[i].Real / (max * 1.4142d));
             }
             return output;
+        }
+
+        /// <summary>
+        /// Generates the long spectrum for Bandwidth mode (only amplitudes are generated; phases will be random)
+        /// </summary>
+        /// <param name="f"></param>
+        /// <param name="bw"></param>
+        /// <param name="bwscale"></param>
+        /// <returns></returns>
+        private float[] GenerateSpectrum(float f, float bw, float bwscale)
+        {
+            var freq_amp = new float[N / 2];
+            for (var nh = 1; nh < number_harmonics; nh++)
+            {
+                var realfreq = f * relF(nh);
+                if (realfreq > samplerate * 0.499999f || realfreq < 20.0f)
+                {
+                    Debug.WriteLine("Bailing out of synth. f: {0:f}, realfreq: {1:f}, nh: {2}", f, realfreq, nh);
+                    break;
+                }
+
+                var bw_Hz = (Math.Pow(2.0, bw / 1200.0) - 1.0) * f * Math.Pow(realfreq / f, bwscale);
+                var bwi = bw_Hz / (2.0 * samplerate);
+                var fi = realfreq / samplerate;
+#if SHOW_DEBUG
+                Debug.WriteLine("freq: {0}, bw_Hz, {1}, bwi: {2}, fi: {3}, bwscale: {4}, bw: {5}, relF({6}): {7}", f, bw_Hz, bwi, fi, bwscale, bw, nh, relF(nh));
+#endif
+                for (var i = 0; i < freq_amp.Length; i++)
+                {
+                    var fiH = ((double)i / (double)N) - fi;
+                    var hprofile = profile(fiH, bwi);
+#if SHOW_DEBUG
+                    Debug.WriteLineIf((i < 2), String.Format("> i: {0}, fiH: {1}", i, fiH));
+                    Debug.WriteLineIf((hprofile > 0.0), String.Format("> i: {0} fiH: {1}, hProfile: {2}", i, fiH, hprofile));
+#endif
+                    freq_amp[i] += Convert.ToSingle(hprofile * A[nh]);
+                }
+            }
+            return freq_amp;
         }
 
 
