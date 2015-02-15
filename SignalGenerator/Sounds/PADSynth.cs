@@ -1,15 +1,21 @@
 ﻿using CorySignalGenerator.Dsp;
+using CorySignalGenerator.Models;
 using CorySignalGenerator.Oscillator;
 using CorySignalGenerator.SampleProviders;
 using CorySignalGenerator.Sequencer;
 using CorySignalGenerator.Utils;
 using NAudio.Wave;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MoreLinq;
+using System.Diagnostics;
+using CorySignalGenerator.Filters;
+using CorySignalGenerator.Sounds.PAD;
 
 namespace CorySignalGenerator.Sounds
 {
@@ -18,148 +24,76 @@ namespace CorySignalGenerator.Sounds
 
     public class PADSynth : NoteSampler
     {
-        public const int PROFILE_SIZE = 512;
         private Random _random;
+        private readonly int[] notesToSample = new int[]{
+            9, // octave -1
+            21, 23, // octave 0
+            24, 25, 27, 31, 35, // octave 1
+            36, 38, 40, 41, 43, 45, 47, // octave 2
+            48, 50, 52, 53, 55, 57, 59, // octave 3
+            60, 62, 64, 65, 67, 69, 71, // octave 4
+            72, 74, 76, 77, 79, 81, 83, // octave 5
+            84, 86, 88, 89, 91, 93, 95, // octave 6
+            96, 98, 101, 105, // octave 7
+            108, 116, // octave 8
+            120, 127 // octave 9
+        };
 
         public PADSynth(WaveFormat format)
         {
             _random = new Random();
-            HarmonicProfile = new PAD.HarmonicProfile();
+            Profile = new PAD.HarmonicProfile();
             WaveFormat = format;
+            WaveTable = new ConcurrentDictionary<MidiNote, SampleSource>();
+            BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
+
         }
 
         protected override NAudio.Wave.ISampleProvider GenerateNote(Models.MidiNote note)
         {
-            throw new NotImplementedException();
+            if(WaveTable.Count == 0)
+            {
+                return new MusicSampleProvider(SampleSource.CreateEmpty(WaveFormat, note));
+            }
+            
+            // This should be logarithmic, not linear
+            var nearestNote = WaveTable.Keys.MinBy(x => Math.Abs(x.Frequency - note.Frequency));
+            SampleSource source=null;
+            var gotSample = WaveTable.TryGetValue(nearestNote, out source);
+
+            // This should always get something... we just looked it up.  Nothing ever deletes samples either...
+            Debug.Assert(gotSample);
+            if (!gotSample)
+                return null; // honestly returning an empty SampleProvider would be a more graceful way to fail
+
+            var music_sampler = new MusicSampleProvider(source);
+            ISampleProvider outputProvider;
+            var noteDelta = note.Number - nearestNote.Number;
+            if (noteDelta != 0)
+            {
+                var windowFactor = 4 + 4 * note.Number / 128;
+                var windowSize = 50f; //windowFactor * 1000 * 1 / nearestNote.FundamentalFrequency;
+                var overlapSize = windowSize * 2 / 5f;
+                Debug.WriteLine("Shift {0} to {1}. w: {2}, o: {3}", note, nearestNote, windowSize, overlapSize);
+
+                outputProvider = new SuperPitch(music_sampler)
+                {
+                    PitchOctaves = 0f,
+                    PitchSemitones = noteDelta,
+                    WindowSize = windowSize,
+                    OverlapSize = overlapSize
+                };
+            }
+            else
+            {
+                outputProvider = music_sampler;
+            }
+            return outputProvider;
         }
 
-        protected float GetProfile(float[] profile, int profilesize)
+        protected SampleSource GenerateSampleForFrequency(MidiNote note, float bwadjust, float[] profile)
         {
-            var supersample = 16;
-            var basepar = FloatMath.pow(2.0f, (1.0f - HarmonicProfile.BaseWidth / 127.0f) * 12.0f);
-            var freqmult = FloatMath.floor(FloatMath.pow(2.0f, HarmonicProfile.FrequencyMultiplier / 127.0f * 5.0f) + 0.000001f);
-            var modfreq = FloatMath.floor(FloatMath.pow(2.0f, HarmonicProfile.ModulatorFrequency / 127.0f * 5.0f) + 0.000001f);
-            var modpar1 = FloatMath.pow(HarmonicProfile.BaseWidth / 127.0f, 4.0f) * 5.0f / FloatMath.sqrt(modfreq);
-
-            float amppar1 = FloatMath.pow(2.0f, FloatMath.pow(HarmonicProfile.AmplitudeMultiplierParam1 / 127.0f, 2.0f) * 10.0f) - 0.999f;
-            float amppar2 = (1.0f - HarmonicProfile.AmplitudeMultiplierParam2 / 127.0f) * 0.998f + 0.001f;
-
-            var width = FloatMath.pow(150.0f / (HarmonicProfile.Size + 22.0f), 2.0f);
-
-            for (int i = 0; i < profilesize * supersample; i++)
-            {
-                var makezero = false;
-                var x = i * 1.0f / (profilesize * (float)supersample);
-                float origx = x;
-                //do the sizing (width)
-                x = (x - 0.5f) * width + 0.5f;
-                if (x < 0.0f)
-                {
-                    x = 0.0f;
-                    makezero = true;
-                }
-                else if (x > 1.0f)
-                {
-                    x = 1.0f;
-                    makezero = true;
-                }
-                // if you want to do anything with the profile... do it here
-                float x_before_freq_mult = x;
-                x *= freqmult;
-
-                //do the modulation of the profile
-                x += FloatMath.sin(x_before_freq_mult * 3.1415926f * modfreq) * modpar1;
-                x = FloatMath.mod(x + 1000.0f, 1.0f) * 2.0f - 1.0f;
-
-                float f;
-                switch (HarmonicProfile.BaseType)
-                {
-                    case CorySignalGenerator.Sounds.PAD.FrequencyBaseType.Square:
-                        f = FloatMath.exp(-(x * x) * basepar);
-                        if (f < 0.4f)
-                            f = 0.0f;
-                        else
-                            f = 1.0f;
-                        break;
-                    case CorySignalGenerator.Sounds.PAD.FrequencyBaseType.DoubleExp:
-                        f = FloatMath.exp(-(FloatMath.abs(x)) * FloatMath.sqrt(basepar));
-
-                        break;
-                    default: // gaussian
-                        f = FloatMath.exp(-(x * x) * basepar);
-                        break;
-                }
-
-                if (makezero)
-                    f = 0.0f;
-
-                float amp = 1.0f;
-                origx = origx * 2.0f - 1.0f;
-
-                switch (HarmonicProfile.AplitudeMultiplierType)
-                {
-                    case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Gauss:
-                        amp = FloatMath.exp(-(origx * origx) * 10.0f * amppar1);
-                        break;
-                    case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Sine:
-                        amp = 0.5f * (1.0f + FloatMath.cos(3.1415926f * origx * FloatMath.sqrt(amppar1 * 4.0f + 1.0f)));
-                        break;
-                    case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Flat:
-                        amp = 1.0f / (FloatMath.pow(origx * (amppar1 * 2.0f + 0.8f), 14.0f) + 1.0f);
-                        break;
-                    default:
-                        break;
-                }
-
-                float finalsmp = f;
-                if(HarmonicProfile.AplitudeMultiplierType != PAD.AmplitudeMultiplierType.OFF)
-                {
-                    switch (HarmonicProfile.AmplitudeMultiplerMode)
-                    {
-                        case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplerMode.Sum:
-                            finalsmp = amp * (1.0f - amppar2) + finalsmp * amppar2;
-
-                            break;
-                        case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplerMode.Mult:
-                            finalsmp *= amp * (1.0f - amppar2) + amppar2;
-
-                            break;
-                        case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplerMode.Div1:
-                            finalsmp = finalsmp / (amp + FloatMath.pow(amppar2, 4.0f) * 20.0f + 0.0001f);
-                            break;
-                        case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplerMode.Div2:
-                            finalsmp = amp / (finalsmp + FloatMath.pow(amppar2, 4.0f) * 20.0f + 0.0001f);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                profile[i / supersample] += finalsmp / supersample;
-
-            }
-
-            FrequencyUtils.NormalizeToOne(profile, profilesize);
-
-            if (!AutoScale)
-                return 0.5f;
-
-            //compute the estimated perceived bandwidth
-            float sum = 0.0f;
-            int index;
-            for (index = 0; index < profilesize / 2 - 2; ++index)
-            {
-                sum += profile[index] * profile[index] + profile[profilesize - index - 1] * profile[profilesize - index - 1];
-                if (sum >= 4.0f)
-                    break;
-            }
-
-            float result = 1.0f - 2.0f * index / (float)profilesize;
-            return result;
-        }
-
-        protected SampleSource GenerateSampleForFrequency(float frequency, float bwadjust, int midiNote, float[] profile)
-        {
-            var spectrum = GenerateSpectrumBandwidth(frequency, profile, bwadjust);
+            var spectrum = GenerateSpectrumBandwidth((float)note.Frequency, profile, bwadjust);
 
             // Do a big-ass FFT...  just one
             MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(spectrum, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
@@ -167,7 +101,7 @@ namespace CorySignalGenerator.Sounds
             var sample = spectrum.Select(x => (float)x.Real).ToArray();
             FrequencyUtils.RmsNormalize(sample, SampleSize);
 
-            return new SampleSource(sample, frequency, midiNote, true, true, WaveFormat);
+            return new SampleSource(sample, (float)note.Frequency, note.Number, true, true, WaveFormat);
 
         }
 
@@ -241,7 +175,49 @@ namespace CorySignalGenerator.Sounds
 
         }
 
+        protected void BuildWaveTable()
+        {
+            var profile = new float[HarmonicProfile.PROFILE_SIZE];
+            var bwadjust = Profile.GetHarmonicProfile(profile);
+
+            var allNotes = MidiNotes.GenerateNotes();
+            var notesToGen = notesToSample.Select(x => allNotes[x]);
+            
+            Debug.WriteLine("Min Freq: {0}, Max Freq: {1}", notesToGen.Min(x => x.Frequency), notesToGen.Max(x => x.Frequency));
+
+            Parallel.ForEach(notesToGen, (note) =>
+            {
+                var sample = GenerateSampleForFrequency(note, bwadjust, profile);
+                WaveTable.AddOrUpdate(note, sample, (k,v) => { return sample; });
+            });
+        }
+        #region Relay Commands
+        public RelayCommand BuildWaveTableCommand { get; set; }
+
+        /// <summary>
+        /// Method that gets run when somebody executes the <see cref="BuildWaveTableCommand"/>
+        /// </summary>
+        /// <param name="parameter"></param>
+        protected void BuildWaveTableCommandExecute(object parameter)
+        {
+            Task.Run(() =>
+            {
+                BuildWaveTable();
+            });
+        }
+
+        #endregion
+
         #region Properties
+
+        /// <summary>
+        /// Wave lookup table.  Each key is a midi note number
+        /// </summary>
+        protected ConcurrentDictionary<MidiNote, SampleSource> WaveTable
+        {
+            get;
+            private set;
+        }
 
         private Lazy<OscillatorGenerator> _oscillator = new Lazy<OscillatorGenerator>(() => new OscillatorGenerator());
         public OscillatorGenerator Oscillator { get { return _oscillator.Value; } }
@@ -267,29 +243,7 @@ namespace CorySignalGenerator.Sounds
         #endregion
 
 
-        public PAD.HarmonicProfile HarmonicProfile { get; private set; }
-
-
-        #region Property AutoScale
-        private bool _autoScale = false;
-
-        /// <summary>
-        /// Sets and gets the AutoScale property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool AutoScale
-        {
-            get
-            {
-                return _autoScale;
-            }
-            set
-            {
-                Set(ref _autoScale, value);
-            }
-        }
-        #endregion
-		
+        public PAD.HarmonicProfile Profile { get; private set; }
 
         /// <summary>
         /// bandwidth in cents of the fundamental frequency (eg. 25 cents)
