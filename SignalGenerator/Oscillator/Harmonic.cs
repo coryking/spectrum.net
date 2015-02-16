@@ -33,12 +33,13 @@ namespace CorySignalGenerator.Oscillator
     /// </summary>
     public class Harmonic : Models.PropertyChangeModel
     {
-        public Harmonic() : this(64,64)
+        public Harmonic(int index) : this(index, 64,64)
         {
 
         }
-        public Harmonic(byte magnitude, byte phase)
+        public Harmonic(int index, byte magnitude, byte phase)
         {
+            this._index = index;
             this._magnitude = magnitude;
             this._phase = phase;
         }
@@ -82,7 +83,27 @@ namespace CorySignalGenerator.Oscillator
             }
         }
         #endregion
-		
+
+        #region Property Index
+        private int _index = 1;
+
+        /// <summary>
+        /// Sets and gets the Index property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int Index
+        {
+            get
+            {
+                return _index;
+            }
+            set
+            {
+                Set(ref _index, value);
+            }
+        }
+        #endregion
+
 
         /// <summary>
         /// Converts this Midi-based phase & magnitude into a Complex number
@@ -125,6 +146,9 @@ namespace CorySignalGenerator.Oscillator
 
             return Complex.FromPolarCoordinates(magnitude, phase);
         }
-
+        public override string ToString()
+        {
+            return String.Format("Harmonic.  Index {0}.  Magnitude: {1}.  Phase: {2}", Index, Magnitude, Phase);
+        }
     }
 }

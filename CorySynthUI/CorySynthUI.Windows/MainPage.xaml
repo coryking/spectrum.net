@@ -135,7 +135,9 @@
         <models:SamplerDataTemplateSelector
             x:Key="samplerDataTemplateSelector" 
             PadSoundDataTemplate="{StaticResource PadSoundTemplate}"
-            SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"/>
+            SynthSoundDataTemplate="{StaticResource SignalGeneratedSoundTemplate}"
+            PadSynthDataTemplate="{StaticResource PadSynthTemplate}"
+            />
         <models:EffectsDataTemplateSelector
             x:Key="effectsDataTemplateSelector"
             ZynAddSubReverbDataTemplate="{StaticResource ZynAddSubReverbTemplate}"

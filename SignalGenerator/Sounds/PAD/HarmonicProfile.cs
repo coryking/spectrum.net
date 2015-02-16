@@ -1,6 +1,7 @@
 ﻿using CorySignalGenerator.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace CorySignalGenerator.Sounds.PAD
 
         public HarmonicProfile()
         {
+            Debug.WriteLine("In HarmonicProfile Constructor");
 
         }
 
@@ -132,7 +134,7 @@ namespace CorySignalGenerator.Sounds.PAD
                 float amp = 1.0f;
                 origx = origx * 2.0f - 1.0f;
 
-                switch (AplitudeMultiplierType)
+                switch (AmplitudeMultiplierType)
                 {
                     case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Gauss:
                         amp = FloatMath.exp(-(origx * origx) * 10.0f * amppar1);
@@ -148,7 +150,7 @@ namespace CorySignalGenerator.Sounds.PAD
                 }
 
                 float finalsmp = f;
-                if (AplitudeMultiplierType != PAD.AmplitudeMultiplierType.OFF)
+                if (AmplitudeMultiplierType != PAD.AmplitudeMultiplierType.OFF)
                 {
                     switch (AmplitudeMultiplerMode)
                     {
@@ -356,7 +358,7 @@ namespace CorySignalGenerator.Sounds.PAD
         /// Sets and gets the AplitudeMultiplierType property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public AmplitudeMultiplierType AplitudeMultiplierType
+        public AmplitudeMultiplierType AmplitudeMultiplierType
         {
             get
             {

@@ -59,6 +59,7 @@ namespace CorySignalGenerator.Oscillator
 
         protected void Prepare()
         {
+            Debug.WriteLine("Maybe Preparing OscillatorGenerator");
             if (dirtyBaseFunction || BaseFunctionFFTFrequencies == null)
             {
                 ChangeBaseFunction();
@@ -127,6 +128,7 @@ namespace CorySignalGenerator.Oscillator
         /// </summary>
         protected void ChangeBaseFunction()
         {
+            Debug.WriteLine("Changing Base Function");
             if(BaseFunction != null)
             {
                 var samples = GetBaseFunctionSamples();
@@ -203,24 +205,27 @@ namespace CorySignalGenerator.Oscillator
 
         private void InitHarmonics()
         {
+            Debug.WriteLine("Building out Harmonics");
             _harmonics = new Harmonic[MAX_HARMONICS];
 
-            for (int i = 1; i < MAX_HARMONICS; i++)
+            for (int i = 0; i < MAX_HARMONICS; i++)
             {
                 if (i == 0)
-                    _harmonics[i] = new Harmonic(127, 64);
+                    _harmonics[i] = new Harmonic(i,127, 64);
                 else
-                    _harmonics[i] = new Harmonic();
+                    _harmonics[i] = new Harmonic(i);
 
                 _harmonics[i].PropertyChanged += HarmonicsPropertyChanged;
             }
 
+            Debug.WriteLine("About to do prop changed");
             OnPropertyChanged("Harmonics");
-
+            Debug.WriteLine("Done with prop changed");
         }
 
         private void HarmonicsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            Debug.WriteLine("Some property in harmonics changed: {0}.  {1}", e.PropertyName, sender);
             dirtyParams = true;
         }
 
@@ -293,6 +298,7 @@ namespace CorySignalGenerator.Oscillator
 
         protected override void HandlePropertyChanged(string propertyName)
         {
+            Debug.WriteLine("{0} property changed in OscillatorGenerator", propertyName);
             dirtyParams = true;
             base.HandlePropertyChanged(propertyName);
         }

@@ -46,7 +46,7 @@ namespace CorySignalGenerator.Sounds
             WaveFormat = format;
             WaveTable = new ConcurrentDictionary<MidiNote, SampleSource>();
             BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
-
+            SampleSize = (int)Math.Pow(2, 16);
         }
 
         protected override NAudio.Wave.ISampleProvider GenerateNote(Models.MidiNote note)
