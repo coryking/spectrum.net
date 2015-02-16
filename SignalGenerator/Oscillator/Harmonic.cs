@@ -62,8 +62,6 @@ namespace CorySignalGenerator.Oscillator
             }
         }
         #endregion
-		
-
 
         #region Property Phase
         private byte _phase = 0;
@@ -111,11 +109,11 @@ namespace CorySignalGenerator.Oscillator
         /// <param name="type">Type of magnitude</param>
         /// <param name="index">The phase adjustment (typically the harmonic number)</param>
         /// <returns>Complex number</returns>
-        public Complex ToComplex(uint index=0, MagnitudeType type=MagnitudeType.Linear)
+        public Complex ToComplex(MagnitudeType type=MagnitudeType.Linear)
         {
             // Note that in OscilGen, they divide the phase by the harmonic + 1
             //         hphase[i] = (Phphase[i] - 64.0f) / 64.0f * PI / (i + 1);
-            double phase = (Phase - 64.0) / 64.0 * Math.PI / (index + 1.0);
+            double phase = (Phase - 64.0) / 64.0 * Math.PI / (Index + 1.0);
 
             var magnitudeNew = 1.0 - Math.Abs(Magnitude / 64.0 - 1.0);
             var magnitude = 0.0;
@@ -148,7 +146,7 @@ namespace CorySignalGenerator.Oscillator
         }
         public override string ToString()
         {
-            return String.Format("Harmonic.  Index {0}.  Magnitude: {1}.  Phase: {2}", Index, Magnitude, Phase);
+            return String.Format("Harmonic.  Index {0}.  Magnitude: {1}.  Phase: {2}", Index,Magnitude,Phase);
         }
     }
 }

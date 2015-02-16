@@ -1,6 +1,7 @@
 ﻿using CorySignalGenerator.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -14,7 +15,7 @@ namespace CorySignalGenerator.Oscillator
         /// <summary>
         ///  Max number of user-adjustable harmonics
         /// </summary>
-        public const int MAX_HARMONICS = 128;
+        public const int MAX_HARMONICS = 24;
         /// <summary>
         ///  Size of the oscillator sample
         /// </summary>
@@ -68,12 +69,13 @@ namespace CorySignalGenerator.Oscillator
             var harmonics = new Complex[MAX_HARMONICS];
             for (int i = 0; i < MAX_HARMONICS; i++)
             {
-                harmonics[i] = Harmonics[i].ToComplex(index:(uint)i);
+                harmonics[i] = Harmonics[i].ToComplex();
             }
 
             PrepareFFTFrequencies();
             if(BaseFunction == null || BaseFunction is SineBaseFunction)
             {
+                Debug.WriteLine("Making FFT Frequencies for SineBaseFunction");
                 for (int i = 0; i < MAX_HARMONICS-1; i++)
                 {
                     var complex = Harmonics[i].ToComplex();
@@ -86,6 +88,7 @@ namespace CorySignalGenerator.Oscillator
             }
             else
             {
+                Debug.WriteLine("Making FFT Frequencies for all but SineBaseFunction");
                 for (int j = 0; j < MAX_HARMONICS; j++)
                 {
                     if (Harmonics[j].Magnitude == 64)
@@ -113,11 +116,13 @@ namespace CorySignalGenerator.Oscillator
 
             oscPrepared = true;
             dirtyParams = false;
+            Debug.WriteLine("Done with Prepare");
         }
 
        
         private void PrepareFFTFrequencies()
         {
+            Debug.WriteLine("Preparing FFT Requencies");
             if (FFTFrequencies == null)
                 FFTFrequencies = new Complex[OSCILLATOR_SIZE];
             else
@@ -196,26 +201,27 @@ namespace CorySignalGenerator.Oscillator
 
         #region Harmonics Property
 
-        private Harmonic[] _harmonics;
 
         /// <summary>
         /// User settable harmonics
         /// </summary>
-        public IReadOnlyList<Harmonic> Harmonics { get { return _harmonics; } }
+        public ObservableCollection<Harmonic> Harmonics { get; private set; }
 
         private void InitHarmonics()
         {
             Debug.WriteLine("Building out Harmonics");
-            _harmonics = new Harmonic[MAX_HARMONICS];
+            Harmonics = new ObservableCollection<Harmonic>();
 
             for (int i = 0; i < MAX_HARMONICS; i++)
             {
+                Harmonic harmonic = null;
                 if (i == 0)
-                    _harmonics[i] = new Harmonic(i,127, 64);
+                    harmonic = new Harmonic(i,127, 64);
                 else
-                    _harmonics[i] = new Harmonic(i);
+                    harmonic = new Harmonic(i);
 
-                _harmonics[i].PropertyChanged += HarmonicsPropertyChanged;
+                harmonic.PropertyChanged += HarmonicsPropertyChanged;
+                Harmonics.Add(harmonic);
             }
 
             Debug.WriteLine("About to do prop changed");

@@ -34,11 +34,6 @@
             </Setter>
         </Style>
         <SolidColorBrush x:Key="SliderForeground" Color="#FFC766C7"/>
-        <Style x:Key="VerticalSliderStyle" TargetType="Slider">
-            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
-            <Setter Property="TickPlacement" Value="Outside"/>
-            <Setter Property="Orientation" Value="Vertical"/>
-        </Style>
         <SolidColorBrush x:Key="SecondarySelectedItemBackground" Color="#FFdde397"/>
 
         <SolidColorBrush x:Key="SecondaryControlBackground" Color="#FF5B611A"/>
@@ -111,6 +106,11 @@
             <Setter Property="Orientation" Value="Horizontal"/>
             <Setter Property="TickPlacement" Value="Outside"/>
             <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+        </Style>
+
+        <Style x:Key="VerticalSliderStyle" TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+            <Setter Property="Orientation" Value="Vertical"/>
         </Style>
         <Style TargetType="Slider" BasedOn="{StaticResource VerticalSliderStyle}" x:Key="VerticalSlider128Style">
             <Setter Property="Minimum" Value="0"/>
@@ -189,9 +189,17 @@
                 <ScrollViewer
                 	 HorizontalScrollBarVisibility="Visible"
 				>
-                    <ItemsControl ItemsSource="{Binding Harmonics}" ItemTemplate="{StaticResource HarmonicValueSelector}" 
+                    <ItemsControl ItemsSource="{Binding Harmonics}"
 						HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="1024"
 				>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <Slider Style="{StaticResource VerticalSlider128Style}" Header="{Binding Index}" Height="200" Value="{Binding Magnitude, Mode=TwoWay}" Margin="0,0,0,10" />
+                                <Slider Style="{StaticResource VerticalSlider128Style}" Height="200" Value="{Binding Phase, Mode=TwoWay}" />
+                            </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal"/>
