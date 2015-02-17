@@ -22,6 +22,7 @@ namespace CorySignalGenerator.Oscillator
         public const int OSCILLATOR_SIZE = 1024;
 
         private Random rnd;
+        private object _lock = new object();
 
         public OscillatorGenerator()
         {
@@ -33,8 +34,7 @@ namespace CorySignalGenerator.Oscillator
         public float[] GetFrequencies(float freqHz)
         {
 
-            if (NeedsPrepare)
-                Prepare();
+            PrepareIfNeeded();
 
             var input = FFTFrequencies;
             var output = new Complex[OSCILLATOR_SIZE];
@@ -54,6 +54,15 @@ namespace CorySignalGenerator.Oscillator
                 outputFloat[i - 1] = (float)output[i].Magnitude;
             
             return outputFloat;
+        }
+
+        private void PrepareIfNeeded()
+        {
+            lock (_lock)
+            {
+                if (NeedsPrepare)
+                    Prepare();
+            }
         }
 
         
@@ -138,7 +147,7 @@ namespace CorySignalGenerator.Oscillator
             Debug.WriteLine("Changing Base Function");
             if(BaseFunction != null)
             {
-                var samples = GetBaseFunctionSamples();
+                var samples = GetBaseFunctionSamples(BaseFunction, BaseFunctionParameter);
                 BaseFunctionFFTFrequencies = samples.Select((x) => { return new Complex(x, 0.0); }).ToArray();
                 MathNet.Numerics.IntegralTransforms.Fourier.Radix2Forward(
                     BaseFunctionFFTFrequencies,
@@ -155,14 +164,16 @@ namespace CorySignalGenerator.Oscillator
         /// <summary>
         /// Get the samples from the base function
         /// </summary>
-        /// <param name="samples">An <see cref="OSCILLATOR_SIZE"/> array of samples in the time domain</param>
-        private float[] GetBaseFunctionSamples()
+        /// <param name="baseFunction">The function to call</param>
+        /// <param name="param">The parameter for the function</param>
+        /// <remarks>We pass in the function & params because the property may change on us while this function is at work</remarks>
+        private float[] GetBaseFunctionSamples(IBaseFunction baseFunction, byte param)
         {
             var result = new float[OSCILLATOR_SIZE];
 
-            var parameter = (BaseFunctionParameter + 0.5f) / 128.0f;
+            var parameter = (param + 0.5f) / 128.0f;
             // deal with rounding...
-            if (BaseFunctionParameter == 64)
+            if (param == 64)
                 parameter = 0.5f;
 
             // TODO: Function Modulation
@@ -174,8 +185,8 @@ namespace CorySignalGenerator.Oscillator
                 // TODO: Base Function Modulation
                 t = t - FloatMath.floor(t);
 
-                if (BaseFunction != null && !(BaseFunction is SineBaseFunction))
-                    result[i] = BaseFunction.Process(t, parameter);
+                if (BaseFunction != null && !(baseFunction is SineBaseFunction))
+                    result[i] = baseFunction.Process(t, parameter);
                 else
                     result[i] = -FloatMath.sin(2.0f * FloatMath.PI * i / OSCILLATOR_SIZE);
 
