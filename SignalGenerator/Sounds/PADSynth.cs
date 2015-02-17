@@ -149,18 +149,19 @@ namespace CorySignalGenerator.Sounds
         protected SampleSource GenerateSampleForFrequency(MidiNote note, float bwadjust, float[] profile)
         {
             var spectrum = GenerateSpectrumBandwidth((float)note.Frequency, profile, bwadjust);
-
+            var fftfreqs = spectrum.Select(x => Complex.FromPolarCoordinates(x, _random.NextDouble() * 2.0 * Math.PI)).ToArray();
+            fftfreqs[0] = Complex.Zero;
             // Do a big-ass FFT...  just one
-            MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(spectrum, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
+            MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(fftfreqs, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
 
-            var sample = spectrum.Select(x => (float)x.Real).ToArray();
+            var sample = fftfreqs.Select(x => (float)x.Real).ToArray();
             FrequencyUtils.RmsNormalize(sample, SampleSize);
 
             return new SampleSource(sample, (float)note.Frequency, note.Number, true, true, WaveFormat);
 
         }
 
-        public Complex[] GenerateSpectrumBandwidth(float basefreq, float[] profile, float bwadjust)
+        public float[] GenerateSpectrumBandwidth(float basefreq, float[] profile, float bwadjust)
         {
             var oscilsize = OscillatorGenerator.OSCILLATOR_SIZE;
             var spectrum = new float[SampleSize];
@@ -223,11 +224,7 @@ namespace CorySignalGenerator.Sounds
                 }
 
             }
-            return spectrum.Select(x =>
-            {
-                return Complex.FromPolarCoordinates(x, _random.NextDouble() * 2.0 * Math.PI);
-            }).ToArray();
-
+            return spectrum;
         }
 
         protected void BuildWaveTable()
