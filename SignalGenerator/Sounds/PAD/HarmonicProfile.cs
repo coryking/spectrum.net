@@ -77,7 +77,7 @@ namespace CorySignalGenerator.Sounds.PAD
             var basepar = FloatMath.pow(2.0f, (1.0f - BaseWidth / 127.0f) * 12.0f);
             var freqmult = FloatMath.floor(FloatMath.pow(2.0f, FrequencyMultiplier / 127.0f * 5.0f) + 0.000001f);
             var modfreq = FloatMath.floor(FloatMath.pow(2.0f, ModulatorFrequency / 127.0f * 5.0f) + 0.000001f);
-            var modpar1 = FloatMath.pow(BaseWidth / 127.0f, 4.0f) * 5.0f / FloatMath.sqrt(modfreq);
+            var modpar1 = FloatMath.pow(Str / 127.0f, 4.0f) * 5.0f / FloatMath.sqrt(modfreq);
 
             float amppar1 = FloatMath.pow(2.0f, FloatMath.pow(AmplitudeMultiplierParam1 / 127.0f, 2.0f) * 10.0f) - 0.999f;
             float amppar2 = (1.0f - AmplitudeMultiplierParam2 / 127.0f) * 0.998f + 0.001f;
@@ -106,7 +106,7 @@ namespace CorySignalGenerator.Sounds.PAD
                 x *= freqmult;
 
                 //do the modulation of the profile
-                x += FloatMath.sin(x_before_freq_mult * 3.1415926f * modfreq) * modpar1;
+                x += FloatMath.sin(x_before_freq_mult * FloatMath.PI * modfreq) * modpar1;
                 x = FloatMath.mod(x + 1000.0f, 1.0f) * 2.0f - 1.0f;
 
                 float f;
@@ -140,7 +140,7 @@ namespace CorySignalGenerator.Sounds.PAD
                         amp = FloatMath.exp(-(origx * origx) * 10.0f * amppar1);
                         break;
                     case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Sine:
-                        amp = 0.5f * (1.0f + FloatMath.cos(3.1415926f * origx * FloatMath.sqrt(amppar1 * 4.0f + 1.0f)));
+                        amp = 0.5f * (1.0f + FloatMath.cos(FloatMath.PI * origx * FloatMath.sqrt(amppar1 * 4.0f + 1.0f)));
                         break;
                     case CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType.Flat:
                         amp = 1.0f / (FloatMath.pow(origx * (amppar1 * 2.0f + 0.8f), 14.0f) + 1.0f);
