@@ -14,6 +14,11 @@
 
 
 
+        <converters:OffsetByteTypeConverter x:Key="OffsetByteTypeConverter"/>
+
+
+
+
         <converters:ByteTypeConverter x:Key="ByteTypeConverter"/>
 
 
@@ -133,8 +138,9 @@
 
         <DataTemplate x:Key="HarmonicValueSelector">
             <StackPanel Orientation="Vertical">
-                <Slider Style="{StaticResource VerticalSlider128Style}" Header="{Binding Index}" Height="125" Value="{Binding Magnitude, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" Margin="0,0,0,10" />
-                <Slider Style="{StaticResource VerticalSlider128Style}" Height="125" Value="{Binding Phase, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" />
+                <Slider Orientation="Vertical" Minimum="0" Maximum="127" StepFrequency="1"
+                        Header="{Binding Index}" Height="125" Value="{Binding Magnitude, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" Margin="0,0,0,10" />
+                <Slider Orientation="Vertical"   Minimum="0" Maximum="127" StepFrequency="1" Height="125" Value="{Binding Phase, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" />
             </StackPanel>
         </DataTemplate>
 
@@ -192,7 +198,7 @@
                         <osc:DiodeBaseFunction/>
                         <osc:SineBaseFunction/>
                     </ComboBox>
-                    <Slider Header="Base Function Param" Value="{Binding BaseFunctionParameter, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" Minimum="0" Maximum="127" TickFrequency="8" StepFrequency="1"/>
+                    <Slider Header="Base Function Param" Value="{Binding BaseFunctionParameter, ConverterParameter=-64, Converter={StaticResource OffsetByteTypeConverter}, Mode=TwoWay}" Minimum="-64" Maximum="63" TickFrequency="8" StepFrequency="1"/>
                 </StackPanel>
                 <ScrollViewer
             		HorizontalScrollBarVisibility="Visible"
@@ -301,8 +307,9 @@
 								ContentTemplate="{StaticResource AdsrTemplate}" VerticalContentAlignment="Stretch" BorderBrush="{StaticResource ControlGroupingBorderBrush}"    />
 
                     <StackPanel Orientation="Horizontal">
-                        <Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="100" Minimum="1" Value="{Binding Sampler.Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
-                        <Slider Header="Bandwidth Scale" Style="{StaticResource VerticalSliderStyle}" Minimum="-2" Maximum="2" Value="{Binding Sampler.BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+                        <Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="1000" Minimum="0" Value="{Binding Sampler.Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="50" />
+                        <ComboBox SelectedItem="{Binding Sampler.BandwidthScale, Mode=TwoWay}" Header="Bandwidth Scale" 
+                                  util:EnumHelper.Enum="CorySignalGenerator.Sounds.BandwidthScale, SignalGeneratorCore"/>
                         <Button Command="{Binding Sampler.BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"   />
                     </StackPanel>
                     <ContentControl 
@@ -314,6 +321,7 @@
 
                     <ContentControl 
 							VariableSizedWrapGrid.ColumnSpan="3"
+                            VariableSizedWrapGrid.RowSpan="2"
 							DataContext="{Binding Sampler.Profile}" Content="{Binding}" ContentTemplate="{StaticResource HarmonicProfileTemplate}" BorderBrush="{StaticResource ControlGroupingBorderBrush}" BorderThickness="1" />
                 </VariableSizedWrapGrid>
 

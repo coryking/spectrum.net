@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -148,5 +149,6 @@ namespace CorySignalGenerator.Oscillator
         {
             return String.Format("Harmonic.  Index {0}.  Magnitude: {1}.  Phase: {2}", Index,Magnitude,Phase);
         }
+
     }
 }

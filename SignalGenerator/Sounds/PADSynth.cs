@@ -20,7 +20,62 @@ using CorySignalGenerator.Sounds.PAD;
 namespace CorySignalGenerator.Sounds
 {
 
+    public enum BandwidthScale
+    {
+        Normal = 0,
+        EqualHz = 1,
+        Quarter = 2,
+        Half = 3,
+        ThreeQuarters = 4,
+        OneFifty = 5,
+        Double = 6,
+        InvHalf = 7,
+    }
 
+    public static class BandwidthScaleExtensions
+    {
+        /// <summary>
+        /// Translate the <see cref="BandwidthScale"/> into a float.
+        /// </summary>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static float GetScale(this BandwidthScale scale)
+        {
+            float bwscale = 0f;
+            switch (scale)
+            {
+                    
+                case BandwidthScale.Normal:
+                    bwscale=1.0f;
+                    break;
+                case BandwidthScale.EqualHz:
+                    bwscale=0f;
+                    break;
+                case BandwidthScale.Quarter:
+                    bwscale = 0.25f;
+                    break;
+                case BandwidthScale.Half:
+                    bwscale = 0.5f;
+                    break;
+                case BandwidthScale.ThreeQuarters:
+                    bwscale = 0.75f;
+                    break;
+                case BandwidthScale.OneFifty:
+                    bwscale = 1.5f;
+                    break;
+                case BandwidthScale.Double:
+                    bwscale = 2.0f;
+                    break;
+                case BandwidthScale.InvHalf:
+                    bwscale = -0.5f;
+                    break;
+                default:
+                    bwscale = 1.0f;
+                    break;
+            }
+            return bwscale;
+        }
+    }
 
     public class PADSynth : NoteSampler
     {
@@ -113,8 +168,8 @@ namespace CorySignalGenerator.Sounds
             var harmonics = Oscillator.GetFrequencies(basefreq);
             FrequencyUtils.NormalizeMax(harmonics, oscilsize / 2);
 
-            var power = BandwidthScale; // This is not right but for now we will role with it
-            var bandwidthcents = Bandwidth; // this too is not right... should somehow get converted into cents
+            var power = BandwidthScale.GetScale(); // This is not right but for now we will role with it
+            var bandwidthcents = getRealBandwidth();
             for (int nh = 1; nh < oscilsize / 2; nh++)
             {
                 var realfreq = HarmonicOffsetMaker.GetPosition(nh) * basefreq;
@@ -139,7 +194,7 @@ namespace CorySignalGenerator.Sounds
                     var cfreq = (int)(realfreq / (WaveFormat.SampleRate * 0.5f) * SampleSize) - ibw / 2;
                     for (int i = 0; i < ibw; i++)
                     {
-                        var src = Convert.ToInt32(i * rap * rap);
+                        var src = Convert.ToInt32(FloatMath.floor(i * rap * rap));
                         var spfreq = i + cfreq;
                         if (spfreq < 0)
                             continue;
@@ -162,7 +217,7 @@ namespace CorySignalGenerator.Sounds
                             continue;
                         if (spfreq >= SampleSize - 1)
                             break;
-                        spectrum[spfreq] += amp * profile[i] * rap * (1.0f + fspfreq);
+                        spectrum[spfreq] += amp * profile[i] * rap * (1.0f - fspfreq);
                         spectrum[spfreq + 1] += amp * profile[i] * rap * fspfreq;
                     }
                 }
@@ -251,9 +306,21 @@ namespace CorySignalGenerator.Sounds
         public float Bandwidth { get; set; }
 
         /// <summary>
+        ///  Compute the real bandwidth in cents and returns it
+        /// </summary>
+        /// <returns></returns>
+        private float getRealBandwidth()
+        {
+            var result = FloatMath.pow(Bandwidth / 1000.0f, 1.1f);
+            result = FloatMath.pow(10.0f, result * 4.0f) * 0.25f;
+            return result;
+        }
+
+
+        /// <summary>
         /// how the bandwidth increase on the higher harmonics (recomanded value: 1.0)
         /// </summary>
-        public float BandwidthScale { get; set; }
+        public BandwidthScale BandwidthScale { get; set; }
 
         /// <summary>
         /// Gets the size of the sample (must be a power of two)

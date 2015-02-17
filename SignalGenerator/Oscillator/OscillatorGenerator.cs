@@ -15,7 +15,7 @@ namespace CorySignalGenerator.Oscillator
         /// <summary>
         ///  Max number of user-adjustable harmonics
         /// </summary>
-        public const int MAX_HARMONICS = 24;
+        public const int MAX_HARMONICS = 128;
         /// <summary>
         ///  Size of the oscillator sample
         /// </summary>
@@ -72,16 +72,17 @@ namespace CorySignalGenerator.Oscillator
                 harmonics[i] = Harmonics[i].ToComplex();
             }
 
+
             PrepareFFTFrequencies();
             if(BaseFunction == null || BaseFunction is SineBaseFunction)
             {
                 Debug.WriteLine("Making FFT Frequencies for SineBaseFunction");
                 for (int i = 0; i < MAX_HARMONICS-1; i++)
                 {
-                    var complex = Harmonics[i].ToComplex();
+                    var harmonic = harmonics[i];
                     // I'm kind of positive there is a function built into Complex that does this...
-                    var real = -complex.Magnitude * Math.Sin(complex.Phase * (i + 1.0)) / 2.0;
-                    var imaginary = complex.Magnitude * Math.Cos(complex.Phase * (i + 1.0)) / 2.0;
+                    var real = -harmonic.Magnitude * Math.Sin(harmonic.Phase * (i + 1.0)) / 2.0;
+                    var imaginary = harmonic.Magnitude * Math.Cos(harmonic.Phase * (i + 1.0)) / 2.0;
 
                     FFTFrequencies[i + 1] = new Complex(real, imaginary);
                 }
@@ -93,13 +94,14 @@ namespace CorySignalGenerator.Oscillator
                 {
                     if (Harmonics[j].Magnitude == 64)
                         continue;
-                    for (int i = 0; i < OSCILLATOR_SIZE/2; i++)
+                    for (int i = 1; i < OSCILLATOR_SIZE/2; i++)
                     {
                         var k = i * (j + 1);
                         if (k >= OSCILLATOR_SIZE / 2)
                             break;
 
                         var orig = harmonics[j];
+
                         var rotated = Complex.FromPolarCoordinates(orig.Magnitude, orig.Phase * k);
                         FFTFrequencies[k] += BaseFunctionFFTFrequencies[i] * rotated;
                     }
@@ -122,7 +124,7 @@ namespace CorySignalGenerator.Oscillator
        
         private void PrepareFFTFrequencies()
         {
-            Debug.WriteLine("Preparing FFT Requencies");
+            Debug.WriteLine("Preparing FFT Fequencies");
             if (FFTFrequencies == null)
                 FFTFrequencies = new Complex[OSCILLATOR_SIZE];
             else
@@ -224,8 +226,8 @@ namespace CorySignalGenerator.Oscillator
                 Harmonics.Add(harmonic);
             }
 
-            Debug.WriteLine("About to do prop changed");
-            OnPropertyChanged("Harmonics");
+            //Debug.WriteLine("About to do prop changed");
+            //OnPropertyChanged("Harmonics");
             Debug.WriteLine("Done with prop changed");
         }
 
