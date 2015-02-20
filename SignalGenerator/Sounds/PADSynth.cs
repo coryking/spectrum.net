@@ -81,18 +81,21 @@ namespace CorySignalGenerator.Sounds
     {
         private Random _random;
         private readonly int[] notesToSample = new int[]{
-            9, // octave -1
-            21, 23, // octave 0
-            24, 25, 27, 31, 35, // octave 1
-            36, 38, 40, 41, 43, 45, 47, // octave 2
-            48, 50, 52, 53, 55, 57, 59, // octave 3
-            60, 62, 64, 65, 67, 69, 71, // octave 4
-            72, 74, 76, 77, 79, 81, 83, // octave 5
-            84, 86, 88, 89, 91, 93, 95, // octave 6
-            96, 98, 101, 105, // octave 7
-            108, 116, // octave 8
-            120, 127 // octave 9
+            64, 81
         };
+        //private readonly int[] notesToSample = new int[]{
+        //    9, // octave -1
+        //    21, 23, // octave 0
+        //    24, 25, 27, 31, 35, // octave 1
+        //    36, 38, 40, 41, 43, 45, 47, // octave 2
+        //    48, 50, 52, 53, 55, 57, 59, // octave 3
+        //    60, 62, 64, 65, 67, 69, 71, // octave 4
+        //    72, 74, 76, 77, 79, 81, 83, // octave 5
+        //    84, 86, 88, 89, 91, 93, 95, // octave 6
+        //    96, 98, 101, 105, // octave 7
+        //    108, 116, // octave 8
+        //    120, 127 // octave 9
+        //};
 
         public PADSynth(WaveFormat format)
         {
@@ -101,7 +104,7 @@ namespace CorySignalGenerator.Sounds
             WaveFormat = format;
             WaveTable = new ConcurrentDictionary<MidiNote, SampleSource>();
             BuildWaveTableCommand = new RelayCommand(BuildWaveTableCommandExecute);
-            SampleSize = (int)Math.Pow(2, 16);
+            SampleSize = (int)Math.Pow(2, 16); // was 16
         }
 
         protected override NAudio.Wave.ISampleProvider GenerateNote(Models.MidiNote note)
@@ -148,9 +151,33 @@ namespace CorySignalGenerator.Sounds
 
         protected SampleSource GenerateSampleForFrequency(MidiNote note, float bwadjust, float[] profile)
         {
-            var spectrum = GenerateSpectrumBandwidth((float)note.Frequency, profile, bwadjust);
-            var fftfreqs = spectrum.Select(x => Complex.FromPolarCoordinates(x, _random.NextDouble() * 2.0 * Math.PI)).ToArray();
-            fftfreqs[0] = Complex.Zero;
+            var spectrumSize = SampleSize/2;
+            var spectrum = GenerateSpectrumBandwidth((float)note.Frequency, spectrumSize, profile, bwadjust);
+            var fftfreqs = new Complex[SampleSize];
+            
+            // do not include the first spectrum sample.
+            for (int i = 1; i < spectrumSize; i++)
+            {
+                fftfreqs[i] = Complex.FromPolarCoordinates(spectrum[i], _random.NextDouble() * 2.0 * Math.PI);
+            }
+            
+#if SHOW_SPECTRUM
+            Debug.WriteLine("Spectrum BW---------------------");
+            foreach (var item in spectrum)
+            {
+                Debug.WriteLine(item);
+                
+            }
+            Debug.WriteLine("Spectrum BW---------------------");
+
+            Debug.WriteLine("fft freqs BW---------------------");
+            foreach (var item in fftfreqs)
+            {
+                Debug.WriteLine(item.Real);
+
+            }
+            Debug.WriteLine("fft freqs BW---------------------");
+#endif
             // Do a big-ass FFT...  just one
             MathNet.Numerics.IntegralTransforms.Fourier.Radix2Inverse(fftfreqs, MathNet.Numerics.IntegralTransforms.FourierOptions.Default);
 
@@ -161,11 +188,11 @@ namespace CorySignalGenerator.Sounds
 
         }
 
-        public float[] GenerateSpectrumBandwidth(float basefreq, float[] profile, float bwadjust)
+        public float[] GenerateSpectrumBandwidth(float basefreq, int spectrumSize, float[] profile, float bwadjust)
         {
             var oscilsize = OscillatorGenerator.OSCILLATOR_SIZE;
-            var spectrum = new float[SampleSize];
 
+            var spectrum = new float[spectrumSize];
             var harmonics = Oscillator.GetFrequencies(basefreq);
             FrequencyUtils.NormalizeMax(harmonics, oscilsize / 2);
 
@@ -184,7 +211,7 @@ namespace CorySignalGenerator.Sounds
                 var bw =
                     ((FloatMath.pow(2.0f, bandwidthcents / 1200.0f) - 1.0f) * basefreq / bwadjust)
                     * FloatMath.pow(realfreq / basefreq, power);
-                var ibw = (int)((bw / (WaveFormat.SampleRate * 0.5f) * SampleSize)) + 1;
+                var ibw = (int)((bw / (WaveFormat.SampleRate * 0.5f) * spectrumSize)) + 1;
 
                 float amp = harmonics[nh - 1];
 
@@ -192,14 +219,14 @@ namespace CorySignalGenerator.Sounds
                 if (ibw > profile.Length)
                 {
                     var rap = FloatMath.sqrt((float)profile.Length / (float)ibw);
-                    var cfreq = (int)(realfreq / (WaveFormat.SampleRate * 0.5f) * SampleSize) - ibw / 2;
+                    var cfreq = (int)(realfreq / (WaveFormat.SampleRate * 0.5f) * spectrumSize) - ibw / 2;
                     for (int i = 0; i < ibw; i++)
                     {
                         var src = Convert.ToInt32(FloatMath.floor(i * rap * rap));
                         var spfreq = i + cfreq;
                         if (spfreq < 0)
                             continue;
-                        if (spfreq >= SampleSize)
+                        if (spfreq >= spectrumSize)
                             break;
 
                         spectrum[spfreq] += amp + profile[src] * rap;
@@ -208,7 +235,7 @@ namespace CorySignalGenerator.Sounds
                 else
                 {
                     var rap = FloatMath.sqrt((float)ibw / (float)profile.Length);
-                    var ibasefreq = realfreq / (WaveFormat.SampleRate * 0.5f) * SampleSize;
+                    var ibasefreq = realfreq / (WaveFormat.SampleRate * 0.5f) * spectrumSize;
                     for (int i = 0; i < profile.Length; i++)
                     {
                         var idfreq = (i / (float)profile.Length - 0.5f) * ibw;
@@ -216,7 +243,7 @@ namespace CorySignalGenerator.Sounds
                         var fspfreq = FloatMath.mod((float)idfreq + ibasefreq, 1.0f);
                         if (spfreq <= 0)
                             continue;
-                        if (spfreq >= SampleSize - 1)
+                        if (spfreq >= spectrumSize - 1)
                             break;
                         spectrum[spfreq] += amp * profile[i] * rap * (1.0f - fspfreq);
                         spectrum[spfreq + 1] += amp * profile[i] * rap * fspfreq;
@@ -237,11 +264,14 @@ namespace CorySignalGenerator.Sounds
             
             Debug.WriteLine("Min Freq: {0}, Max Freq: {1}", notesToGen.Min(x => x.Frequency), notesToGen.Max(x => x.Frequency));
 
-            Parallel.ForEach(notesToGen, (note) =>
+            Action<MidiNote> loopFunc =  (note) =>
             {
                 var sample = GenerateSampleForFrequency(note, bwadjust, profile);
                 WaveTable.AddOrUpdate(note, sample, (k,v) => { return sample; });
-            });
+            };
+
+            notesToGen.ForEach(loopFunc);
+            //Parallel.ForEach(notesToGen,loopFunc);
         }
         #region Relay Commands
         public RelayCommand BuildWaveTableCommand { get; set; }
