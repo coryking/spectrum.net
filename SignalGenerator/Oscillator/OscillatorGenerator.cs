@@ -111,7 +111,7 @@ namespace CorySignalGenerator.Oscillator
 
                         var orig = harmonics[j];
 
-                        var rotated = Complex.FromPolarCoordinates(orig.Magnitude, orig.Phase * k);
+                        var rotated = FrequencyUtils.FromPolar(orig.Magnitude, orig.Phase * k);
                         FFTFrequencies[k] += BaseFunctionFFTFrequencies[i] * rotated;
                     }
                     

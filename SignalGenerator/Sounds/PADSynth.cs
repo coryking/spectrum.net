@@ -158,9 +158,9 @@ namespace CorySignalGenerator.Sounds
             // do not include the first spectrum sample.
             for (int i = 1; i < spectrumSize; i++)
             {
-                fftfreqs[i] = Complex.FromPolarCoordinates(spectrum[i], _random.NextDouble() * 2.0 * Math.PI);
+                fftfreqs[i] = FrequencyUtils.FromPolar(spectrum[i], _random.NextDouble() * 2.0 * Math.PI);
             }
-            
+                        
 #if SHOW_SPECTRUM
             Debug.WriteLine("Spectrum BW---------------------");
             foreach (var item in spectrum)
@@ -229,7 +229,7 @@ namespace CorySignalGenerator.Sounds
                         if (spfreq >= spectrumSize)
                             break;
 
-                        spectrum[spfreq] += amp + profile[src] * rap;
+                        spectrum[spfreq] += amp * profile[src] * rap;
                     }
                 }
                 else

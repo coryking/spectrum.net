@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorySignalGenerator.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -143,7 +144,7 @@ namespace CorySignalGenerator.Oscillator
                 magnitude = 0.0f;
 
 
-            return Complex.FromPolarCoordinates(magnitude, phase);
+            return FrequencyUtils.FromPolar(magnitude, phase);
         }
         public override string ToString()
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics;
 
 namespace CorySignalGenerator.Utils
 {
@@ -17,9 +18,23 @@ namespace CorySignalGenerator.Utils
 
         }
 
-        public static double Normal(this Complex complex)
+        /// <summary>
+        /// Take a phase and maginitude and turn it into a complex number.  Do it the way the c code does it
+        /// </summary>
+        /// <param name="rho">magnitude</param>
+        /// <param name="theta">phase</param>
+        /// <returns></returns>
+        public static Complex FromPolar(double rho, double theta)
         {
-            return Math.Pow(complex.Magnitude, 2.0);
+            var x = rho * Math.Cos(theta);
+            if (x == Double.NaN)
+                x = 0;
+
+            var y = rho * Math.Sin(theta);
+            if (y == Double.NaN)
+                y = 0;
+
+            return new Complex(x, y);
         }
 
         /// <summary>
@@ -34,15 +49,15 @@ namespace CorySignalGenerator.Utils
                 return;
 
             var sum = 0.0;
-            for (int i = 0; i < length; i++)
+            for (int i = 1; i < length; i++)
             {
-                sum += frequencies[i].Normal(); 
+                sum += frequencies[i].MagnitudeSquared(); 
             }
             if (sum < 0.000001)
                 return; // everything is just about zero.  Nothing to do...
 
             var gain = 1.0 / Math.Sqrt(sum);
-            for (int i = 0; i < length; i++)
+            for (int i = 1; i < length; i++)
             {
                 frequencies[i] *= gain;
             }
@@ -55,10 +70,10 @@ namespace CorySignalGenerator.Utils
                 rms += sample[i] * sample[i];
 
             rms = Math.Sqrt(rms);
-            if (rms < 0.000001f)
+            if (rms < 0.000001)
                 rms = 1.0;
 
-            rms *= Math.Sqrt(262144.0f / length);//262144=2^18
+            rms *= Math.Sqrt(262144.0 / length);//262144=2^18
 
             for (int i = 0; i < length; i++)
             {
