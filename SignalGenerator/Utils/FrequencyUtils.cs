@@ -55,7 +55,7 @@ namespace CorySignalGenerator.Utils
                 rms += sample[i] * sample[i];
 
             rms = Math.Sqrt(rms);
-            if (rms < 000001)
+            if (rms < 0.000001f)
                 rms = 1.0;
 
             rms *= Math.Sqrt(262144.0f / length);//262144=2^18
