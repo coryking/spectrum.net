@@ -22,8 +22,14 @@ namespace CorySynthUI.ViewModel
 
         public SequencerViewModel(WaveFormat format)
         {
-            MidiChannel = new Channel(0, format);
+            VoicePanelNavItems = new ObservableCollection<string>()
+            {
+                "Voice",
+                "Effects"
+            };
 
+            MidiChannel = new Channel(0, format);
+            MidiChannel.PropertyChanged += MidiChannel_PropertyChanged;
             WaveOut = new WaveOutPlayer(Latency);
             WaveOut.PlaybackStopped +=WaveOut_PlaybackStopped;
             WaveOut.PropertyChanged += WaveOut_PropertyChanged;
@@ -32,6 +38,23 @@ namespace CorySynthUI.ViewModel
             MidiDevice.MessageReceived += MidiDevice_MessageReceived;
 
             InitalizeRelayCommands();
+        }
+
+        void MidiChannel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedVoice")
+            {
+                if(MidiChannel.SelectedVoice is SamplerVoice && ((SamplerVoice)MidiChannel.SelectedVoice).Sampler is PADSynth)
+                {
+                    if (!VoicePanelNavItems.Contains("Oscillator"))
+                        VoicePanelNavItems.Add("Oscillator");
+                }
+                else
+                {
+                    if (VoicePanelNavItems.Contains("Oscillator"))
+                        VoicePanelNavItems.Remove("Oscillator");
+                }
+            }
         }
 
         void WaveOut_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -102,7 +125,7 @@ namespace CorySynthUI.ViewModel
 
         #region Properties
 
-
+        public ObservableCollection<String> VoicePanelNavItems { get; private set; }
         
         #region Property SelectedVoice
         private IVoice _selectedVoice = null;

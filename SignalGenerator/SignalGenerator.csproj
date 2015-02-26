@@ -113,6 +113,10 @@
     <Compile Include="Dsp\DelayLine.cs" />
     <Compile Include="Dsp\DynamicConvolver.cs" />
     <Compile Include="Dsp\EqFilter.cs" />
+    <Compile Include="Oscillator\BaseFunctions.cs" />
+    <Compile Include="Oscillator\Harmonic.cs" />
+    <Compile Include="Oscillator\IBaseFunction.cs" />
+    <Compile Include="Oscillator\OscillatorGenerator.cs" />
     <Compile Include="Dsp\PADSynthHarmonicPositions.cs" />
     <Compile Include="Filters\ChorusEffect.cs" />
     <Compile Include="Filters\FlangerEffect.cs" />
@@ -124,7 +128,7 @@
     <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="Reverb\FFTConvolver.cs" />
     <Compile Include="Dsp\LinearInterpolator.cs" />
-    <Compile Include="Dsp\PADsynth.cs" />
+    <Compile Include="Dsp\LegacyPADsynth.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Filters\DynamicConvolvingFilter.cs" />
     <Compile Include="Filters\Effect.cs" />
@@ -181,6 +185,8 @@
     <Compile Include="Sequencer\SamplerVoice.cs" />
     <Compile Include="Sequencer\VoiceController.cs" />
     <Compile Include="Sounds\PadSound.cs" />
+    <Compile Include="Sounds\PADSynth.cs" />
+    <Compile Include="Sounds\PAD\HarmonicProfile.cs" />
     <Compile Include="Sounds\SignalGeneratedSound.cs" />
     <Compile Include="Models\MidiNotes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -191,6 +197,7 @@
     <Compile Include="Utils\BasicCircularBuffer.cs" />
     <Compile Include="Utils\CircularBuffer.cs" />
     <Compile Include="Utils\FastMath.cs" />
+    <Compile Include="Utils\FloatMath.cs" />
     <Compile Include="Utils\FrequencyUtils.cs" />
     <Compile Include="Utils\Unison.cs" />
     <Compile Include="Utils\VectorMath.cs" />

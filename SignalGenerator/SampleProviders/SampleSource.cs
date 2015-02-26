@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using CorySignalGenerator.Models;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,18 @@ namespace CorySignalGenerator.SampleProviders
             this.Length = length;
             this.IsLoopable = isLoopable;
             this.IsRandomStart = isRandomStart;
+        }
+
+        /// <summary>
+        /// Create an empty sample source
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public static SampleSource CreateEmpty(WaveFormat format, MidiNote note)
+        {
+            float[] emptyData = new float[10];
+
+            return new SampleSource(emptyData, (float)note.Frequency, note.Number, false, false, format);
         }
 
         /// <summary>

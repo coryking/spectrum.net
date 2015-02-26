@@ -115,11 +115,11 @@
     <Compile Include="..\SignalGenerator\Dsp\EqFilter.cs">
       <Link>Dsp\EqFilter.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Dsp\LegacyPADsynth.cs">
+      <Link>Dsp\LegacyPADsynth.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Dsp\LinearInterpolator.cs">
       <Link>Dsp\LinearInterpolator.cs</Link>
-    </Compile>
-    <Compile Include="..\SignalGenerator\Dsp\PADsynth.cs">
-      <Link>Dsp\PADsynth.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Dsp\PADSynthHarmonicPositions.cs">
       <Link>Dsp\PADSynthHarmonicPositions.cs</Link>
@@ -201,6 +201,18 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Models\RelayCommand.cs">
       <Link>Models\RelayCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Oscillator\BaseFunctions.cs">
+      <Link>Oscillator\BaseFunctions.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Oscillator\Harmonic.cs">
+      <Link>Oscillator\Harmonic.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Oscillator\IBaseFunction.cs">
+      <Link>Oscillator\IBaseFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Oscillator\OscillatorGenerator.cs">
+      <Link>Oscillator\OscillatorGenerator.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Reverb\DirectConvolver.cs">
       <Link>Reverb\DirectConvolver.cs</Link>
@@ -331,6 +343,12 @@
     <Compile Include="..\SignalGenerator\Sounds\PadSound.cs">
       <Link>Sounds\PadSound.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sounds\PADSynth.cs">
+      <Link>Sounds\PADSynth.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Sounds\PAD\HarmonicProfile.cs">
+      <Link>Sounds\PAD\HarmonicProfile.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sounds\SignalGeneratedSound.cs">
       <Link>Sounds\SignalGeneratedSound.cs</Link>
     </Compile>
@@ -342,6 +360,9 @@
     </Compile>
     <Compile Include="..\SignalGenerator\Utils\FastMath.cs">
       <Link>Utils\FastMath.cs</Link>
+    </Compile>
+    <Compile Include="..\SignalGenerator\Utils\FloatMath.cs">
+      <Link>Utils\FloatMath.cs</Link>
     </Compile>
     <Compile Include="..\SignalGenerator\Utils\FrequencyUtils.cs">
       <Link>Utils\FrequencyUtils.cs</Link>

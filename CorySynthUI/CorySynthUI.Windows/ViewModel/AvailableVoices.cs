@@ -34,6 +34,7 @@ namespace CorySynthUI.ViewModel
                 {
                     new AvailableType("Pad Sound",typeof(PadSound)),
                     new AvailableType("Synth Sound",typeof(SignalGeneretedSound)),
+                    new AvailableType("Pad Synth", typeof(PADSynth)),
                 };
             }
         }

@@ -22,6 +22,8 @@ namespace CorySynthUI.ViewModel
         /// </summary>
         public DataTemplate SynthSoundDataTemplate { get; set; }
 
+        public DataTemplate PadSynthDataTemplate { get; set; }
+
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
             // All we know how to handle is the SamplerVoice right now...
@@ -36,6 +38,9 @@ namespace CorySynthUI.ViewModel
 
             if (samplerType is SignalGeneretedSound)
                 return SynthSoundDataTemplate;
+
+            if (samplerType is PADSynth)
+                return PadSynthDataTemplate;
 
             return base.SelectTemplateCore(item, container);
         }

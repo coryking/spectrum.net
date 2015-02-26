@@ -5,12 +5,24 @@
         xmlns:util="using:CorySignalGenerator.Utils"
     xmlns:harmonics="using:CorySignalGenerator.Dsp.Harmonics"
     xmlns:controls="using:CorySynthUI.Controls"
+    xmlns:osc="using:CorySignalGenerator.Oscillator"
+    xmlns:converters="using:CorySynthUI.Converters"
     xmlns:local="using:CorySynthUI">
 
     <Application.Resources>
 
 
-        
+
+
+        <converters:OffsetByteTypeConverter x:Key="OffsetByteTypeConverter"/>
+
+
+
+
+        <converters:ByteTypeConverter x:Key="ByteTypeConverter"/>
+
+
+
 
         <Style TargetType="controls:HeaderedStackPanel" x:Key="headeredStackPanelStyle">
             <Setter Property="Orientation" Value="Horizontal"/>
@@ -33,11 +45,6 @@
             </Setter>
         </Style>
         <SolidColorBrush x:Key="SliderForeground" Color="#FFC766C7"/>
-        <Style x:Key="VerticalSliderStyle" TargetType="Slider">
-            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
-            <Setter Property="TickPlacement" Value="Outside"/>
-            <Setter Property="Orientation" Value="Vertical"/>
-        </Style>
         <SolidColorBrush x:Key="SecondarySelectedItemBackground" Color="#FFdde397"/>
 
         <SolidColorBrush x:Key="SecondaryControlBackground" Color="#FF5B611A"/>
@@ -112,8 +119,29 @@
             <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
         </Style>
 
+        <Style x:Key="VerticalSliderStyle" TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource SliderForeground}"/>
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="MinHeight" Value="150"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style TargetType="Slider" BasedOn="{StaticResource VerticalSliderStyle}" x:Key="VerticalSlider128Style">
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="127"/>
+            <Setter Property="TickFrequency" Value="8"/>
+            <Setter Property="StepFrequency" Value="1"/>
+        </Style>
+
         <DataTemplate x:Key="AmplitudeValueSelector">
-           <Slider Style="{StaticResource VerticalSliderStyle}" Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Minimum="-1" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
+            <Slider Style="{StaticResource VerticalSliderStyle}" Header="{Binding Index}" Height="200" Value="{Binding Value, Mode=TwoWay}" Minimum="-1" Maximum="1" StepFrequency="0.01" TickFrequency="0.1" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HarmonicValueSelector">
+            <StackPanel Orientation="Vertical">
+                <Slider Orientation="Vertical" Minimum="0" Maximum="127" StepFrequency="1"
+                        Header="{Binding Index}" Height="125" Value="{Binding Magnitude, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" Margin="0,0,0,10" />
+                <Slider Orientation="Vertical"   Minimum="0" Maximum="127" StepFrequency="1" Height="125" Value="{Binding Phase, Converter={StaticResource ByteTypeConverter}, Mode=TwoWay}" />
+            </StackPanel>
         </DataTemplate>
 
 
@@ -158,8 +186,147 @@
                 </StackPanel>
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Key="OscillatorTemplate">
+            <StackPanel  Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Width="1024">
+                    <ComboBox Header="Base Function" x:Name="BaseFunctionBox" 
+            			SelectedItem="{Binding BaseFunction, Mode=TwoWay}"
+            			DisplayMemberPath="Name" SelectedIndex="0" VerticalAlignment="Top"
+                                      >
+                        <osc:PowerBaseFunction/>
+                        <osc:GaussBaseFunction/>
+                        <osc:DiodeBaseFunction/>
+                        <osc:SineBaseFunction/>
+                    </ComboBox>
+                    <Slider Header="Base Function Param" Value="{Binding BaseFunctionParameter, ConverterParameter=-64, Converter={StaticResource OffsetByteTypeConverter}, Mode=TwoWay}" Minimum="-64" Maximum="63" TickFrequency="8" StepFrequency="1"/>
+                </StackPanel>
+                <ScrollViewer
+            		HorizontalScrollBarVisibility="Visible"
+				>
+                    <ItemsControl ItemsSource="{Binding Harmonics}"
+            			HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="1024" ItemTemplate="{StaticResource HarmonicValueSelector}"
+				>
 
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="HarmonicOffsetMakerTemplate">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Header="Overtones Position" x:Name="PadHarmonicTypes" 
+                                      SelectedValue="{Binding HarmonicOffsetMaker, Mode=TwoWay}"
+                                      DisplayMemberPath="Name" 
+									  SelectedIndex="0" 
+									  VerticalAlignment="Top"
+                                      >
+                    <harmonics:HarmonicHarmonicPosition/>
+                    <harmonics:LinearHarmonic/>
+                    <harmonics:PowerHarmonicPosition/>
+                    <harmonics:PowerLHarmonicPosition/>
+                    <harmonics:PowerUHarmonicPosition/>
+                    <harmonics:ShiftHarmonicPosition/>
+                    <harmonics:ShiftLHarmonicPosition/>
+                    <harmonics:ShiftUHarmonicPosition/>
+                    <harmonics:SineHarmonicPosition/>
+                </ComboBox>
+                <Slider x:Name="Param1" Value="{Binding HarmonicOffsetMaker.Parameter1, Mode=TwoWay}" Header="Par 1" Style="{StaticResource VerticalSlider128Style}"/>
+                <Slider x:Name="Param2" Value="{Binding HarmonicOffsetMaker.Parameter2, Mode=TwoWay}" Header="Par 2" Style="{StaticResource VerticalSlider128Style}" />
+                <Slider x:Name="Param3" Value="{Binding HarmonicOffsetMaker.Parameter3, Mode=TwoWay}" Header="Force H" Style="{StaticResource VerticalSlider128Style}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="HarmonicProfileTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                </Grid>
+                <ComboBox Grid.Row="0" SelectedItem="{Binding BaseType, Mode=TwoWay}" 
+					util:EnumHelper.Enum="CorySignalGenerator.Sounds.PAD.FrequencyBaseType, SignalGeneratorCore" Header="Base Type" SelectedIndex="0" VerticalAlignment="Top"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Slider Header="Width" Style="{StaticResource VerticalSlider128Style}" Value="{Binding BaseWidth, Mode=TwoWay}"/>
+                    <Slider Header="Freq. Multiplier" Style="{StaticResource VerticalSlider128Style}" Value="{Binding FrequencyMultiplier, Mode=TwoWay}"/>
+                    <Slider Header="Str" Style="{StaticResource VerticalSlider128Style}" Value="{Binding Str, Mode=TwoWay}"/>
+                    <Slider Header="S. Freq" Style="{StaticResource VerticalSlider128Style}" Value="{Binding ModulatorFrequency, Mode=TwoWay}"/>
+                    <Slider Header="Size" Style="{StaticResource VerticalSlider128Style}" Value="{Binding Size, Mode=TwoWay}"/>
+                </StackPanel>
+                <Border Style="{StaticResource ControlGroupingBorderStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                            <ComboBox Header="Amp. Multiplier" SelectedItem="{Binding AmplitudeMultiplierType, Mode=TwoWay}" SelectedIndex="0" util:EnumHelper.Enum="CorySignalGenerator.Sounds.PAD.AmplitudeMultiplierType, SignalGeneratorCore"/>
+                            <ComboBox Header="Amp. Mode" SelectedItem="{Binding AmplitudeMultiplerMode, Mode=TwoWay}" SelectedIndex="0" util:EnumHelper.Enum="CorySignalGenerator.Sounds.PAD.AmplitudeMultiplerMode, SignalGeneratorCore"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Orientation="Horizontal">
+                            <Slider Style="{StaticResource VerticalSlider128Style}" Value="{Binding AmplitudeMultiplierParam1, Mode=TwoWay}" Header="Parameter 1"/>
+                            <Slider Style="{StaticResource VerticalSlider128Style}" Value="{Binding AmplitudeMultiplierParam2, Mode=TwoWay}" Header="Parameter 2"/>
+                        </StackPanel>
+                        <CheckBox Content="Auto Scale" IsChecked="{Binding AutoScale, Mode=TwoWay}" Grid.Row="1" Grid.Column="0"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
 
+        </DataTemplate>
+
+        <DataTemplate x:Key="PadSynthTemplate">
+
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Slider
+					Header="Volume"
+						Minimum="0" Maximum="1" Value="{Binding Volume, Mode=TwoWay}" StepFrequency="0.01" 
+						Style="{StaticResource VerticalSliderStyle}" 
+						Grid.RowSpan="2"
+						 />
+                <VariableSizedWrapGrid Grid.Column="1" MaximumRowsOrColumns="3" Orientation="Horizontal" >
+                    <ContentControl x:Name="contentControl"
+								VariableSizedWrapGrid.ColumnSpan="1"
+								BorderThickness="1"
+								Content="{Binding Envelope}"
+								ContentTemplate="{StaticResource AdsrTemplate}" VerticalContentAlignment="Stretch" BorderBrush="{StaticResource ControlGroupingBorderBrush}"    />
+
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="1000" Minimum="0" Value="{Binding Sampler.Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="50" />
+                        <ComboBox SelectedItem="{Binding Sampler.BandwidthScale, Mode=TwoWay}" Header="Bandwidth Scale" 
+                                  util:EnumHelper.Enum="CorySignalGenerator.Sounds.BandwidthScale, SignalGeneratorCore"/>
+                        <Button Command="{Binding Sampler.BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"   />
+                    </StackPanel>
+                    <ContentControl 
+								VariableSizedWrapGrid.ColumnSpan="1"
+								DataContext="{Binding Sampler}"
+								Content="{Binding}" 
+								x:Name="HarmonicOffsetMakerControl" 
+								ContentTemplate="{StaticResource HarmonicOffsetMakerTemplate}" BorderBrush="{StaticResource ControlGroupingBorderBrush}" BorderThickness="1" />
+
+                    <ContentControl 
+							VariableSizedWrapGrid.ColumnSpan="3"
+                            VariableSizedWrapGrid.RowSpan="2"
+							DataContext="{Binding Sampler.Profile}" Content="{Binding}" ContentTemplate="{StaticResource HarmonicProfileTemplate}" BorderBrush="{StaticResource ControlGroupingBorderBrush}" BorderThickness="1" />
+                </VariableSizedWrapGrid>
+
+            </Grid>
+        </DataTemplate>
 
         <DataTemplate x:Key="PadSoundTemplate">
 
@@ -187,48 +354,46 @@
 						ContentTemplate="{StaticResource AdsrTemplate}" Grid.Column="1" VerticalContentAlignment="Stretch" />
                 <Border DataContext="{Binding Sampler}" Style="{StaticResource ControlGroupingBorderStyle}" Grid.Column="2">
 
-                	<StackPanel Orientation="Horizontal">
-                		<Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="100" Minimum="1" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
-                		<Slider Header="Bandwidth Scale" Style="{StaticResource VerticalSliderStyle}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
-                	</StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Header="Bandwidth" Style="{StaticResource VerticalSliderStyle}" Maximum="100" Minimum="1" Value="{Binding Bandwidth, Mode=TwoWay}" StepFrequency="1" TickFrequency="5" />
+                        <Slider Header="Bandwidth Scale" Style="{StaticResource VerticalSliderStyle}" Minimum="-2" Maximum="2" Value="{Binding BandwidthScale, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.2"/>
+                    </StackPanel>
                 </Border>
                 <Border  DataContext="{Binding Sampler}" Style="{StaticResource ControlGroupingBorderStyle}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" >
-                		<StackPanel Orientation="Horizontal">
-                            <CheckBox Content="Interpolate Harmonics" IsChecked="{Binding InterpolateAmplitudes, Mode=TwoWay}"/>
-							<ComboBox Header="Overtones Position" x:Name="PadHarmonicTypes" 
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Interpolate Harmonics" IsChecked="{Binding InterpolateAmplitudes, Mode=TwoWay}"/>
+                        <ComboBox Header="Overtones Position" x:Name="PadHarmonicTypes" 
                                       SelectedValue="{Binding HarmonicOffsetMaker, Mode=TwoWay}"
                                       DisplayMemberPath="Name" SelectedIndex="0" VerticalAlignment="Top"
                                       >
-                                <ComboBox.Items>
-                                    <harmonics:HarmonicHarmonicPosition/>
-                                    <harmonics:LinearHarmonic/>
-                                    <harmonics:PowerHarmonicPosition/>
-                                    <harmonics:PowerLHarmonicPosition/>
-                                    <harmonics:PowerUHarmonicPosition/>
-                                    <harmonics:ShiftHarmonicPosition/>
-                                    <harmonics:ShiftLHarmonicPosition/>
-                                    <harmonics:ShiftUHarmonicPosition/>
-                                    <harmonics:SineHarmonicPosition/>
-                                </ComboBox.Items>
-                            </ComboBox>
-							<Slider Value="{Binding HarmonicOffsetMaker.Parameter1, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Parameter 1" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
-							<Slider Value="{Binding HarmonicOffsetMaker.Parameter2, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Parameter 2" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
-							<Slider Value="{Binding HarmonicOffsetMaker.Parameter3, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Force H" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
-                			<Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
-                		</StackPanel>
+                            <harmonics:HarmonicHarmonicPosition/>
+                            <harmonics:LinearHarmonic/>
+                            <harmonics:PowerHarmonicPosition/>
+                            <harmonics:PowerLHarmonicPosition/>
+                            <harmonics:PowerUHarmonicPosition/>
+                            <harmonics:ShiftHarmonicPosition/>
+                            <harmonics:ShiftLHarmonicPosition/>
+                            <harmonics:ShiftUHarmonicPosition/>
+                            <harmonics:SineHarmonicPosition/>
+                        </ComboBox>
+                        <Slider Value="{Binding HarmonicOffsetMaker.Parameter1, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Parameter 1" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
+                        <Slider Value="{Binding HarmonicOffsetMaker.Parameter2, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Parameter 2" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
+                        <Slider Value="{Binding HarmonicOffsetMaker.Parameter3, Mode=TwoWay}" Minimum="0" Maximum="255" Header="Force H" Style="{StaticResource VerticalSliderStyle}" TickFrequency="32"/>
+                        <Button Command="{Binding BuildWaveTableCommand}" x:Name="RegeneratePadSound"  Content="Build Sound"  />
+                    </StackPanel>
                 </Border>
                 <ScrollViewer
                 	Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="1" HorizontalScrollBarVisibility="Visible"
 				>
-                	<ItemsControl ItemsSource="{Binding Sampler.Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" 
+                    <ItemsControl ItemsSource="{Binding Sampler.Amplitudes}" ItemTemplate="{StaticResource AmplitudeValueSelector}" 
 						HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinWidth="1024"
 				>
-                		<ItemsControl.ItemsPanel>
-                			<ItemsPanelTemplate>
-                				<StackPanel Orientation="Horizontal"/>
-                			</ItemsPanelTemplate>
-                		</ItemsControl.ItemsPanel>
-                	</ItemsControl>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
                 </ScrollViewer>
             </Grid>
 

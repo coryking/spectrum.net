@@ -18,7 +18,7 @@ namespace CorySignalGenerator.Dsp
     }
 
 
-    public class PADsynth
+    public class LegacyPADsynth
     {
         private float[] A;
         //private float[] freq_amp;
@@ -45,7 +45,7 @@ namespace CorySignalGenerator.Dsp
         {
             Debug.WriteLine("Building Wave Table\n> freq: {0}. bw: {1}, bwscale: {2}", freq, bw, bwscale);
         
-            var synth = new PADsynth(sampleSize, sampleRate, amplitudeValues, harmonicmaker);
+            var synth = new LegacyPADsynth(sampleSize, sampleRate, amplitudeValues, harmonicmaker);
             var sampleData = synth.synth(freq, bw, bwscale);
 
             var outputData = new float[sampleData.Length * channels];
@@ -70,7 +70,7 @@ namespace CorySignalGenerator.Dsp
         /// <param name="n">is the samplesize (eg: 262144)</param>
         /// <param name="samplerate">samplerate (eg. 44100)</param>
         /// <param name="number_harmonics">the number of harmonics that are computed</param>
-        public PADsynth(int n, int samplerate, float[] a, IHarmonicPosition harmonicmaker)
+        public LegacyPADsynth(int n, int samplerate, float[] a, IHarmonicPosition harmonicmaker)
         {
             rnd = new System.Random();
             N=n;
