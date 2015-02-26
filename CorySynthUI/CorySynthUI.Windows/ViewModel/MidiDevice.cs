@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using WindowsPreview.Devices.Midi;
+using MoreLinq;
 
 namespace CorySynthUI.ViewModel
 {
@@ -27,27 +28,27 @@ namespace CorySynthUI.ViewModel
     {
         public MidiDevice()
         {
-            MidiDevices = new ObservableCollection<DeviceInformation>();
-            MidiWatcher = new MidiDeviceWatcher();
-            MidiWatcher.MidiDevicesChanged += MidiWatcher_MidiDevicesChanged;
-            MidiWatcher.Start();
+            MidiWatcher = new DeviceWatchWrapper(WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector());
+            MidiWatcher.DevicesChanged += MidiWatcher_MidiDevicesChanged;
         }
 
         #region Event Handlers
 
-        async void MidiWatcher_MidiDevicesChanged(MidiDeviceWatcher sender)
+        async void MidiWatcher_MidiDevicesChanged(DeviceWatchWrapper sender)
         {
-            var dispatcher = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-            var items = sender.GetDeviceInformationCollection().Where(x => x.IsEnabled).OrderBy(x => x.Name);
-            await dispatcher.RunIdleAsync((e) =>
+            if (SelectedMidiDevice == null)
             {
-                MidiDevices.Clear();
-                foreach (var item in items)
+                var settings = (App.Current as App).SettingsViewModel;
+                if (!String.IsNullOrEmpty(settings.MidiDeviceId) && MidiDevices.Any(x => x.Id == settings.MidiDeviceId))
                 {
-                    MidiDevices.Add(item);
-
+                    SelectedMidiDevice = MidiDevices.First(x => x.Id == settings.MidiDeviceId);
                 }
-            });
+                else
+                {
+                    SelectedMidiDevice = MidiDevices.FirstOrDefault();
+                }
+                
+            }
             
         }
         void MidiInput_MessageReceived(MidiInPort sender, MidiMessageReceivedEventArgs args)
@@ -77,6 +78,8 @@ namespace CorySynthUI.ViewModel
             }
             if (newDevice != null)
             {
+                var settings = (App.Current as App).SettingsViewModel;
+                settings.MidiDeviceId = newDevice.Id;
                 MidiInput = await MidiInPort.FromIdAsync(newDevice.Id);
             }
             else
@@ -134,10 +137,16 @@ namespace CorySynthUI.ViewModel
         }
         #endregion
 
-        public ObservableCollection<DeviceInformation> MidiDevices { get; private set; }
+        public ObservableCollection<DeviceInformation> MidiDevices {
+            get
+            {
+                return MidiWatcher.Devices;
+            }
+        
+        }
 
 
-        protected MidiDeviceWatcher MidiWatcher { get; private set; }
+        protected DeviceWatchWrapper MidiWatcher { get; private set; }
 
         
         #region Property MidiInput

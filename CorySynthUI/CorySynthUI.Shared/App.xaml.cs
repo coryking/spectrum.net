@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorySynthUI.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -29,6 +31,26 @@ namespace CorySynthUI
         private TransitionCollection transitions;
 #endif
 
+        private SettingsViewModel _settingsViewModel;
+
+        /// <summary>
+        /// A reference to the settings view-model.
+        /// </summary>
+        public SettingsViewModel SettingsViewModel
+        {
+            get
+            {
+                if (_settingsViewModel != null) return _settingsViewModel;
+                _settingsViewModel = new SettingsViewModel();
+                //if (SuspensionManager.SessionState.ContainsKey("GameViewModel"))
+                //{
+                //    _settingsViewModel.GameViewModel = SuspensionManager
+                //        .SessionState["GameViewModel"] as GameViewModel;
+                //}
+                return _settingsViewModel;
+            }
+        }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -37,6 +59,9 @@ namespace CorySynthUI
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            ApplicationData.Current.DataChanged += (sender, e) => SettingsViewModel.UpdateSettings();
+
         }
 
         /// <summary>
