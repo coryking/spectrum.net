@@ -9,6 +9,7 @@ using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using WindowsPreview.Devices.Midi;
 using MoreLinq;
+using CorySignalGenerator.Wave;
 
 namespace CorySynthUI.ViewModel
 {
