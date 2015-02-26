@@ -270,7 +270,7 @@ namespace CorySignalGenerator.Sounds.PAD
 
 
         #region Property Size
-        private int _size = 0;
+        private int _size = 127;
 
         /// <summary>
         /// Refered to as "width"
@@ -294,8 +294,7 @@ namespace CorySignalGenerator.Sounds.PAD
         private int _frequencyMultipler = 0;
 
         /// <summary>
-        /// Sets and gets the FrequencyMultiplier property.
-        /// Changes to that property's value raise the PropertyChanged event. 
+        /// "frequency_multiplier"
         /// </summary>
         public int FrequencyMultiplier
         {
@@ -332,7 +331,7 @@ namespace CorySignalGenerator.Sounds.PAD
 
 
         #region Property ModulatorFrequency
-        private int _modulatorFrequency = 0;
+        private int _modulatorFrequency = 30;
 
         /// <summary>
         /// Otherwise known as modulator.freq

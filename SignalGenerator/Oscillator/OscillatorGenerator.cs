@@ -75,10 +75,14 @@ namespace CorySignalGenerator.Oscillator
                 ChangeBaseFunction();
                 dirtyBaseFunction = false;
             }
-            var harmonics = new Complex[MAX_HARMONICS];
+            var magnitudes = new double[MAX_HARMONICS];
+            var phases = new double[MAX_HARMONICS];
+            //var harmonics = new Complex[MAX_HARMONICS];
             for (int i = 0; i < MAX_HARMONICS; i++)
             {
-                harmonics[i] = Harmonics[i].ToComplex();
+                magnitudes[i] = Harmonics[i].GetMagnitude();
+                phases[i] = Harmonics[i].GetPhase();
+                //harmonics[i] = Harmonics[i].ToComplex();
             }
 
 
@@ -88,10 +92,9 @@ namespace CorySignalGenerator.Oscillator
                 Debug.WriteLine("Making FFT Frequencies for SineBaseFunction");
                 for (int i = 0; i < MAX_HARMONICS-1; i++)
                 {
-                    var harmonic = harmonics[i];
                     // I'm kind of positive there is a function built into Complex that does this...
-                    var real = -harmonic.Magnitude * Math.Sin(harmonic.Phase * (i + 1.0)) / 2.0;
-                    var imaginary = harmonic.Magnitude * Math.Cos(harmonic.Phase * (i + 1.0)) / 2.0;
+                    var real = -magnitudes[i] * Math.Sin(phases[i] * (i + 1.0)) / 2.0;
+                    var imaginary = magnitudes[i] * Math.Cos(phases[i] * (i + 1.0)) / 2.0;
 
                     FFTFrequencies[i + 1] = new Complex(real, imaginary);
                 }
@@ -109,9 +112,7 @@ namespace CorySignalGenerator.Oscillator
                         if (k >= OSCILLATOR_SIZE / 2)
                             break;
 
-                        var orig = harmonics[j];
-
-                        var rotated = FrequencyUtils.FromPolar(orig.Magnitude, orig.Phase * k);
+                        var rotated = FrequencyUtils.FromPolar(magnitudes[j], phases[j] * k);
                         FFTFrequencies[k] += BaseFunctionFFTFrequencies[i] * rotated;
                     }
                     
@@ -124,6 +125,22 @@ namespace CorySignalGenerator.Oscillator
             
             // Clear DC
             FFTFrequencies[0] = new Complex();
+
+            var sp = new StringBuilder();
+            var str = String.Join("\t", FFTFrequencies.Take(OSCILLATOR_SIZE/2).Select(x=>x.Magnitude));
+            sp.AppendFormat("FFT Frequencies,{0}\n", str);
+
+            var bstr = String.Join("\t", BaseFunctionFFTFrequencies.Take(OSCILLATOR_SIZE/2).Select(x=>x.Magnitude));
+            sp.AppendFormat("Base Frequencies,{0}\n", bstr);
+            
+            var dp = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            dp.SetData(Windows.ApplicationModel.DataTransfer.StandardDataFormats.Text, sp.ToString());
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                Windows.UI.Core.CoreDispatcherPriority.Normal,
+            () =>
+            {
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dp);
+            });
 
             oscPrepared = true;
             dirtyParams = false;

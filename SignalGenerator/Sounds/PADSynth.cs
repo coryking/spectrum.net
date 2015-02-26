@@ -194,6 +194,7 @@ namespace CorySignalGenerator.Sounds
 
             var spectrum = new float[spectrumSize];
             var harmonics = Oscillator.GetFrequencies(basefreq);
+
             FrequencyUtils.NormalizeMax(harmonics, oscilsize / 2);
 
             var power = BandwidthScale.GetScale(); // This is not right but for now we will role with it

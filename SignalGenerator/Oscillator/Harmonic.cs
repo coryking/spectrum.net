@@ -104,19 +104,8 @@ namespace CorySignalGenerator.Oscillator
         }
         #endregion
 
-
-        /// <summary>
-        /// Converts this Midi-based phase & magnitude into a Complex number
-        /// </summary>
-        /// <param name="type">Type of magnitude</param>
-        /// <param name="index">The phase adjustment (typically the harmonic number)</param>
-        /// <returns>Complex number</returns>
-        public Complex ToComplex(MagnitudeType type=MagnitudeType.Linear)
+        public double GetMagnitude(MagnitudeType type = MagnitudeType.Linear)
         {
-            // Note that in OscilGen, they divide the phase by the harmonic + 1
-            //         hphase[i] = (Phphase[i] - 64.0f) / 64.0f * PI / (i + 1);
-            double phase = (Phase - 64.0) / 64.0 * Math.PI / (Index + 1.0);
-
             var magnitudeNew = 1.0 - Math.Abs(Magnitude / 64.0 - 1.0);
             var magnitude = 0.0;
             switch (type)
@@ -143,8 +132,24 @@ namespace CorySignalGenerator.Oscillator
             if (Magnitude == 64)
                 magnitude = 0.0f;
 
+            return magnitude;
+        }
 
-            return FrequencyUtils.FromPolar(magnitude, phase);
+        public double GetPhase()
+        {
+            return (Phase - 64.0) / 64.0 * Math.PI / (Index + 1.0);
+
+        }
+
+        /// <summary>
+        /// Converts this Midi-based phase & magnitude into a Complex number
+        /// </summary>
+        /// <param name="type">Type of magnitude</param>
+        /// <param name="index">The phase adjustment (typically the harmonic number)</param>
+        /// <returns>Complex number</returns>
+        public Complex ToComplex(MagnitudeType type=MagnitudeType.Linear)
+        {
+            return FrequencyUtils.FromPolar(GetMagnitude(type: type), GetPhase());
         }
         public override string ToString()
         {
