@@ -40,74 +40,83 @@ namespace CorySynthUI.Models
             get;
             private set;
         }
-        private CoreDispatcher Dispatcher
-        {
-            get
-            {
-                return Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-            }
-        }
 
 
         public void ChangeAudioDevice(Windows.Devices.Enumeration.DeviceInformation newDevice)
         {
+            if (newDevice == null)
+            {
+                DeviceId = string.Empty;
+                destroyOldWaveOut();
+                return;
+            }
+            ChangeAudioDevice(newDevice.Id);
+        }
+        public void ChangeAudioDevice(Device newDevice)
+        {
+            if (newDevice == null)
+            {
+                destroyOldWaveOut();
+                DeviceId = string.Empty;
+                return;
+            }
+
+
             ChangeAudioDevice(newDevice.Id);
         }
 
         public void ChangeAudioDevice(string newDeviceId)
         {
-            reInitWaveOut(newDeviceId, SampleProvider);
+            DeviceId = newDeviceId;
+            reInitWaveOut();
 
         }
 
-        private void reInitWaveOut(string deviceId, ISampleProvider provider)
+        private void reInitWaveOut()
         {
-            if (waveOut != null)
+            destroyOldWaveOut();
+            initWaveOut();
+        }
+
+        private void destroyOldWaveOut()
+        {
+            lock (_lock)
             {
-                Monitor.Enter(_lock);
-                waveOut.Stop();
-                waveOut.PlaybackStopped += async (sender, e) =>
+                if (waveOut != null)
                 {
                     waveOut.Dispose();
                     waveOut = null;
-                    Monitor.Exit(_lock); // there is probaly some chance the callback will never happen and this lock will never be freed
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        initWaveOut(deviceId, provider);
-                    });
-                };
+                    Debug.WriteLine("Done  knocking out waveout");
+                }
             }
-            else
-            {
-                initWaveOut(deviceId,provider);
-            }
-
         }
 
-        private void initWaveOut(string deviceId, ISampleProvider provider)
+        private void initWaveOut()
         {
+            Debug.WriteLine("Init wave out");
             // bail if there is no provider or deviceid
-            if (provider == null || String.IsNullOrEmpty(deviceId))
+            if (SampleProvider == null || String.IsNullOrEmpty(DeviceId))
                 return;
+            Debug.WriteLine("Going to wait for lock");
             lock (_lock)
             {
+                Debug.WriteLine("Inside lock for initwaveout");
                 Debug.Assert(waveOut == null);
 
                 if (waveOut != null)
                     return;
-                waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(deviceId, NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
-                waveOut.Init(provider);
+                waveOut = new NAudio.Win8.Wave.WaveOutputs.WasapiOutRT(DeviceId, NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
+                waveOut.Init(SampleProvider);
                 waveOut.Play();
-                SampleProvider = provider;
-                DeviceId = deviceId;
             }
         }
 
 
         public void ChangeSampleProvider(ISampleProvider newProvider)
         {
+            Debug.WriteLine("Changing Sample Provider");
             SampleProvider = newProvider;
-            reInitWaveOut(DeviceId, newProvider);
+            reInitWaveOut();
 
         }
 
@@ -120,5 +129,8 @@ namespace CorySynthUI.Models
                 wave.Dispose();
 
         }
+
+
+
     }
 }

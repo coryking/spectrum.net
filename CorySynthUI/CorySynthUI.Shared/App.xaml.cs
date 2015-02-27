@@ -59,9 +59,8 @@ namespace CorySynthUI
         {
             get
             {
-                if (_deviceModel != null) return _deviceModel;
+                //if (_deviceModel != null) return _deviceModel;
 
-                _deviceModel = AsyncContext.Run(() => DeviceModel.CreateDeviceModelAsync(SettingsViewModel));
                 return _deviceModel;
             }
         }
@@ -75,7 +74,10 @@ namespace CorySynthUI
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            Caliburn.Micro.PlatformProvider.Current = new Caliburn.Micro.XamlPlatformProvider();
             this._settingsViewModel = new Models.SettingsViewModel();
+
+            _deviceModel = AsyncContext.Run(() => DeviceModel.CreateDeviceModelAsync(SettingsViewModel));
 
             ApplicationData.Current.DataChanged += (sender, e) => SettingsViewModel.UpdateSettings();
 
@@ -169,7 +171,7 @@ namespace CorySynthUI
         private void OnCommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
             args.Request.ApplicationCommands.Add(new SettingsCommand(
-            "AudioSettings", "Audio Settings", (handler) => ShowAudioSettingsFlyout()));
+            AudioSettingsFlyout.CommandID, "Audio Settings", (handler) => ShowAudioSettingsFlyout()));
         }
 
         // This code is executed when the user taps the "Audio Settings" command in the SettingsPane.

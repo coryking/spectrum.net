@@ -10,6 +10,44 @@ using Windows.UI.Core;
 
 namespace CorySignalGenerator.Wave
 {
+    public class Device
+    {
+        public Device(string name, string id, bool isenabled)
+        {
+            Name = name;
+            Id = id;
+            IsEnabled = isenabled; ;
+        }
+
+        public static Device FromDeviceInformation(DeviceInformation information)
+        {
+            return new Device(information.Name, information.Id, information.IsEnabled);
+        }
+
+        public Windows.Storage.ApplicationDataCompositeValue ToStorage()
+        {
+            var composite = new Windows.Storage.ApplicationDataCompositeValue();
+            composite["id"] = Id;
+            composite["name"] = Name;
+            return composite;
+        }
+
+        public static Device FromStorage(Windows.Storage.ApplicationDataCompositeValue composite)
+        {
+            if (composite == null)
+                return null;
+            var id = composite["id"] as string;
+            var name = composite["name"] as string;
+            return new Device(name, id, true);
+        }
+
+
+
+        public Boolean IsEnabled { get; set; }
+        public String Name { get; private set; }
+        public String Id { get; private set; }
+    }
+
     public delegate void DevicesChangedEventArgs(DeviceWatchWrapper sender);
 
     public class DeviceChangedEventArgs<T>
@@ -29,41 +67,52 @@ namespace CorySignalGenerator.Wave
         private DeviceWatcher _watcher;
         private DeviceWatchWrapper(DeviceWatcher watcher)
         {
-            Devices = new ObservableCollection<DeviceInformation>();
+            Devices = new ObservableCollection<Device>();
 
             _watcher = watcher;
             _watcher.Added += audio_watcher_Added;
             _watcher.Removed += audio_watcher_Removed;
-            _watcher.Updated += audio_watcher_Updated;
+            
+            // Nothing we do with updated... maybe sometime in the future
+            //_watcher.Updated += audio_watcher_Updated;
             _watcher.EnumerationCompleted += audio_watcher_EnumerationCompleted;
             _watcher.Start();
         }
 
-        public DeviceWatchWrapper(string deviceSelector) : this(DeviceInformation.CreateWatcher(deviceSelector))
+        public DeviceWatchWrapper(string deviceSelector)
+            : this(DeviceInformation.CreateWatcher(deviceSelector))
         {
             //midiSelector = WindowsPreview.Devices.Midi.MidiInPort.GetDeviceSelector();
         }
 
-        public DeviceWatchWrapper(DeviceClass deviceClass) : this(DeviceInformation.CreateWatcher(deviceClass))
+        public DeviceWatchWrapper(DeviceClass deviceClass)
+            : this(DeviceInformation.CreateWatcher(deviceClass))
         {
         }
 
-        public event DevicesChangedEventArgs DevicesChanged;
+        protected CoreDispatcher Dispatcher
+        {
+            get
+            {
+                return Windows.ApplicationModel.Core.CoreApplication.MainView.Dispatcher;
+            }
+        }
 
-        public event EventHandler<DeviceChangedEventArgs<DeviceInformation>> SelectedDeviceChanged;
+
+        public event EventHandler<DeviceChangedEventArgs<Device>> SelectedDeviceChanged;
 
         #region Properties
-        public ObservableCollection<DeviceInformation> Devices { get; private set; }
+        public ObservableCollection<Device> Devices { get; private set; }
 
 
         #region Property SelectedDevice
-        private DeviceInformation _selectedDevice = null;
+        private Device _selectedDevice = null;
 
         /// <summary>
         /// Sets and gets the SelectedDevice property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public DeviceInformation SelectedDevice
+        public Device SelectedDevice
         {
             get
             {
@@ -78,80 +127,48 @@ namespace CorySignalGenerator.Wave
         public async Task<DeviceInformation> SetSelectedDeviceFromIdAsync(string deviceId)
         {
             var device = await DeviceInformation.CreateFromIdAsync(deviceId);
-            SelectedDevice = device;
+            SelectedDevice = Device.FromDeviceInformation(device);
             return device;
         }
 
         #endregion
-		
-
-        protected CoreDispatcher Dispatcher
-        {
-            get
-            {
-                return Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher;
-            }
-        }
 
         #endregion
 
 
         #region _watch events
 
-        async void audio_watcher_EnumerationCompleted(DeviceWatcher sender, object args)
+        void audio_watcher_EnumerationCompleted(DeviceWatcher sender, object args)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+
+            if (SelectedDevice == null || !Devices.Contains(SelectedDevice))
             {
-                OnDevicesChanged();
-                if (SelectedDevice == null || !Devices.Contains(SelectedDevice))
-                {
-                    SelectedDevice = Devices.FirstOrDefault();
-                }
-            });
+                SelectedDevice = Devices.FirstOrDefault();
+            }
         }
 
-        async void audio_watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        void audio_watcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                var device = Devices.Where(x => x.Id == args.Id).FirstOrDefault();
-                if (device != null)
-                    device.Update(args);
-            });
+
+            var device = Devices.Where(x => x.Id == args.Id).FirstOrDefault();
+
+            if (device != null)
+                Caliburn.Micro.Execute.OnUIThread(() => Devices.Remove(device));
         }
 
-        async void audio_watcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                var device = Devices.Where(x => x.Id == args.Id).FirstOrDefault();
-
-                if (device != null)
-                    Devices.Remove(device);
-            });
-        }
-
-        async void audio_watcher_Added(DeviceWatcher sender, DeviceInformation args)
+        void audio_watcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             if (args.IsEnabled)
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    Devices.Add(args);
-                });
+                Caliburn.Micro.Execute.OnUIThread(() => Devices.Add(Device.FromDeviceInformation(args)));
         }
 
         #endregion
 
-        protected void OnDevicesChanged()
-        {
-            if (DevicesChanged != null)
-                DevicesChanged(this);
-        }
 
-        protected void OnSelectedDeviceChanged(DeviceInformation oldValue, DeviceInformation newValue)
+        protected void OnSelectedDeviceChanged(Device oldValue, Device newValue)
         {
             if (SelectedDeviceChanged != null)
-                SelectedDeviceChanged(this, new DeviceChangedEventArgs<DeviceInformation>(oldValue, newValue));
+                SelectedDeviceChanged(this, new DeviceChangedEventArgs<Device>(oldValue, newValue));
         }
     }
 }

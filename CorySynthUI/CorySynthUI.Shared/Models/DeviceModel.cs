@@ -28,14 +28,18 @@ namespace CorySynthUI.Models
             MidiDeviceWrapper.SelectedDeviceChanged += MidiCaptureDevices_SelectedDeviceChanged;
         }
 
+        
         public async static Task<DeviceModel> CreateDeviceModelAsync(ISettingsViewModel settings)
         {
             var model = new DeviceModel(settings);
-            if (!String.IsNullOrEmpty(settings.AudioRenderDeviceId))
-                await model.AudioDeviceWrapper.SetSelectedDeviceFromIdAsync(settings.AudioRenderDeviceId);
 
-            if (!String.IsNullOrEmpty(settings.MidiCaptureDeviceId))
-                await model.MidiDeviceWrapper.SetSelectedDeviceFromIdAsync(settings.MidiCaptureDeviceId);
+            model.AudioDeviceWrapper.SelectedDevice = settings.AudioRenderDevice;
+            model.MidiDeviceWrapper.SelectedDevice = settings.MidiCaptureDevice;
+            //if (!String.IsNullOrEmpty(settings.AudioRenderDeviceId))
+            //    await model.AudioDeviceWrapper.SetSelectedDeviceFromIdAsync(settings.AudioRenderDeviceId);
+
+//            if (!String.IsNullOrEmpty(settings.MidiCaptureDeviceId))
+//                await model.MidiDeviceWrapper.SetSelectedDeviceFromIdAsync(settings.MidiCaptureDeviceId);
 
             return model;
             
@@ -58,17 +62,18 @@ namespace CorySynthUI.Models
         /// <summary>
         /// The selected audio device
         /// </summary>
-        public DeviceInformation SelectedAudioRenderDevice
+        public Device SelectedAudioRenderDevice
         {
             get { return AudioDeviceWrapper.SelectedDevice; }
             set { AudioDeviceWrapper.SelectedDevice = value; }
         }
-        public ObservableCollection<DeviceInformation> AudioRenderDevices { get { return AudioDeviceWrapper.Devices; } }
+        public ObservableCollection<Device> AudioRenderDevices { get { return AudioDeviceWrapper.Devices; } }
 
-        void AudioRenderDevices_SelectedDeviceChanged(object sender, DeviceChangedEventArgs<DeviceInformation> e)
+        void AudioRenderDevices_SelectedDeviceChanged(object sender, DeviceChangedEventArgs<Device> e)
         {
             OnPropertyChanged("SelectedAudioRenderDevice");
-            settingsModel.AudioRenderDeviceId = e.NewDevice.Id;
+            if(settingsModel.AudioRenderDevice != e.NewDevice)
+                settingsModel.AudioRenderDevice = e.NewDevice;
             AudioRenderer.ChangeAudioDevice(e.NewDevice);
 
         }
@@ -76,18 +81,19 @@ namespace CorySynthUI.Models
         /// <summary>
         /// The selected midi input
         /// </summary>
-        public DeviceInformation SelectedMidiCaptureDevice
+        public Device SelectedMidiCaptureDevice
         {
             get { return MidiDeviceWrapper.SelectedDevice; }
             set { MidiDeviceWrapper.SelectedDevice = value; }
         }
 
-        public ObservableCollection<DeviceInformation> MidiCaptureDevices { get { return MidiDeviceWrapper.Devices; } }
+        public ObservableCollection<Device> MidiCaptureDevices { get { return MidiDeviceWrapper.Devices; } }
 
-        void MidiCaptureDevices_SelectedDeviceChanged(object sender, DeviceChangedEventArgs<DeviceInformation> e)
+        void MidiCaptureDevices_SelectedDeviceChanged(object sender, DeviceChangedEventArgs<Device> e)
         {
             OnPropertyChanged("SelectedMidiCaptureDevice");
-            settingsModel.MidiCaptureDeviceId = e.NewDevice.Id;
+            if(settingsModel.MidiCaptureDevice != e.NewDevice)
+                settingsModel.MidiCaptureDevice = e.NewDevice;
             MidiCapture.ChangeDevice(e.NewDevice);
         }
 

@@ -59,7 +59,8 @@ namespace CorySignalGenerator.Models
             HandlePropertyChanged(propertyName);
             if (PropertyChanged != null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                Caliburn.Micro.Execute.OnUIThread(() =>
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName)));
             }
         }
 

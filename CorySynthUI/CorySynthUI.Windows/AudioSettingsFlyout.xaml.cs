@@ -19,6 +19,9 @@ namespace CorySynthUI
 {
     public sealed partial class AudioSettingsFlyout : SettingsFlyout
     {
+        public static readonly String CommandID = "09458439-B623-4143-9968-9B507B5E7075";
+
+
         public AudioSettingsFlyout()
         {
             this.InitializeComponent();

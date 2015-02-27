@@ -38,6 +38,16 @@ namespace CorySynthUI.Models
             private set;
         }
 
+        public void ChangeDevice(Device newDevice)
+        {
+            if (newDevice == null)
+            {
+                disposeMidiIn();
+                return;
+            }
+            ChangeDevice(newDevice.Id);
+        }
+
         public void ChangeDevice(Windows.Devices.Enumeration.DeviceInformation newDevice)
         {
             ChangeDevice(newDevice.Id);
@@ -64,5 +74,6 @@ namespace CorySynthUI.Models
                 midiIn.Dispose();
             }
         }
+
     }
 }

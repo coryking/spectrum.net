@@ -15,6 +15,7 @@ namespace CorySignalGenerator.Wave
         string DeviceId { get; }
 
         void ChangeDevice(DeviceInformation newDevice);
+        void ChangeDevice(Device newDevice);
         void ChangeDevice(string newDeviceId);
     }
 }

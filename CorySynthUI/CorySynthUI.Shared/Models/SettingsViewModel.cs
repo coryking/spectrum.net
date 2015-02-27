@@ -1,4 +1,5 @@
 ﻿using CorySignalGenerator.Models;
+using CorySignalGenerator.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,30 +16,30 @@ namespace CorySynthUI.Models
         /// <summary>
         /// Selected Midi Device ID
         /// </summary>
-        public String MidiCaptureDeviceId
+        public Device MidiCaptureDevice
         {
             get
             {
-                return GetSetting(default(string));
+                return Device.FromStorage(GetSetting<ApplicationDataCompositeValue>(default(ApplicationDataCompositeValue)));
             }
             set
             {
-                SaveSetting(value);
+                SaveSetting(value.ToStorage());
             }
         }
 
         /// <summary>
         /// Selected Audio Output Device ID
         /// </summary>
-        public String AudioRenderDeviceId
+        public Device AudioRenderDevice
         {
             get
             {
-                return GetSetting(default(string));
+                return Device.FromStorage(GetSetting<ApplicationDataCompositeValue>(default(ApplicationDataCompositeValue)));
             }
             set
             {
-                SaveSetting(value);
+                SaveSetting(value.ToStorage());
             }
         }
 
