@@ -389,7 +389,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition />
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <StackPanel.Resources>
@@ -525,12 +524,6 @@
             </Grid>
 
         </Grid>
-        <Grid Grid.Row="2" Background="{StaticResource BottomBarBackgroundColor}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-        </Grid>
+        
     </Grid>
 </Page>
