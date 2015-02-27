@@ -23,15 +23,11 @@ namespace CorySignalGenerator.Wave
         public WaveOutPlayer(int latency)
         {
             Latency = latency;
-            AudioDevices = new ObservableCollection<DeviceInformation>();
-            audio_watcher = DeviceInformation.CreateWatcher(DeviceClass.AudioRender);
-            audio_watcher.Added += audio_watcher_Added;
-            audio_watcher.Removed += audio_watcher_Removed;
-            audio_watcher.Updated += audio_watcher_Updated;
-            audio_watcher.EnumerationCompleted += audio_watcher_EnumerationCompleted;
-            audio_watcher.Start();
+            watcher = new DeviceWatchWrapper(DeviceClass.AudioRender);
+            watcher.DevicesChanged += watcher_DevicesChanged;
         }
 
+        
         public bool IsActive
         {
             get
@@ -112,38 +108,23 @@ namespace CorySignalGenerator.Wave
             });
         }
 
-        async void audio_watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
+        void watcher_DevicesChanged(DeviceWatchWrapper sender)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            if (SelectedAudioDevice == null)
             {
-                var device = AudioDevices.Where(x => x.Id == args.Id).FirstOrDefault();
-                if (device != null)
-                    device.Update(args);
-            });
+                SelectedAudioDevice = AudioDevices.FirstOrDefault();
+            }
         }
 
-        async void audio_watcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+
+
+        public ObservableCollection<DeviceInformation> AudioDevices
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            get
             {
-                var device = AudioDevices.Where(x => x.Id == args.Id).FirstOrDefault();
-
-                if (device != null)
-                    AudioDevices.Remove(device);
-            });
+                return watcher.Devices;
+            }
         }
-
-        async void audio_watcher_Added(DeviceWatcher sender, DeviceInformation args)
-        {
-            if (args.IsEnabled)
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    AudioDevices.Add(args);
-                });
-        }
-
-
-        public ObservableCollection<DeviceInformation> AudioDevices {get;private set;}
 
 
         #region Property SelectedAudioDevice
@@ -165,7 +146,7 @@ namespace CorySignalGenerator.Wave
         }
         #endregion
 
-        private DeviceWatcher audio_watcher = null;
+        private DeviceWatchWrapper watcher = null;
 
         #endregion
 

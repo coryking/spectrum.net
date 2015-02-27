@@ -113,8 +113,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioSettings.xaml.cs">
-      <DependentUpon>AudioSettings.xaml</DependentUpon>
+    <Compile Include="AudioSettingsFlyout.xaml.cs">
+      <DependentUpon>AudioSettingsFlyout.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -124,12 +124,11 @@
     <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
       <DependentUpon>SampleDataSource.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\AudioSettingsViewModel.cs" />
     <Compile Include="ViewModel\AvailableVoices.cs" />
     <Compile Include="ViewModel\EffectsDataTemplateSelector.cs" />
-    <Compile Include="ViewModel\MidiDevice.cs" />
     <Compile Include="ViewModel\SequencerViewModel.cs" />
     <Compile Include="ViewModel\SamplerDataTemplateSelector.cs" />
-    <Compile Include="ViewModel\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -160,7 +159,7 @@
     </DesignTimeOnly>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AudioSettings.xaml">
+    <Page Include="AudioSettingsFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -181,6 +180,15 @@
     <Reference Include="NAudio.Win8, Version=1.7.0.15, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NAudio.1.7.2\lib\windows8\NAudio.Win8.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>..\..\packages\Nito.AsyncEx.3.0.0\lib\netcore45\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent">
+      <HintPath>..\..\packages\Nito.AsyncEx.3.0.0\lib\netcore45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment">
+      <HintPath>..\..\packages\Nito.AsyncEx.3.0.0\lib\netcore45\Nito.AsyncEx.Enlightenment.dll</HintPath>
     </Reference>
     <Reference Include="WinRTXamlToolkit">
       <HintPath>..\..\packages\WinRTXamlToolkit.Windows.1.8.1.0\lib\netcore451\WinRTXamlToolkit.dll</HintPath>

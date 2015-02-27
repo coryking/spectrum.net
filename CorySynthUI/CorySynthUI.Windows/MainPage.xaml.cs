@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,7 +31,6 @@ namespace CorySynthUI
             this.Init();
 
             this.InitializeComponent();
-            
         }
 
         private SequencerViewModel _viewModel;
@@ -41,7 +41,7 @@ namespace CorySynthUI
 
         public void Init()
         {
-            _viewModel = new SequencerViewModel(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
+            _viewModel = new SequencerViewModel(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2), (App.Current as App).DeviceModel);
        }
 
         private void LayersLink_Click(object sender, RoutedEventArgs e)
@@ -59,6 +59,7 @@ namespace CorySynthUI
         {
             VisualStateManager.GoToState(this, String.Format("{0}LayerSelected", (string)this.VoicePanelNav.SelectedValue), true);
         }
+        
 
     }
 }

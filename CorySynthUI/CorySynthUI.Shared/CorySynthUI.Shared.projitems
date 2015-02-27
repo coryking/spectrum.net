@@ -17,5 +17,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\HeaderedStackPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ByteTypeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DeviceModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ISettingsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RenderAudioDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CaptureMidiDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SettingsViewModel.cs" />
   </ItemGroup>
 </Project>

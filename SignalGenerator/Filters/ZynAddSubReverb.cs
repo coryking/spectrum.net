@@ -257,9 +257,9 @@ namespace CorySignalGenerator.Filters
 
         #region internal param setters
 
-        private Action LockedSet(Action callback)
+        private CorySignalGenerator.Models.PropertyChangeModelCallback<T> LockedSet<T>(Action callback)
         {
-            return () =>
+            return (o,n) =>
             {
                 lock (_lock)
                 {
@@ -479,7 +479,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _type, value, changeCallback: LockedSet(() => { settype(); }));
+                Set(ref _type, value, changeCallback: LockedSet<ReverbType>(settype));
             }
         }
         #endregion
@@ -500,7 +500,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _bandwidth, value, changeCallback: LockedSet(() => { setbandwidth(); }));
+                Set(ref _bandwidth, value, changeCallback: LockedSet<float>(setbandwidth));
             }
         }
         #endregion
@@ -522,7 +522,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _roomSize, value, changeCallback: LockedSet(() => { setroomsize(); }));
+                Set(ref _roomSize, value, changeCallback: LockedSet<float>(setroomsize));
             }
         }
         #endregion
@@ -543,7 +543,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _loHiDamp, value, 64f, changeCallback: LockedSet(() => setLoHiDamp()));
+                Set(ref _loHiDamp, value, 64f, changeCallback: LockedSet<float>(setLoHiDamp));
             }
         }
         #endregion
@@ -564,7 +564,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _hpf, value, changeCallback: LockedSet(() => sethpf()));
+                Set(ref _hpf, value, changeCallback: LockedSet<float>(sethpf));
             }
         }
         #endregion
@@ -585,7 +585,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _lpf, value, changeCallback: LockedSet(() => setlpf()));
+                Set(ref _lpf, value, changeCallback: LockedSet<float>(setlpf));
             }
         }
         #endregion
@@ -605,7 +605,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _initialDelayFeedback, value, changeCallback: LockedSet(() => setiDelayFb()));
+                Set(ref _initialDelayFeedback, value, changeCallback: LockedSet<float>(setiDelayFb));
             }
         }
         #endregion
@@ -626,7 +626,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _initialDelay, value, changeCallback: LockedSet(() => setiDelay()));
+                Set(ref _initialDelay, value, changeCallback: LockedSet<float>(setiDelay));
             }
         }
         #endregion
@@ -646,7 +646,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _pan, value, changeCallback: LockedSet(() => setpan()));
+                Set(ref _pan, value, changeCallback: LockedSet<float>(setpan));
             }
         }
         #endregion
@@ -667,7 +667,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _volume, value, LockedSet(() => setvolume()));
+                Set(ref _volume, value, LockedSet<float>(setvolume));
             }
         }
         #endregion
@@ -688,7 +688,7 @@ namespace CorySignalGenerator.Filters
             }
             set
             {
-                Set(ref _time, value, LockedSet(() => settime()));
+                Set(ref _time, value, LockedSet<float>(settime));
             }
         }
 

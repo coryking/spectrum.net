@@ -306,7 +306,7 @@ namespace CorySignalGenerator.Oscillator
             }
             set
             {
-                Set(ref _baseFunction, value, changeCallback: () => { dirtyBaseFunction = true; });
+                Set(ref _baseFunction, value, changeCallback: (o,n) => { dirtyBaseFunction = true; });
             }
         }
         #endregion

@@ -5,39 +5,40 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
 using Windows.Storage;
 
-namespace CorySynthUI.ViewModel
+namespace CorySynthUI.Models
 {
-    public class SettingsViewModel : PropertyChangeModel
+    public class SettingsViewModel : PropertyChangeModel, CorySynthUI.Models.ISettingsViewModel
     {
         /// <summary>
         /// Selected Midi Device ID
         /// </summary>
-        public String MidiDeviceId
+        public String MidiCaptureDeviceId
         {
             get
             {
-                return GetSetting<string>(String.Empty);
+                return GetSetting(default(string));
             }
             set
             {
-                SaveSetting<string>(value);
+                SaveSetting(value);
             }
         }
 
         /// <summary>
         /// Selected Audio Output Device ID
         /// </summary>
-        public String AudioOutputDeviceId
+        public String AudioRenderDeviceId
         {
             get
             {
-                return GetSetting<string>(String.Empty);
+                return GetSetting(default(string));
             }
             set
             {
-                SaveSetting<string>(value);
+                SaveSetting(value);
             }
         }
 
@@ -74,8 +75,8 @@ namespace CorySynthUI.ViewModel
         /// </summary>
         private void UpdateStatus()
         {
-            OnPropertyChanged("NewGameOpponentsText");
-            OnPropertyChanged("NewGameBoardSizeText");
+            OnPropertyChanged("MidiCaptureDevice");
+            OnPropertyChanged("AudioRenderDevice");
         }
 
         /// <summary>
@@ -83,16 +84,8 @@ namespace CorySynthUI.ViewModel
         /// </summary>
         public void UpdateSettings()
         {
-            OnPropertyChanged("IsLastMoveIndicatorShowing");
-            OnPropertyChanged("IsShowingValidMoves");
-            OnPropertyChanged("IsClockShowing");
-            OnPropertyChanged("PlayerOneIsAiSetting");
-            OnPropertyChanged("PlayerTwoIsAiSetting");
-            OnPropertyChanged("PlayerOneAiSearchDepthSetting");
-            OnPropertyChanged("PlayerTwoAiSearchDepthSetting");
-            OnPropertyChanged("BoardSizeIndex");
-            OnPropertyChanged("NewGameOpponentsText");
-            OnPropertyChanged("NewGameBoardSizeText");
+            OnPropertyChanged("MidiCaptureDevice");
+            OnPropertyChanged("AudioRenderDevice");
         }
 
       

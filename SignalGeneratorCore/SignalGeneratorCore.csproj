@@ -307,6 +307,9 @@
     <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiControlChangeMessage.cs">
       <Link>Sequencer\Midi\MidiControlChangeMessage.cs</Link>
     </Compile>
+    <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiInputMessageEventArgs.cs">
+      <Link>Sequencer\Midi\MidiInputMessageEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\SignalGenerator\Sequencer\Midi\MidiMessageType.cs">
       <Link>Sequencer\Midi\MidiMessageType.cs</Link>
     </Compile>
@@ -378,6 +381,8 @@
     <Compile Include="Sequencer\Midi\MidiMessageConverter.cs" />
     <Compile Include="Utils\EnumHelper.cs" />
     <Compile Include="Wave\DeviceWatchWrapper.cs" />
+    <Compile Include="Wave\IAudioRenderer.cs" />
+    <Compile Include="Wave\IMidiInputDevice.cs" />
     <Compile Include="Wave\WaveOutPlayer.cs" />
   </ItemGroup>
   <ItemGroup>

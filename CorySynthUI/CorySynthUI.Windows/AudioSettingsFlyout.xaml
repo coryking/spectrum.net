@@ -1,5 +1,5 @@
 ﻿<SettingsFlyout
-    x:Class="CorySynthUI.AudioSettings"
+    x:Class="CorySynthUI.AudioSettingsFlyout"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CorySynthUI"
@@ -17,17 +17,17 @@
 
         <!-- Content Section 1-->
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Audio Devices" />
 
-            <!-- Section 1 header -->
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Lorem ipsum" />
+            <ComboBox Header="Audio Output" ItemsSource="{Binding Devices.AudioRenderDevices, Mode=TwoWay}" 
+					SelectedItem="{Binding Devices.SelectedAudioRenderDevice, Mode=TwoWay}" 
+					ItemTemplate="{StaticResource DeviceInformationTemplate}" Width="250"/>
 
-            <!-- Section 1 body -->
-            <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,0,0,25" TextWrapping="Wrap">
-                <TextBlock.Text>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </TextBlock.Text>
-            </TextBlock>
+
+                <ComboBox Header="Midi Input" x:Name="MidiDevList"
+					SelectedItem="{Binding Devices.SelectedMidiCaptureDevice, Mode=TwoWay}"
+					ItemsSource="{Binding Devices.MidiCaptureDevices}"
+					ItemTemplate="{StaticResource DeviceInformationTemplate}" Width="250"/>
 
         </StackPanel>
 

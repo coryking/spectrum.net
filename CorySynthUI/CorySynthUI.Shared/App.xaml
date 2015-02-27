@@ -21,7 +21,9 @@
 
         <converters:ByteTypeConverter x:Key="ByteTypeConverter"/>
 
-
+        <DataTemplate x:Key="DeviceInformationTemplate">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
 
 
         <Style TargetType="controls:HeaderedStackPanel" x:Key="headeredStackPanelStyle">

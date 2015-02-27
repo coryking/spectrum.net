@@ -17,9 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace CorySynthUI
 {
-    public sealed partial class AudioSettings : SettingsFlyout
+    public sealed partial class AudioSettingsFlyout : SettingsFlyout
     {
-        public AudioSettings()
+        public AudioSettingsFlyout()
         {
             this.InitializeComponent();
         }

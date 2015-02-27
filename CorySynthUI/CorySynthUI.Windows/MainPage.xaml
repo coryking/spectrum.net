@@ -128,9 +128,7 @@
                 <Slider Header="Q" Maximum="1" Minimum="0" Value="{Binding Q, Mode=TwoWay}" StepFrequency="0.1" TickFrequency="0.1"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="DeviceInformationTemplate">
-            <TextBlock Text="{Binding Name}"/>
-        </DataTemplate>
+
 
         <models:SamplerDataTemplateSelector
             x:Key="samplerDataTemplateSelector" 
@@ -532,10 +530,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Button  Content="Start" Command="{Binding StartRecordingCommand}"/>
-                <Button  Content="Stop" Command="{Binding StopRecordingCommand}"/>
-            </StackPanel>
+
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
                 <ComboBox Header="Audio Device" ItemsSource="{Binding WaveOut.AudioDevices, Mode=TwoWay}" 
 					SelectedItem="{Binding WaveOut.SelectedAudioDevice, Mode=TwoWay}" 

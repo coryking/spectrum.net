@@ -1,4 +1,6 @@
-﻿using CorySynthUI.ViewModel;
+﻿using CorySynthUI.Models;
+using CorySynthUI.ViewModel;
+using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +11,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -51,6 +54,19 @@ namespace CorySynthUI
             }
         }
 
+        private DeviceModel _deviceModel;
+        public DeviceModel DeviceModel
+        {
+            get
+            {
+                if (_deviceModel != null) return _deviceModel;
+
+                _deviceModel = AsyncContext.Run(() => DeviceModel.CreateDeviceModelAsync(SettingsViewModel));
+                return _deviceModel;
+            }
+        }
+        
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -59,11 +75,11 @@ namespace CorySynthUI
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            this._settingsViewModel = new Models.SettingsViewModel();
 
             ApplicationData.Current.DataChanged += (sender, e) => SettingsViewModel.UpdateSettings();
 
         }
-
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used when the application is launched to open a specific file, to display
@@ -143,6 +159,33 @@ namespace CorySynthUI
             rootFrame.Navigated -= this.RootFrame_FirstNavigated;
         }
 #endif
+
+        protected override void OnWindowCreated(WindowCreatedEventArgs args)
+        {
+            SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
+        }
+
+        // Commands are requested when the Settings charm is used to open the SettingsPane.
+        private void OnCommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            args.Request.ApplicationCommands.Add(new SettingsCommand(
+            "AudioSettings", "Audio Settings", (handler) => ShowAudioSettingsFlyout()));
+        }
+
+        // This code is executed when the user taps the "Audio Settings" command in the SettingsPane.
+        public void ShowAudioSettingsFlyout()
+        {
+            AudioSettingsFlyout audioFlyout = new AudioSettingsFlyout()
+            {
+                DataContext = new AudioSettingsViewModel()
+                {
+                    Devices=DeviceModel,
+                }
+            };
+            audioFlyout.Show();
+        }
+
+
 
         /// <summary>
         /// Invoked when application execution is being suspended.  Application state is saved
