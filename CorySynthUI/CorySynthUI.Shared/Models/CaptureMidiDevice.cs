@@ -63,7 +63,8 @@ namespace CorySynthUI.Models
             disposeMidiIn();
             
             midiIn = await MidiInPort.FromIdAsync(deviceId);
-            midiIn.MessageReceived += MidiInput_MessageReceived;
+            if(midiIn != null)
+                midiIn.MessageReceived += MidiInput_MessageReceived;
         }
 
         private void disposeMidiIn()

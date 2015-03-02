@@ -44,21 +44,17 @@ namespace CorySynthUI
             _viewModel = new SequencerViewModel(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2), (App.Current as App).DeviceModel);
        }
 
-        private void LayersLink_Click(object sender, RoutedEventArgs e)
+        private void NavLinkClick(object sender, RoutedEventArgs e)
         {
-            VisualStateManager.GoToState(this, "LayersView", true);
+            var state = ((FrameworkElement)sender).Tag as String;
+            VisualStateManager.GoToState(this, state, true);
         }
 
-        private void EffectsLink_Click(object sender, RoutedEventArgs e)
-        {
-            VisualStateManager.GoToState(this, "EffectsView", true);
-        }
-
-       
         private void VoicePanelNav_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             VisualStateManager.GoToState(this, String.Format("{0}LayerSelected", (string)this.VoicePanelNav.SelectedValue), true);
         }
+
         
 
     }

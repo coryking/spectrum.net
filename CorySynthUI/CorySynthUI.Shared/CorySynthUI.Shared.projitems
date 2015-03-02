@@ -16,6 +16,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\HeaderedStackPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Keyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ByteTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeviceModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ISettingsViewModel.cs" />

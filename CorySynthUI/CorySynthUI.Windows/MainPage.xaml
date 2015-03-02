@@ -264,6 +264,13 @@
                                 </DiscreteObjectKeyFrame.Value>
                             </DiscreteObjectKeyFrame>
                         </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TheKeyboard">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
                 <VisualState x:Name="LayersView">
@@ -289,8 +296,46 @@
                                 </DiscreteObjectKeyFrame.Value>
                             </DiscreteObjectKeyFrame>
                         </ObjectAnimationUsingKeyFrames>
-
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TheKeyboard">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HomeView">
+                	<Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="GlobalEffectsPane">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Control.FontWeight)" Storyboard.TargetName="HomeLink">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <FontWeight>Bold</FontWeight>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="LayersPane">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TheKeyboard">
+                			<DiscreteObjectKeyFrame KeyTime="0">
+                				<DiscreteObjectKeyFrame.Value>
+                					<Visibility>Visible</Visibility>
+                				</DiscreteObjectKeyFrame.Value>
+                			</DiscreteObjectKeyFrame>
+                		</ObjectAnimationUsingKeyFrames>
+                	</Storyboard>
                 </VisualState>
             </VisualStateGroup>
             <VisualStateGroup x:Name="VoiceLayer">
@@ -403,10 +448,12 @@
             <StackPanel.Background>
                 <StaticResource ResourceKey="NavBarBackground"/>
             </StackPanel.Background>
-            <HyperlinkButton Content="Home"/>
-            <HyperlinkButton Content="Effects" x:Name="EffectsLink" Click="EffectsLink_Click"/>
-            <HyperlinkButton Content="Layers" x:Name="LayersLink" Click="LayersLink_Click"/>
+            <HyperlinkButton Content="Home" Tag="HomeView" x:Name="HomeLink" Click="NavLinkClick"/>
+            <HyperlinkButton Content="Effects" Tag="EffectsView" x:Name="EffectsLink" Click="NavLinkClick"/>
+            <HyperlinkButton Content="Layers" Tag="LayersView" x:Name="LayersLink" Click="NavLinkClick"/>
         </StackPanel>
+        <controls:Keyboard Grid.Row="1" x:Name="TheKeyboard" Visibility="Collapsed"/>
+		
         <Grid DataContext="{Binding MidiChannel.Effects}" Visibility="Collapsed" Grid.Row="1" x:Name="GlobalEffectsPane">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
