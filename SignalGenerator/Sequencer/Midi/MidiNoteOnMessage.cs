@@ -8,6 +8,7 @@ namespace CorySignalGenerator.Sequencer.Midi
 {
     public class MidiNoteOnMessage :IMidiMessage
     {
+
         public MidiNoteOnMessage(byte channel, byte note, byte velocity)
         {
             Channel = channel;

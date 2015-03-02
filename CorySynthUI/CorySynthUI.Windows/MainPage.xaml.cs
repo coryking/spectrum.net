@@ -31,6 +31,12 @@ namespace CorySynthUI
             this.Init();
 
             this.InitializeComponent();
+            this.TheKeyboard.KeyboardEvent += TheKeyboard_KeyboardEvent;
+        }
+
+        void TheKeyboard_KeyboardEvent(object sender, CorySignalGenerator.Sequencer.Midi.IMidiMessage message)
+        {
+            _viewModel.MidiChannel.ProcessMidiMessage(message);
         }
 
         private SequencerViewModel _viewModel;

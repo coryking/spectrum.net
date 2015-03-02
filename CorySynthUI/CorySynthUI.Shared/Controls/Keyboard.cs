@@ -170,9 +170,10 @@ namespace CorySynthUI.Controls
                 case CorySignalGenerator.Sequencer.Midi.MidiMessageType.None:
                     break;
                 case CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOff:
+                    message = new CorySignalGenerator.Sequencer.Midi.MidiNoteOffMessage(0, (byte)note.Number, 0);
                     break;
                 case CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOn:
-                    message = new CorySignalGenerator.Sequencer.Midi.MidiNoteOnMessage(MidiChannel, note.Number, 127);
+                    message = new CorySignalGenerator.Sequencer.Midi.MidiNoteOnMessage(0, (byte)note.Number, 127);
                     break;
                 case CorySignalGenerator.Sequencer.Midi.MidiMessageType.PolyphonicKeyPressure:
                     break;
@@ -209,6 +210,8 @@ namespace CorySynthUI.Controls
                 default:
                     break;
             }
+            if (KeyboardEvent != null)
+                KeyboardEvent(this, message);
         }
 
       
@@ -260,15 +263,19 @@ namespace CorySynthUI.Controls
         void key_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             var ele = sender as Windows.UI.Xaml.Shapes.Rectangle;
-            var off = ((MidiNote)ele.Tag).KeyColor == KeyColor.White ? offBrushWhite : offBrushBlack;
+            var note = (MidiNote)ele.Tag;
+            var off = note.KeyColor == KeyColor.White ? offBrushWhite : offBrushBlack;
             ele.Fill = off;
+            OnKeyboardEvent(note, CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOff);
         }
 
         void key_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var ele = sender as Windows.UI.Xaml.Shapes.Rectangle;
-            var on = ((MidiNote)ele.Tag).KeyColor == KeyColor.White ? onBrushWhite : onBrushBlack;
+            var note = (MidiNote)ele.Tag;
+            var on = note.KeyColor == KeyColor.White ? onBrushWhite : onBrushBlack;
             ele.Fill = on;
+            OnKeyboardEvent(note, CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOn);
         }
 
         public int NumberOfWhiteNotes
