@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace CorySynthUI.Controls
 {
-
+    public delegate void KeyboardEventCallback(object sender, CorySignalGenerator.Sequencer.Midi.IMidiMessage message);
 
     public class Keyboard : Canvas
     {
@@ -160,6 +160,56 @@ namespace CorySynthUI.Controls
         #endregion
 
 
+        public event KeyboardEventCallback KeyboardEvent;
+
+        protected void OnKeyboardEvent(MidiNote note, CorySignalGenerator.Sequencer.Midi.MidiMessageType type)
+        {
+            CorySignalGenerator.Sequencer.Midi.IMidiMessage message = null;
+            switch (type)
+            {
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.None:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOff:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.NoteOn:
+                    message = new CorySignalGenerator.Sequencer.Midi.MidiNoteOnMessage(MidiChannel, note.Number, 127);
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.PolyphonicKeyPressure:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.ControlChange:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.ProgramChange:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.ChannelPressure:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.PitchBendChange:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.SystemExclusive:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.MidiTimeCode:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.SongPositionPointer:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.SongSelect:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.TuneRequest:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.TimingClock:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.Start:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.Continue:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.Stop:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.ActiveSensing:
+                    break;
+                case CorySignalGenerator.Sequencer.Midi.MidiMessageType.SystemReset:
+                    break;
+                default:
+                    break;
+            }
+        }
 
       
         private void RenderControl()
