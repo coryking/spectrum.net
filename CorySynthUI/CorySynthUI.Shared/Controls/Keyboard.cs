@@ -1,6 +1,7 @@
 ﻿using CorySignalGenerator.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -32,10 +33,10 @@ namespace CorySynthUI.Controls
 
         public Keyboard() : base()
         {
-            onBrushWhite = new SolidColorBrush(Windows.UI.Colors.PowderBlue);
+            onBrushWhite = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             offBrushWhite = new SolidColorBrush(Windows.UI.Colors.White);
 
-            onBrushBlack = new SolidColorBrush(Windows.UI.Colors.DarkGray);
+            onBrushBlack = new SolidColorBrush(Windows.UI.Colors.CornflowerBlue);
             offBrushBlack = new SolidColorBrush(Windows.UI.Colors.Black);
             RenderControl();
         }
@@ -115,6 +116,28 @@ namespace CorySynthUI.Controls
         }
 
         #endregion
+
+        #region BlackKeyWidth
+
+        /// <summary>
+        /// Identifies the <see cref="BlackKeyWidth"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty BlackKeyWidthProperty =
+            DependencyProperty.Register("BlackKeyWidth", typeof(double), typeof(Keyboard),
+                new PropertyMetadata((double)25));
+
+        /// <summary>
+        /// Gets or sets the BlackKeyWidth property.  This dependency property 
+        /// indicates ....
+        /// </summary>
+        public double BlackKeyWidth
+        {
+            get { return (double)GetValue(BlackKeyWidthProperty); }
+            set { SetValue(BlackKeyWidthProperty, value); }
+        }
+
+        #endregion
+
 
 
         #region WhiteKeyWidth
@@ -239,13 +262,14 @@ namespace CorySynthUI.Controls
         private double SetKey(MidiNote key, double leftPos)
         {
             // If the key is black, then we have to set it off by 1/2 of the black key's width
-            var actualLeftPos = key.KeyColor == KeyColor.Black ? leftPos + WhiteKeyWidth / 2 : leftPos;
+            var actualLeftPos = key.KeyColor == KeyColor.Black ? leftPos - WhiteKeyWidth / 2.0 + (WhiteKeyWidth - BlackKeyWidth) / 2.0 : leftPos;
+            Debug.WriteLine("Setting {0} at {1}", key, actualLeftPos);
             var keyShape = new Windows.UI.Xaml.Shapes.Rectangle()
             {
 
-                Width = WhiteKeyWidth,
+                Width = key.KeyColor == KeyColor.White ? WhiteKeyWidth : BlackKeyWidth,
                 Height = key.KeyColor == KeyColor.White ? WhiteKeyHeight : WhiteKeyHeight / 2,
-                Stroke = new SolidColorBrush(Windows.UI.Colors.Red),
+                Stroke = new SolidColorBrush(Windows.UI.Colors.DarkGray),
                 Fill = key.KeyColor == KeyColor.White ? offBrushWhite : offBrushBlack,
 
                 Tag = key,
